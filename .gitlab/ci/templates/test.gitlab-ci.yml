@@ -1,0 +1,5 @@
+image: registry.snapp.tech/docker/golang:1.23-alpine
+test:
+  stage: test
+  script:
+    - go test -v ./...

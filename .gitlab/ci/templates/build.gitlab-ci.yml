@@ -1,0 +1,17 @@
+---
+build:
+  image: docker:latest
+  stage: build
+  script:
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+    - docker build --tag $CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA .
+  after_script:
+    - docker save -o ${CI_PROJECT_NAME}-${CI_COMMIT_SHORT_SHA}.tar $CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA
+  artifacts:
+    name: "docker-image-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - ${CI_PROJECT_NAME}-${CI_COMMIT_SHORT_SHA}.tar
+    expire_in: 1 day
+  needs: ["test"]
+
+
