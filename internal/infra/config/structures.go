@@ -5,8 +5,11 @@ type LoggerConfig struct {
 }
 
 type ServerConfig struct {
-	Address string `json:"address" koanf:"address"`
-	Port    string `json:"port"    koanf:"port"`
+	Address       string `json:"address" koanf:"address"`
+	Port          string `json:"port"    koanf:"port"`
+	AuthEnabled   string `json:"auth_enabled" koanf:"auth_enabled"`
+	AuthKeyLookup string `json:"auth_key_lookup" koanf:"auth_key_lookup"`
+	AuthToken     string `json:"auth_token" koanf:"auth_token"`
 }
 
 type ServerCorsConfig struct {

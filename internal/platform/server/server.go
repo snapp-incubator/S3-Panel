@@ -54,6 +54,8 @@ func (s *Server) registerRoutes() {
 
 	apiRoutes := s.router.Group("/api",
 		s.CORSMiddleware(),
+		s.AuthMiddleware(),
+		s.TimeOutMiddleware(),
 	)
 
 	apiRoutesBuckets := apiRoutes.Group("/bucket")
