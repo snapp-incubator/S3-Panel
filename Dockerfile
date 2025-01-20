@@ -11,4 +11,4 @@ FROM alpine:3.20
 WORKDIR /app/
 COPY --from=builder /app/cmd/snapp_object_store .
 ENTRYPOINT ["./snapp_object_store"]
-CMD ["snapp_object_store", "--configPath=./config.yaml"]
+CMD ["snapp-object-store", "--configPath=./config.yaml"]

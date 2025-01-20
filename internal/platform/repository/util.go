@@ -18,6 +18,7 @@ func NewS3Client(endpoint, accessKey, secretKey string) (*s3.Client, error) {
 				SecretAccessKey: secretKey,
 			}, nil
 		})),
+		config.WithRegion("auto"),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load configuration: %v", err)
