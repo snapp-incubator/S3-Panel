@@ -1,0 +1,534 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Serves the S3 backend APIs",
+        "title": "ObjectStorage Backend Swagger",
+        "termsOfService": "https://swagger.io/terms/",
+        "contact": {
+            "name": "Cloud-Platform",
+            "url": "https://docs.snappcloud.io/docs/servicedesk",
+            "email": "cloud-platform@snappcloud.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/bucket/create": {
+            "post": {
+                "description": "Creates bucket for a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bucket"
+                ],
+                "summary": "Creates Bucket",
+                "parameters": [
+                    {
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Bucket Name to Create",
+                        "name": "bucket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successful response with buckets quota",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.BucketCreateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/bucket/list": {
+            "get": {
+                "description": "Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bucket"
+                ],
+                "summary": "List of buckets of a user",
+                "parameters": [
+                    {
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with bucket list",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.BucketListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/bucket/quota": {
+            "get": {
+                "description": "Fetches Quota of buckets owned by a user that is specified by AccessKey and SecretKey",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bucket"
+                ],
+                "summary": "Quota of buckets of a user",
+                "parameters": [
+                    {
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with buckets quota",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/objectstorage.BucketQuotaResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/object/list": {
+            "get": {
+                "description": "Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Object"
+                ],
+                "summary": "List of objects of a bucket",
+                "parameters": [
+                    {
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "bucket name",
+                        "name": "bucket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "max_keys of pagination",
+                        "name": "max_keys",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "page of pagination",
+                        "name": "page",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with bucket list",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.ObjectListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/id": {
+            "get": {
+                "description": "Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "List of buckets of a user",
+                "parameters": [
+                    {
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with user identification",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.UserIdentificationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/quota": {
+            "get": {
+                "description": "Fetches Quota Information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Fetch User Quota",
+                "parameters": [
+                    {
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with user quota",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.UserQuotaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "objectstorage.BucketCreateResponse": {
+            "type": "object",
+            "properties": {
+                "already_exist": {
+                    "type": "boolean"
+                },
+                "created": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "objectstorage.BucketListResponse": {
+            "type": "object",
+            "properties": {
+                "bucket_list": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "objectstorage.BucketQuotaResponse": {
+            "type": "object",
+            "properties": {
+                "bucket": {
+                    "type": "string"
+                },
+                "hard_bytes": {
+                    "type": "integer"
+                },
+                "hard_objects": {
+                    "type": "integer"
+                },
+                "quota_enabled": {
+                    "type": "boolean"
+                },
+                "used_bytes": {
+                    "type": "integer"
+                },
+                "used_objects": {
+                    "type": "integer"
+                }
+            }
+        },
+        "objectstorage.ObjectListBody": {
+            "type": "object",
+            "properties": {
+                "last_modified_timestamp": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "objectstorage.ObjectListResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/objectstorage.ObjectListBody"
+                    }
+                }
+            }
+        },
+        "objectstorage.UserIdentificationResponse": {
+            "type": "object",
+            "properties": {
+                "display_name": {
+                    "type": "string"
+                },
+                "suspended": {
+                    "type": "integer"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                },
+                "user_not_found": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "objectstorage.UserQuotaResponse": {
+            "type": "object",
+            "properties": {
+                "hard_buckets": {
+                    "type": "integer"
+                },
+                "hard_bytes": {
+                    "type": "integer"
+                },
+                "hard_objects": {
+                    "type": "integer"
+                },
+                "quota_enabled": {
+                    "type": "boolean"
+                },
+                "used_buckets": {
+                    "type": "integer"
+                },
+                "used_bytes": {
+                    "type": "integer"
+                },
+                "used_objects": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

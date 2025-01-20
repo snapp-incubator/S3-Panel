@@ -8,11 +8,10 @@ type ObjectStorage interface {
 	ObjectList(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectListResponse, error)
 	ObjectUpload()
 
-	BucketCreate(cfg config.ObjectStorageConfig, meta BucketRequestMeta) (BucketCreateResponse, error)
+	BucketCreate(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketCreateResponse, error)
 	BucketDelete()
-	BucketHead()
-	BucketList(cfg config.ObjectStorageConfig, meta BucketRequestMeta) (BucketListResponse, error)
-	BucketQuota(cfg config.ObjectStorageConfig, meta BucketRequestMeta) ([]BucketQuotaResponse, error)
+	BucketList(cfg config.ObjectStorageConfig, meta BucketInfoRequestMeta) (BucketListResponse, error)
+	BucketQuota(cfg config.ObjectStorageConfig, meta BucketInfoRequestMeta) ([]BucketQuotaResponse, error)
 
 	UserQuota(cfg config.ObjectStorageConfig, meta UserRequestMeta) (UserQuotaResponse, error)
 	UserIdentification(cfg config.ObjectStorageConfig, meta UserRequestMeta) (UserIdentificationResponse, error)

@@ -6,9 +6,22 @@ import (
 	"net/http"
 )
 
+// HandleBucketList
+//
+//	@Summary		List of buckets of a user
+//	@Description	Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey
+//	@Tags			Bucket
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	body		string								true	"User given AccessKey"
+//	@Param			secret_key	body		string								true	"User given SecretKey"
+//	@Success		200			{object}	objectstorage.BucketListResponse	"Successful response with bucket list"
+//	@Failure		400			{object}	map[string]string					"Bad Request"
+//	@Failure		500			{object}	map[string]string					"Internal server error"
+//	@Router			/api/bucket/list [get]
 func HandleBucketList(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req objectstorage.BucketRequestMeta
+		var req objectstorage.BucketInfoRequestMeta
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
@@ -28,9 +41,22 @@ func HandleBucketList(s *Server) echo.HandlerFunc {
 	}
 }
 
+// HandleBucketQuota
+//
+//	@Summary		Quota of buckets of a user
+//	@Description	Fetches Quota of buckets owned by a user that is specified by AccessKey and SecretKey
+//	@Tags			Bucket
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	body		string								true	"User given AccessKey"
+//	@Param			secret_key	body		string								true	"User given SecretKey"
+//	@Success		200			{object}	[]objectstorage.BucketQuotaResponse	"Successful response with buckets quota"
+//	@Failure		400			{object}	map[string]string					"Bad Request"
+//	@Failure		500			{object}	map[string]string					"Internal server error"
+//	@Router			/api/bucket/quota [get]
 func HandleBucketQuota(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req objectstorage.BucketRequestMeta
+		var req objectstorage.BucketInfoRequestMeta
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
@@ -50,9 +76,23 @@ func HandleBucketQuota(s *Server) echo.HandlerFunc {
 	}
 }
 
+// HandleBucketCreate
+//
+//	@Summary		Creates Bucket
+//	@Description	Creates bucket for a user
+//	@Tags			Bucket
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	body		string								true	"User given AccessKey"
+//	@Param			secret_key	body		string								true	"User given SecretKey"
+//	@Param			bucket		body		string								true	"Bucket Name to Create"
+//	@Success		201			{object}	objectstorage.BucketCreateResponse	"Successful response with buckets quota"
+//	@Failure		400			{object}	map[string]string					"Bad Request"
+//	@Failure		500			{object}	map[string]string					"Internal server error"
+//	@Router			/api/bucket/create [post]
 func HandleBucketCreate(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req objectstorage.BucketRequestMeta
+		var req objectstorage.BucketActionRequestMeta
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())

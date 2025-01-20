@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func (c CephObjectStorage) BucketCreate(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketRequestMeta) (objectstorage.BucketCreateResponse, error) {
+func (c CephObjectStorage) BucketCreate(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketActionRequestMeta) (objectstorage.BucketCreateResponse, error) {
 	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
 		return objectstorage.BucketCreateResponse{}, err
@@ -45,9 +45,7 @@ func (c CephObjectStorage) BucketCreate(serverAdminConfig configApp.ObjectStorag
 
 func (c CephObjectStorage) BucketDelete() {}
 
-func (c CephObjectStorage) BucketHead() {}
-
-func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketRequestMeta) (objectstorage.BucketListResponse, error) {
+func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketInfoRequestMeta) (objectstorage.BucketListResponse, error) {
 	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
 		return objectstorage.BucketListResponse{}, err
@@ -70,7 +68,7 @@ func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageC
 	}, nil
 }
 
-func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketRequestMeta) ([]objectstorage.BucketQuotaResponse, error) {
+func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketInfoRequestMeta) ([]objectstorage.BucketQuotaResponse, error) {
 	radosClient, err := NewRadosClient(serverAdminConfig.URL, serverAdminConfig.AccessKeyAdmin, serverAdminConfig.SecretKeyAdmin)
 	if err != nil {
 		return nil, err

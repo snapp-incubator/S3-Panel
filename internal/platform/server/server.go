@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/health"
@@ -51,6 +52,7 @@ func (s *Server) registerRouter() {
 
 func (s *Server) registerRoutes() {
 	s.router.GET("/health", health.HandleHealth())
+	s.router.GET("/docs/*", echoSwagger.WrapHandler)
 
 	apiRoutes := s.router.Group("/api",
 		s.CORSMiddleware(),

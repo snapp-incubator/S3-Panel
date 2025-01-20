@@ -1,0 +1,354 @@
+definitions:
+  objectstorage.BucketCreateResponse:
+    properties:
+      already_exist:
+        type: boolean
+      created:
+        type: boolean
+    type: object
+  objectstorage.BucketListResponse:
+    properties:
+      bucket_list:
+        items:
+          type: string
+        type: array
+    type: object
+  objectstorage.BucketQuotaResponse:
+    properties:
+      bucket:
+        type: string
+      hard_bytes:
+        type: integer
+      hard_objects:
+        type: integer
+      quota_enabled:
+        type: boolean
+      used_bytes:
+        type: integer
+      used_objects:
+        type: integer
+    type: object
+  objectstorage.ObjectListBody:
+    properties:
+      last_modified_timestamp:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+    type: object
+  objectstorage.ObjectListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/objectstorage.ObjectListBody'
+        type: array
+    type: object
+  objectstorage.UserIdentificationResponse:
+    properties:
+      display_name:
+        type: string
+      suspended:
+        type: integer
+      team:
+        type: string
+      user_not_found:
+        type: boolean
+      userID:
+        type: string
+    type: object
+  objectstorage.UserQuotaResponse:
+    properties:
+      hard_buckets:
+        type: integer
+      hard_bytes:
+        type: integer
+      hard_objects:
+        type: integer
+      quota_enabled:
+        type: boolean
+      used_buckets:
+        type: integer
+      used_bytes:
+        type: integer
+      used_objects:
+        type: integer
+    type: object
+info:
+  contact:
+    email: cloud-platform@snappcloud.io
+    name: Cloud-Platform
+    url: https://docs.snappcloud.io/docs/servicedesk
+  description: Serves the S3 backend APIs
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://swagger.io/terms/
+  title: ObjectStorage Backend Swagger
+  version: "1.0"
+paths:
+  /api/bucket/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates bucket for a user
+      parameters:
+      - description: User given AccessKey
+        in: body
+        name: access_key
+        required: true
+        schema:
+          type: string
+      - description: User given SecretKey
+        in: body
+        name: secret_key
+        required: true
+        schema:
+          type: string
+      - description: Bucket Name to Create
+        in: body
+        name: bucket
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful response with buckets quota
+          schema:
+            $ref: '#/definitions/objectstorage.BucketCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Creates Bucket
+      tags:
+      - Bucket
+  /api/bucket/list:
+    get:
+      consumes:
+      - application/json
+      description: Fetches list of buckets owned by a user that is specified by AccessKey
+        and SecretKey
+      parameters:
+      - description: User given AccessKey
+        in: body
+        name: access_key
+        required: true
+        schema:
+          type: string
+      - description: User given SecretKey
+        in: body
+        name: secret_key
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with bucket list
+          schema:
+            $ref: '#/definitions/objectstorage.BucketListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List of buckets of a user
+      tags:
+      - Bucket
+  /api/bucket/quota:
+    get:
+      consumes:
+      - application/json
+      description: Fetches Quota of buckets owned by a user that is specified by AccessKey
+        and SecretKey
+      parameters:
+      - description: User given AccessKey
+        in: body
+        name: access_key
+        required: true
+        schema:
+          type: string
+      - description: User given SecretKey
+        in: body
+        name: secret_key
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with buckets quota
+          schema:
+            items:
+              $ref: '#/definitions/objectstorage.BucketQuotaResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Quota of buckets of a user
+      tags:
+      - Bucket
+  /api/object/list:
+    get:
+      consumes:
+      - application/json
+      description: Fetches list of buckets owned by a user that is specified by AccessKey
+        and SecretKey
+      parameters:
+      - description: User given AccessKey
+        in: body
+        name: access_key
+        required: true
+        schema:
+          type: string
+      - description: User given SecretKey
+        in: body
+        name: secret_key
+        required: true
+        schema:
+          type: string
+      - description: bucket name
+        in: body
+        name: bucket
+        required: true
+        schema:
+          type: string
+      - description: max_keys of pagination
+        in: body
+        name: max_keys
+        required: true
+        schema:
+          type: string
+      - description: page of pagination
+        in: body
+        name: page
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with bucket list
+          schema:
+            $ref: '#/definitions/objectstorage.ObjectListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List of objects of a bucket
+      tags:
+      - Object
+  /api/user/id:
+    get:
+      consumes:
+      - application/json
+      description: Fetches list of buckets owned by a user that is specified by AccessKey
+        and SecretKey
+      parameters:
+      - description: User given AccessKey
+        in: body
+        name: access_key
+        required: true
+        schema:
+          type: string
+      - description: User given SecretKey
+        in: body
+        name: secret_key
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with user identification
+          schema:
+            $ref: '#/definitions/objectstorage.UserIdentificationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List of buckets of a user
+      tags:
+      - User
+  /api/user/quota:
+    get:
+      consumes:
+      - application/json
+      description: Fetches Quota Information
+      parameters:
+      - description: User given AccessKey
+        in: body
+        name: access_key
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with user quota
+          schema:
+            $ref: '#/definitions/objectstorage.UserQuotaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Fetch User Quota
+      tags:
+      - User
+swagger: "2.0"

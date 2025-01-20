@@ -18,6 +18,22 @@ func HandleObjectUpload(s *Server) echo.HandlerFunc {
 	}
 }
 
+// HandleObjectList
+//
+//	@Summary		List of objects of a bucket
+//	@Description	Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey
+//	@Tags			Object
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	body		string								true	"User given AccessKey"
+//	@Param			secret_key	body		string								true	"User given SecretKey"
+//	@Param			bucket		body		string								true	"bucket name"
+//	@Param			max_keys	body		string								true	"max_keys of pagination"
+//	@Param			page		body		string								true	"page of pagination"
+//	@Success		200			{object}	objectstorage.ObjectListResponse	"Successful response with bucket list"
+//	@Failure		400			{object}	map[string]string					"Bad Request"
+//	@Failure		500			{object}	map[string]string					"Internal server error"
+//	@Router			/api/object/list [get]
 func HandleObjectList(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.ObjectRequestMeta

@@ -8,6 +8,17 @@ import (
 
 // HandleUserQuota function to handle the /user/quota endpoint
 // caution: this function only works with AccessKey and does not use SecretKey
+//
+//	@Summary		Fetch User Quota
+//	@Description	Fetches Quota Information
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	body		string							true	"User given AccessKey"
+//	@Success		200			{object}	objectstorage.UserQuotaResponse	"Successful response with user quota"
+//	@Failure		400			{object}	map[string]string				"Bad Request"
+//	@Failure		500			{object}	map[string]string				"Internal server error"
+//	@Router			/api/user/quota [get]
 func HandleUserQuota(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.UserRequestMeta
@@ -31,6 +42,18 @@ func HandleUserQuota(s *Server) echo.HandlerFunc {
 
 // HandleUserIdentification function to handle the /user/id endpoint
 // caution: this function only works with AccessKey and does not use SecretKey
+//
+//	@Summary		List of buckets of a user
+//	@Description	Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	body		string										true	"User given AccessKey"
+//	@Param			secret_key	body		string										true	"User given SecretKey"
+//	@Success		200			{object}	objectstorage.UserIdentificationResponse	"Successful response with user identification"
+//	@Failure		400			{object}	map[string]string							"Bad Request"
+//	@Failure		500			{object}	map[string]string							"Internal server error"
+//	@Router			/api/user/id [get]
 func HandleUserIdentification(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.UserRequestMeta
