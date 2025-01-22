@@ -2,12 +2,41 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/smithy-go"
 	"github.com/ceph/go-ceph/rgw/admin"
 )
+
+const (
+	ErrInvalidAccessKeyID = "InvalidAccessKeyId"
+	ErrAccessDenied       = "AccessDenied"
+	ErrNoSuchBucket       = "NoSuchBucket"
+	ErrInvalidBucketName  = "InvalidBucketName"
+	ErrServiceUnavailable = "ServiceUnavailable"
+)
+
+func CustomizedErrorContents(err error) error {
+	var errOperation *smithy.GenericAPIError
+	if errors.As(err, &errOperation) {
+		switch errOperation.Code {
+		case ErrInvalidAccessKeyID:
+			return fmt.Errorf(ErrInvalidAccessKeyID)
+		case ErrAccessDenied:
+			return fmt.Errorf(ErrAccessDenied)
+		case ErrNoSuchBucket:
+			return fmt.Errorf(ErrNoSuchBucket)
+		case ErrInvalidBucketName:
+			return fmt.Errorf(ErrInvalidBucketName)
+		case ErrServiceUnavailable:
+			return fmt.Errorf(ErrServiceUnavailable)
+		}
+	}
+	return nil
+}
 
 func NewS3Client(endpoint, accessKey, secretKey string) (*s3.Client, error) {
 	// Load AWS config

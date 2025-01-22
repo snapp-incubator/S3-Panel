@@ -16,6 +16,10 @@ func (c CephObjectStorage) UserQuota(serverAdminConfig config.ObjectStorageConfi
 
 	userData, errUser := radosClient.GetUser(context.Background(), admin.User{Keys: []admin.UserKeySpec{{AccessKey: meta.AccessKey}}})
 	if errUser != nil {
+		customizedErr := CustomizedErrorContents(errUser)
+		if customizedErr != nil {
+			return objectstorage.UserQuotaResponse{}, customizedErr
+		}
 		return objectstorage.UserQuotaResponse{}, errUser
 	}
 
@@ -48,6 +52,10 @@ func (c CephObjectStorage) UserIdentification(serverAdminConfig config.ObjectSto
 	if errUser != nil {
 		if errors.Is(errUser, admin.ErrAccessDenied) {
 			return objectstorage.UserIdentificationResponse{UserNotFound: true}, nil
+		}
+		customizedErr := CustomizedErrorContents(errUser)
+		if customizedErr != nil {
+			return objectstorage.UserIdentificationResponse{}, customizedErr
 		}
 		return objectstorage.UserIdentificationResponse{}, errUser
 	}

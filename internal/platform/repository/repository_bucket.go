@@ -23,6 +23,10 @@ func (c CephObjectStorage) BucketCreate(serverAdminConfig configApp.ObjectStorag
 		Bucket: aws.String(meta.Bucket),
 	})
 	if errCreate != nil {
+		customizedErr := CustomizedErrorContents(errCreate)
+		if customizedErr != nil {
+			return objectstorage.BucketCreateResponse{}, customizedErr
+		}
 		if errors.As(errCreate, &exists) {
 			return objectstorage.BucketCreateResponse{
 				AlreadyExist: true,
@@ -56,6 +60,10 @@ func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageC
 	for bucketPaginator.HasMorePages() {
 		output, errNextPage := bucketPaginator.NextPage(context.Background())
 		if errNextPage != nil {
+			customizedErr := CustomizedErrorContents(errNextPage)
+			if customizedErr != nil {
+				return objectstorage.BucketListResponse{}, customizedErr
+			}
 			return objectstorage.BucketListResponse{}, errNextPage
 		} else {
 			for _, bucket := range output.Buckets {
@@ -76,11 +84,19 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 
 	userData, errUser := radosClient.GetUser(context.Background(), admin.User{Keys: []admin.UserKeySpec{{AccessKey: meta.AccessKey}}})
 	if errUser != nil {
+		customizedErr := CustomizedErrorContents(errUser)
+		if customizedErr != nil {
+			return []objectstorage.BucketQuotaResponse{}, customizedErr
+		}
 		return nil, errUser
 	}
 
 	bucketsData, errBuckets := radosClient.ListUsersBucketsWithStat(context.Background(), userData.Keys[0].User)
 	if errBuckets != nil {
+		customizedErr := CustomizedErrorContents(errBuckets)
+		if customizedErr != nil {
+			return []objectstorage.BucketQuotaResponse{}, customizedErr
+		}
 		return []objectstorage.BucketQuotaResponse{}, errBuckets
 	}
 
