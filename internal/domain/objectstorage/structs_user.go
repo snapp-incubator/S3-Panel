@@ -1,7 +1,7 @@
 package objectstorage
 
 type UserRequestMeta struct {
-	AccessKey string `json:"access_key" validate:"required"`
+	AccessKey string `header:"access_key" validate:"required"`
 }
 
 type UserIdentificationResponse struct {

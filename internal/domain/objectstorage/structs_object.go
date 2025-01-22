@@ -1,12 +1,11 @@
 package objectstorage
 
 type ObjectRequestMeta struct {
-	AccessKey string `json:"access_key" validate:"required"`
-	SecretKey string `json:"secret_key" validate:"required"`
-	Bucket    string `json:"bucket"     validate:"required"`
-	Page      int32  `json:"page"       validate:"required"`
-	MaxKeys   int32  `json:"max_keys"   validate:"required"`
-	Object    string `json:"object"`
+	AccessKey string `header:"access_key" validate:"required"`
+	SecretKey string `header:"secret_key" validate:"required"`
+	Bucket    string `query:"bucket"     validate:"required"`
+	Page      int32  `query:"page"       validate:"required"`
+	MaxKeys   int32  `query:"max_keys"   validate:"required"`
 }
 
 type ObjectListBody struct {

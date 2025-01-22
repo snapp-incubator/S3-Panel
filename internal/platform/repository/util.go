@@ -26,6 +26,7 @@ func NewS3Client(endpoint, accessKey, secretKey string) (*s3.Client, error) {
 
 	return s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.BaseEndpoint = aws.String(endpoint)
+		o.UsePathStyle = true
 	}), nil
 }
 

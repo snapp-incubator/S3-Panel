@@ -10,7 +10,6 @@ Buckets
 [x] Bucket List
 [x] Bucket Quota
 [x] Bucket Create
-[x] Bucket List
 [] Bucket Delete
 
 Users
@@ -22,3 +21,27 @@ Objects
 [] Object Delete
 [] Object Download
 [] Object Upload
+
+## APIs Curls
+
+### Bucket List
+
+curl -XGET "127.0.0.1:8080/api/bucket/list" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+
+### Bucket Quota
+
+curl -XGET "127.0.0.1:8080/api/bucket/quota" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+
+### User Identification
+
+curl -XGET "127.0.0.1:8080/api/user/id" -H "Content-Type: application/json" -H "access_key: X" -H "Authorization: Bearer X"
+
+### User Quota
+
+curl -XGET "127.0.0.1:8080/api/user/id" -H "Content-Type: application/json" -H "access_key: X" -H "Authorization: Bearer X"
+
+### Object List
+
+
+
+### Bucket Create

@@ -87,12 +87,14 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 	var aggregatedBucketData []objectstorage.BucketQuotaResponse
 	for _, bucketData := range bucketsData {
 		bucketQuotaInfo := objectstorage.BucketQuotaResponse{
-			BucketName:   bucketData.Bucket,
-			QuotaEnabled: bucketData.BucketQuota.Enabled,
-			UsedBytes:    bucketData.Usage.RgwMain.SizeActual,
-			HardBytes:    bucketData.BucketQuota.MaxSize,
-			UsedObjects:  bucketData.Usage.RgwMain.NumObjects,
-			HardObjects:  bucketData.BucketQuota.MaxObjects,
+			BucketName:      bucketData.Bucket,
+			QuotaEnabled:    bucketData.BucketQuota.Enabled,
+			UsedBytes:       bucketData.Usage.RgwMain.SizeActual,
+			HardBytes:       bucketData.BucketQuota.MaxSize,
+			UsedObjects:     bucketData.Usage.RgwMain.NumObjects,
+			HardObjects:     bucketData.BucketQuota.MaxObjects,
+			ModifyTimeStamp: bucketData.Mtime,
+			Tenant:          bucketData.Tenant,
 		}
 		aggregatedBucketData = append(aggregatedBucketData, bucketQuotaInfo)
 	}

@@ -34,11 +34,10 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 	var desiredObjects []objectstorage.ObjectListBody
 	var currentPage int32 = 1
 	for paginator.HasMorePages() {
-		output, err := paginator.NextPage(context.Background())
-		if err != nil {
-			return objectstorage.ObjectListResponse{}, err
+		output, errNextPage := paginator.NextPage(context.Background())
+		if errNextPage != nil {
+			return objectstorage.ObjectListResponse{}, errNextPage
 		}
-
 		if currentPage == meta.Page {
 			for _, object := range output.Contents {
 				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{

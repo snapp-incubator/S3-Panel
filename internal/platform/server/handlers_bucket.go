@@ -13,8 +13,8 @@ import (
 //	@Tags			Bucket
 //	@Accept			json
 //	@Produce		json
-//	@Param			access_key	body		string								true	"User given AccessKey"
-//	@Param			secret_key	body		string								true	"User given SecretKey"
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Param			secret_key	header		string								true	"User given SecretKey"
 //	@Success		200			{object}	objectstorage.BucketListResponse	"Successful response with bucket list"
 //	@Failure		400			{object}	map[string]string					"Bad Request"
 //	@Failure		500			{object}	map[string]string					"Internal server error"
@@ -22,7 +22,7 @@ import (
 func HandleBucketList(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.BucketInfoRequestMeta
-		err := c.Bind(&req)
+		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
 			return c.JSON(http.StatusBadRequest, err)
@@ -48,8 +48,8 @@ func HandleBucketList(s *Server) echo.HandlerFunc {
 //	@Tags			Bucket
 //	@Accept			json
 //	@Produce		json
-//	@Param			access_key	body		string								true	"User given AccessKey"
-//	@Param			secret_key	body		string								true	"User given SecretKey"
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Param			secret_key	header		string								true	"User given SecretKey"
 //	@Success		200			{object}	[]objectstorage.BucketQuotaResponse	"Successful response with buckets quota"
 //	@Failure		400			{object}	map[string]string					"Bad Request"
 //	@Failure		500			{object}	map[string]string					"Internal server error"
@@ -57,7 +57,7 @@ func HandleBucketList(s *Server) echo.HandlerFunc {
 func HandleBucketQuota(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.BucketInfoRequestMeta
-		err := c.Bind(&req)
+		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
 			return c.JSON(http.StatusBadRequest, err)
@@ -83,9 +83,9 @@ func HandleBucketQuota(s *Server) echo.HandlerFunc {
 //	@Tags			Bucket
 //	@Accept			json
 //	@Produce		json
-//	@Param			access_key	body		string								true	"User given AccessKey"
-//	@Param			secret_key	body		string								true	"User given SecretKey"
-//	@Param			bucket		body		string								true	"Bucket Name to Create"
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Param			secret_key	header		string								true	"User given SecretKey"
+//	@Param			bucket		query		string								true	"Bucket Name to Create"
 //	@Success		201			{object}	objectstorage.BucketCreateResponse	"Successful response with buckets quota"
 //	@Failure		400			{object}	map[string]string					"Bad Request"
 //	@Failure		500			{object}	map[string]string					"Internal server error"
@@ -98,6 +98,13 @@ func HandleBucketCreate(s *Server) echo.HandlerFunc {
 			s.logger.Error(err.Error())
 			return c.JSON(http.StatusBadRequest, err)
 		}
+
+		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
 		err = c.Validate(req)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, err)
