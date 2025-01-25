@@ -39,31 +39,25 @@ const docTemplate = `{
                 "summary": "Creates Bucket",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "User given AccessKey",
                         "name": "access_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "User given SecretKey",
                         "name": "secret_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "Bucket Name to Create",
                         "name": "bucket",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -109,22 +103,18 @@ const docTemplate = `{
                 "summary": "List of buckets of a user",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "User given AccessKey",
                         "name": "access_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "User given SecretKey",
                         "name": "secret_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -170,22 +160,18 @@ const docTemplate = `{
                 "summary": "Quota of buckets of a user",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "User given AccessKey",
                         "name": "access_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "User given SecretKey",
                         "name": "secret_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -234,49 +220,39 @@ const docTemplate = `{
                 "summary": "List of objects of a bucket",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "User given AccessKey",
                         "name": "access_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "User given SecretKey",
                         "name": "secret_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "bucket name",
                         "name": "bucket",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "max_keys of pagination",
                         "name": "max_keys",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "page of pagination",
                         "name": "page",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -309,7 +285,7 @@ const docTemplate = `{
         },
         "/api/user/id": {
             "get": {
-                "description": "Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey",
+                "description": "Fetch User Identification information using AccessKey",
                 "consumes": [
                     "application/json"
                 ],
@@ -319,25 +295,14 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "List of buckets of a user",
+                "summary": "Fetch User Identification information using AccessKey",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "User given AccessKey",
                         "name": "access_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "User given SecretKey",
-                        "name": "secret_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -380,16 +345,14 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Fetch User Quota",
+                "summary": "Fetch User Quota from AccessKey",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "User given AccessKey",
                         "name": "access_key",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -447,6 +410,9 @@ const docTemplate = `{
         "objectstorage.BucketQuotaResponse": {
             "type": "object",
             "properties": {
+                "access": {
+                    "type": "string"
+                },
                 "bucket": {
                     "type": "string"
                 },
@@ -456,8 +422,14 @@ const docTemplate = `{
                 "hard_objects": {
                     "type": "integer"
                 },
+                "modify_time_stamp": {
+                    "type": "string"
+                },
                 "quota_enabled": {
                     "type": "boolean"
+                },
+                "tenant": {
+                    "type": "string"
                 },
                 "used_bytes": {
                     "type": "integer"

@@ -15,14 +15,20 @@ definitions:
     type: object
   objectstorage.BucketQuotaResponse:
     properties:
+      access:
+        type: string
       bucket:
         type: string
       hard_bytes:
         type: integer
       hard_objects:
         type: integer
+      modify_time_stamp:
+        type: string
       quota_enabled:
         type: boolean
+      tenant:
+        type: string
       used_bytes:
         type: integer
       used_objects:
@@ -94,23 +100,20 @@ paths:
       description: Creates bucket for a user
       parameters:
       - description: User given AccessKey
-        in: body
+        in: header
         name: access_key
         required: true
-        schema:
-          type: string
+        type: string
       - description: User given SecretKey
-        in: body
+        in: header
         name: secret_key
         required: true
-        schema:
-          type: string
+        type: string
       - description: Bucket Name to Create
-        in: body
+        in: query
         name: bucket
         required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:
@@ -141,17 +144,15 @@ paths:
         and SecretKey
       parameters:
       - description: User given AccessKey
-        in: body
+        in: header
         name: access_key
         required: true
-        schema:
-          type: string
+        type: string
       - description: User given SecretKey
-        in: body
+        in: header
         name: secret_key
         required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:
@@ -182,17 +183,15 @@ paths:
         and SecretKey
       parameters:
       - description: User given AccessKey
-        in: body
+        in: header
         name: access_key
         required: true
-        schema:
-          type: string
+        type: string
       - description: User given SecretKey
-        in: body
+        in: header
         name: secret_key
         required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:
@@ -225,35 +224,30 @@ paths:
         and SecretKey
       parameters:
       - description: User given AccessKey
-        in: body
+        in: header
         name: access_key
         required: true
-        schema:
-          type: string
+        type: string
       - description: User given SecretKey
-        in: body
+        in: header
         name: secret_key
         required: true
-        schema:
-          type: string
+        type: string
       - description: bucket name
-        in: body
+        in: query
         name: bucket
         required: true
-        schema:
-          type: string
+        type: string
       - description: max_keys of pagination
-        in: body
+        in: query
         name: max_keys
         required: true
-        schema:
-          type: string
+        type: string
       - description: page of pagination
-        in: body
+        in: query
         name: page
         required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:
@@ -280,21 +274,13 @@ paths:
     get:
       consumes:
       - application/json
-      description: Fetches list of buckets owned by a user that is specified by AccessKey
-        and SecretKey
+      description: Fetch User Identification information using AccessKey
       parameters:
       - description: User given AccessKey
-        in: body
+        in: header
         name: access_key
         required: true
-        schema:
-          type: string
-      - description: User given SecretKey
-        in: body
-        name: secret_key
-        required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:
@@ -314,7 +300,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: List of buckets of a user
+      summary: Fetch User Identification information using AccessKey
       tags:
       - User
   /api/user/quota:
@@ -324,11 +310,10 @@ paths:
       description: Fetches Quota Information
       parameters:
       - description: User given AccessKey
-        in: body
+        in: header
         name: access_key
         required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:
@@ -348,7 +333,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Fetch User Quota
+      summary: Fetch User Quota from AccessKey
       tags:
       - User
 swagger: "2.0"
