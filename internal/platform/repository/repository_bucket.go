@@ -111,6 +111,7 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 			HardObjects:     bucketData.BucketQuota.MaxObjects,
 			ModifyTimeStamp: bucketData.Mtime,
 			Tenant:          bucketData.Tenant,
+			Access:          "R/W",
 		}
 		aggregatedBucketData = append(aggregatedBucketData, bucketQuotaInfo)
 	}

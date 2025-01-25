@@ -45,3 +45,14 @@ curl -XGET "127.0.0.1:8080/api/user/id" -H "Content-Type: application/json" -H "
 curl -XGET "127.0.0.1:8080/api/object/list?max_keys=10&page=1&bucket=X" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
 
 ### Bucket Create
+
+curl -XGET "127.0.0.1:8080/api/object/list?bucket=X" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+
+## Release Plan
+
+This list is prioritized from top to bottom. we will work on 2 items in a sprint.
+
+- Object Download
+- Object Upload
+- Object Delete
+- Bucket Delete

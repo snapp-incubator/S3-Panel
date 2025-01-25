@@ -22,6 +22,7 @@ type BucketQuotaResponse struct {
 	HardObjects     *int64  `json:"hard_objects"`
 	ModifyTimeStamp string  `json:"modify_time_stamp"`
 	Tenant          string  `json:"tenant"`
+	Access          string  `json:"access"`
 }
 
 type BucketListResponse struct {
