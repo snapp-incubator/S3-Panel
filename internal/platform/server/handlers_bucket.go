@@ -85,8 +85,8 @@ func HandleBucketQuota(s *Server) echo.HandlerFunc {
 //	@Produce		json
 //	@Param			access_key	header		string								true	"User given AccessKey"
 //	@Param			secret_key	header		string								true	"User given SecretKey"
-//	@Param			bucket		query		string								true	"Bucket Name to Create"
-//	@Success		201			{object}	objectstorage.BucketCreateResponse	"Successful response with buckets quota"
+//	@Param			bucket		body		string								true	"Bucket Name to Create"
+//	@Success		201			{object}	objectstorage.BucketCreateResponse	"Bucket created successfully"
 //	@Failure		400			{object}	map[string]string					"Bad Request"
 //	@Failure		500			{object}	map[string]string					"Internal server error"
 //	@Router			/api/bucket/create [post]
@@ -110,10 +110,10 @@ func HandleBucketCreate(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err)
 		}
 
-		createdBucket, errBucketList := s.db.BucketCreate(s.config.ObjectStorageConfigs, req)
-		if errBucketList != nil {
-			s.logger.Error(errBucketList.Error())
-			return c.JSON(http.StatusInternalServerError, errBucketList)
+		createdBucket, errBucketCreate := s.db.BucketCreate(s.config.ObjectStorageConfigs, req)
+		if errBucketCreate != nil {
+			s.logger.Error(errBucketCreate.Error())
+			return c.JSON(http.StatusInternalServerError, errBucketCreate)
 		}
 		if createdBucket.AlreadyExist {
 			return c.JSON(http.StatusOK, createdBucket)
@@ -122,8 +122,45 @@ func HandleBucketCreate(s *Server) echo.HandlerFunc {
 	}
 }
 
+// HandleBucketDelete
+//
+//	@Summary		Deletes Bucket
+//	@Description	Deletes bucket for a user
+//	@Tags			Bucket
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Param			secret_key	header		string								true	"User given SecretKey"
+//	@Param			bucket		body		string								true	"Bucket Name to Delete"
+//	@Success		200			{object}	objectstorage.BucketDeleteResponse	"Bucket deleted successfully"
+//	@Failure		400			{object}	map[string]string					"Bad Request"
+//	@Failure		500			{object}	map[string]string					"Internal server error"
+//	@Router			/api/bucket/delete [post]
 func HandleBucketDelete(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return nil
+		var req objectstorage.BucketActionRequestMeta
+		err := c.Bind(&req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = c.Validate(req)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		deleteBucket, errBucketDelete := s.db.BucketDelete(s.config.ObjectStorageConfigs, req)
+		if errBucketDelete != nil {
+			s.logger.Error(errBucketDelete.Error())
+			return c.JSON(http.StatusInternalServerError, errBucketDelete)
+		}
+		return c.JSON(http.StatusOK, deleteBucket)
 	}
 }

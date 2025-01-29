@@ -45,18 +45,86 @@
                         "required": true
                     },
                     {
-                        "type": "string",
                         "description": "Bucket Name to Create",
                         "name": "bucket",
-                        "in": "query",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Successful response with buckets quota",
+                        "description": "Bucket created successfully",
                         "schema": {
                             "$ref": "#/definitions/objectstorage.BucketCreateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/bucket/delete": {
+            "post": {
+                "description": "Deletes bucket for a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bucket"
+                ],
+                "summary": "Deletes Bucket",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Bucket Name to Delete",
+                        "name": "bucket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bucket deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.BucketDeleteResponse"
                         }
                     },
                     "400": {
@@ -384,6 +452,17 @@
                     "type": "boolean"
                 },
                 "created": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "objectstorage.BucketDeleteResponse": {
+            "type": "object",
+            "properties": {
+                "deleted": {
+                    "type": "boolean"
+                },
+                "has_objects": {
                     "type": "boolean"
                 }
             }

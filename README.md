@@ -10,7 +10,7 @@ Buckets
 - [x] Bucket List
 - [x] Bucket Quota
 - [x] Bucket Create
-- [] Bucket Delete
+- [x] Bucket Delete
 
 Users
 - [x] User Identification
@@ -46,7 +46,11 @@ curl -XGET "127.0.0.1:8080/api/object/list?max_keys=10&page=1&bucket=X" -H "Cont
 
 ### Bucket Create
 
-curl -XGET "127.0.0.1:8080/api/object/list?bucket=X" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+curl -XPOST "127.0.0.1:8080/api/bucket/create" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X"}'
+
+### Bucket Delete
+
+curl -XPOST "127.0.0.1:8080/api/bucket/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X"}'
 
 ## Release Plan
 
@@ -55,4 +59,3 @@ This list is prioritized from top to bottom. we will work on 2 items in a sprint
 - Object Download
 - Object Upload
 - Object Delete
-- Bucket Delete

@@ -64,14 +64,14 @@ func (s *Server) registerRoutes() {
 	{
 		apiRoutesBuckets.GET("/list", HandleBucketList(s))
 		apiRoutesBuckets.GET("/quota", HandleBucketQuota(s))
-		apiRoutesBuckets.PUT("/create", HandleBucketCreate(s))
+		apiRoutesBuckets.POST("/create", HandleBucketCreate(s))
 		apiRoutesBuckets.POST("/delete", HandleBucketDelete(s))
 	}
 
 	apiRoutesObjects := apiRoutes.Group("/object")
 	{
 		apiRoutesObjects.GET("/list", HandleObjectList(s))
-		apiRoutesObjects.GET("/upload", HandleObjectUpload(s))
+		apiRoutesObjects.PUT("/upload", HandleObjectUpload(s))
 		apiRoutesObjects.GET("/download", HandleObjectDownload(s))
 		apiRoutesObjects.POST("/delete", HandleObjectDelete(s))
 	}

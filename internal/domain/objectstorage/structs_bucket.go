@@ -4,7 +4,7 @@ package objectstorage
 type BucketActionRequestMeta struct {
 	AccessKey string `header:"access_key" validate:"required"`
 	SecretKey string `header:"secret_key" validate:"required"`
-	Bucket    string `query:"bucket"     validate:"required"`
+	Bucket    string `json:"bucket"       validate:"required"`
 }
 
 // BucketInfoRequestMeta used for APIs that don't need the "bucket" name to take actions, like "Quota", "List"
@@ -32,4 +32,9 @@ type BucketListResponse struct {
 type BucketCreateResponse struct {
 	AlreadyExist bool `json:"already_exist"`
 	Created      bool `json:"created"`
+}
+
+type BucketDeleteResponse struct {
+	Deleted    bool `json:"deleted"`
+	HasObjects bool `json:"has_objects"`
 }

@@ -6,6 +6,13 @@ definitions:
       created:
         type: boolean
     type: object
+  objectstorage.BucketDeleteResponse:
+    properties:
+      deleted:
+        type: boolean
+      has_objects:
+        type: boolean
+    type: object
   objectstorage.BucketListResponse:
     properties:
       bucket_list:
@@ -110,15 +117,16 @@ paths:
         required: true
         type: string
       - description: Bucket Name to Create
-        in: query
+        in: body
         name: bucket
         required: true
-        type: string
+        schema:
+          type: string
       produces:
       - application/json
       responses:
         "201":
-          description: Successful response with buckets quota
+          description: Bucket created successfully
           schema:
             $ref: '#/definitions/objectstorage.BucketCreateResponse'
         "400":
@@ -134,6 +142,50 @@ paths:
               type: string
             type: object
       summary: Creates Bucket
+      tags:
+      - Bucket
+  /api/bucket/delete:
+    post:
+      consumes:
+      - application/json
+      description: Deletes bucket for a user
+      parameters:
+      - description: User given AccessKey
+        in: header
+        name: access_key
+        required: true
+        type: string
+      - description: User given SecretKey
+        in: header
+        name: secret_key
+        required: true
+        type: string
+      - description: Bucket Name to Delete
+        in: body
+        name: bucket
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bucket deleted successfully
+          schema:
+            $ref: '#/definitions/objectstorage.BucketDeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Deletes Bucket
       tags:
       - Bucket
   /api/bucket/list:

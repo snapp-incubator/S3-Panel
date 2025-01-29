@@ -2,10 +2,8 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/ceph/go-ceph/rgw/admin"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	configApp "gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
@@ -18,7 +16,12 @@ func (c CephObjectStorage) BucketCreate(serverAdminConfig configApp.ObjectStorag
 		return objectstorage.BucketCreateResponse{}, err
 	}
 
-	var exists *types.BucketAlreadyExists
+	// Check if bucket already exists
+	_, errHead := client.HeadBucket(context.Background(), &s3.HeadBucketInput{Bucket: aws.String(meta.Bucket)})
+	if errHead == nil {
+		return objectstorage.BucketCreateResponse{AlreadyExist: true, Created: false}, nil
+	}
+
 	_, errCreate := client.CreateBucket(context.Background(), &s3.CreateBucketInput{
 		Bucket: aws.String(meta.Bucket),
 	})
@@ -26,12 +29,6 @@ func (c CephObjectStorage) BucketCreate(serverAdminConfig configApp.ObjectStorag
 		customizedErr := CustomizedErrorContents(errCreate)
 		if customizedErr != nil {
 			return objectstorage.BucketCreateResponse{}, customizedErr
-		}
-		if errors.As(errCreate, &exists) {
-			return objectstorage.BucketCreateResponse{
-				AlreadyExist: true,
-				Created:      false,
-			}, nil
 		}
 		return objectstorage.BucketCreateResponse{}, errCreate
 	}
@@ -47,7 +44,25 @@ func (c CephObjectStorage) BucketCreate(serverAdminConfig configApp.ObjectStorag
 	}, nil
 }
 
-func (c CephObjectStorage) BucketDelete() {}
+func (c CephObjectStorage) BucketDelete(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketActionRequestMeta) (objectstorage.BucketDeleteResponse, error) {
+	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+	if err != nil {
+		return objectstorage.BucketDeleteResponse{}, err
+	}
+	_, errDelete := client.DeleteBucket(context.Background(), &s3.DeleteBucketInput{Bucket: aws.String(meta.Bucket)})
+	if errDelete != nil {
+		return objectstorage.BucketDeleteResponse{}, errDelete
+	}
+
+	err = s3.NewBucketNotExistsWaiter(client).Wait(context.Background(), &s3.HeadBucketInput{Bucket: aws.String(meta.Bucket)}, time.Minute)
+	if err != nil {
+		return objectstorage.BucketDeleteResponse{}, err
+	}
+	return objectstorage.BucketDeleteResponse{
+		Deleted:    true,
+		HasObjects: false,
+	}, nil
+}
 
 func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketInfoRequestMeta) (objectstorage.BucketListResponse, error) {
 	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)

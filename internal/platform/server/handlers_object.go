@@ -36,7 +36,7 @@ func HandleObjectUpload(s *Server) echo.HandlerFunc {
 //	@Router			/api/object/list [get]
 func HandleObjectList(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req objectstorage.ObjectRequestMeta
+		var req objectstorage.ObjectListRequestMeta
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())

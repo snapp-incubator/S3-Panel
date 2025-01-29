@@ -4,12 +4,12 @@ import "gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
 
 type ObjectStorage interface {
 	ObjectDelete()
-	ObjectDownload()
-	ObjectList(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectListResponse, error)
+	ObjectDownload(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectDownloadResponse, error)
+	ObjectList(cfg config.ObjectStorageConfig, meta ObjectListRequestMeta) (ObjectListResponse, error)
 	ObjectUpload()
 
 	BucketCreate(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketCreateResponse, error)
-	BucketDelete()
+	BucketDelete(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketDeleteResponse, error)
 	BucketList(cfg config.ObjectStorageConfig, meta BucketInfoRequestMeta) (BucketListResponse, error)
 	BucketQuota(cfg config.ObjectStorageConfig, meta BucketInfoRequestMeta) ([]BucketQuotaResponse, error)
 
