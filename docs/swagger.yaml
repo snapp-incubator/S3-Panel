@@ -145,7 +145,7 @@ paths:
       tags:
       - Bucket
   /api/bucket/delete:
-    post:
+    delete:
       consumes:
       - application/json
       description: Deletes bucket for a user

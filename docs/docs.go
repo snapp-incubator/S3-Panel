@@ -91,7 +91,7 @@ const docTemplate = `{
             }
         },
         "/api/bucket/delete": {
-            "post": {
+            "delete": {
                 "description": "Deletes bucket for a user",
                 "consumes": [
                     "application/json"

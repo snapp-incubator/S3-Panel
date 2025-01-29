@@ -32,6 +32,14 @@ curl -XGET "127.0.0.1:8080/api/bucket/list" -H "Content-Type: application/json" 
 
 curl -XGET "127.0.0.1:8080/api/bucket/quota" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
 
+### Bucket Create
+
+curl -XPOST "127.0.0.1:8080/api/bucket/create" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X"}'
+
+### Bucket Delete
+
+curl -XDELETE "127.0.0.1:8080/api/bucket/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X"}'
+
 ### User Identification
 
 curl -XGET "127.0.0.1:8080/api/user/id" -H "Content-Type: application/json" -H "access_key: X" -H "Authorization: Bearer X"
@@ -43,14 +51,6 @@ curl -XGET "127.0.0.1:8080/api/user/id" -H "Content-Type: application/json" -H "
 ### Object List
 
 curl -XGET "127.0.0.1:8080/api/object/list?max_keys=10&page=1&bucket=X" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
-
-### Bucket Create
-
-curl -XPOST "127.0.0.1:8080/api/bucket/create" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X"}'
-
-### Bucket Delete
-
-curl -XPOST "127.0.0.1:8080/api/bucket/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X"}'
 
 ## Release Plan
 

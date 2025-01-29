@@ -135,7 +135,7 @@ func HandleBucketCreate(s *Server) echo.HandlerFunc {
 //	@Success		200			{object}	objectstorage.BucketDeleteResponse	"Bucket deleted successfully"
 //	@Failure		400			{object}	map[string]string					"Bad Request"
 //	@Failure		500			{object}	map[string]string					"Internal server error"
-//	@Router			/api/bucket/delete [post]
+//	@Router			/api/bucket/delete [delete]
 func HandleBucketDelete(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.BucketActionRequestMeta

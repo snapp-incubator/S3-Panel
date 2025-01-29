@@ -65,7 +65,7 @@ func (s *Server) registerRoutes() {
 		apiRoutesBuckets.GET("/list", HandleBucketList(s))
 		apiRoutesBuckets.GET("/quota", HandleBucketQuota(s))
 		apiRoutesBuckets.POST("/create", HandleBucketCreate(s))
-		apiRoutesBuckets.POST("/delete", HandleBucketDelete(s))
+		apiRoutesBuckets.DELETE("/delete", HandleBucketDelete(s))
 	}
 
 	apiRoutesObjects := apiRoutes.Group("/object")
@@ -73,7 +73,7 @@ func (s *Server) registerRoutes() {
 		apiRoutesObjects.GET("/list", HandleObjectList(s))
 		apiRoutesObjects.PUT("/upload", HandleObjectUpload(s))
 		apiRoutesObjects.GET("/download", HandleObjectDownload(s))
-		apiRoutesObjects.POST("/delete", HandleObjectDelete(s))
+		apiRoutesObjects.DELETE("/delete", HandleObjectDelete(s))
 	}
 
 	apiRoutesUsers := apiRoutes.Group("/user")
