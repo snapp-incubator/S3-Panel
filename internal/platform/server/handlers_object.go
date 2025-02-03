@@ -8,13 +8,57 @@ import (
 
 func HandleObjectDownload(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return nil
+		var req objectstorage.ObjectRequestMeta
+		err := c.Bind(&req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = c.Validate(req)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		objects, err := s.db.ObjectDownload(s.config.ObjectStorageConfigs, req)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		return c.JSON(http.StatusOK, objects)
 	}
 }
 
 func HandleObjectUpload(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return nil
+		var req objectstorage.ObjectRequestMeta
+		err := c.Bind(&req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = c.Validate(req)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		objects, err := s.db.ObjectUpload(s.config.ObjectStorageConfigs, req)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		return c.JSON(http.StatusOK, objects)
 	}
 }
 

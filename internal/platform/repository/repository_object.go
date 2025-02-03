@@ -1,17 +1,23 @@
 package repository
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	_ "github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
+	"time"
 )
 
-func (c CephObjectStorage) ObjectDelete() {}
+func (c CephObjectStorage) ObjectDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDeleteResponse, error) {
+	return objectstorage.ObjectDeleteResponse{}, nil
+}
 
 func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDownloadResponse, error) {
 	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
@@ -25,8 +31,9 @@ func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorage
 	})
 	buffer := manager.NewWriteAtBuffer([]byte{})
 	_, errDownload := downloader.Download(context.Background(), buffer, &s3.GetObjectInput{
-		Bucket: aws.String(meta.Bucket),
-		Key:    aws.String(meta.Object),
+		Bucket:       aws.String(meta.Bucket),
+		Key:          aws.String(meta.Object),
+		ChecksumMode: types.ChecksumModeEnabled,
 	})
 	if errDownload != nil {
 		fmt.Printf("Couldn't download large object from %v:%v. Here's why: %v\n", meta.Bucket, meta.Object, errDownload)
@@ -76,7 +83,44 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 
 		currentPage += 1
 	}
-	return objectstorage.ObjectListResponse{Items: desiredObjects}, nil
+	return objectstorage.ObjectListResponse{
+		Items:       desiredObjects,
+		HasNextPage: paginator.HasMorePages(),
+	}, nil
 }
 
-func (c CephObjectStorage) ObjectUpload() {}
+func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectUploadResponse, error) {
+	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+	if err != nil {
+		return objectstorage.ObjectUploadResponse{}, err
+	}
+
+	uploadManager := manager.NewUploader(client)
+
+	input := &s3.PutObjectInput{
+		Bucket:            aws.String(meta.Bucket),
+		Key:               aws.String(meta.Object),
+		Body:              bytes.NewReader([]byte("hello")),
+		ChecksumAlgorithm: "",
+	}
+	output, errUpload := uploadManager.Upload(context.Background(), input)
+	if errUpload != nil {
+		var noBucket *types.NoSuchBucket
+		if errors.As(errUpload, &noBucket) {
+			errUpload = noBucket
+		}
+		return objectstorage.ObjectUploadResponse{}, errUpload
+	} else {
+		err = s3.NewObjectExistsWaiter(client).Wait(context.Background(), &s3.HeadObjectInput{
+			Bucket: aws.String(meta.Bucket),
+			Key:    aws.String(meta.Object),
+		}, time.Minute)
+		if err != nil {
+			return objectstorage.ObjectUploadResponse{}, err
+		}
+	}
+	return objectstorage.ObjectUploadResponse{
+		Created: true,
+		ID:      *output.Key,
+	}, nil
+}

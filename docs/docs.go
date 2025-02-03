@@ -535,6 +535,9 @@ const docTemplate = `{
         "objectstorage.ObjectListResponse": {
             "type": "object",
             "properties": {
+                "has_next_page": {
+                    "type": "boolean"
+                },
                 "items": {
                     "type": "array",
                     "items": {

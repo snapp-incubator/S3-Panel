@@ -52,6 +52,8 @@ definitions:
     type: object
   objectstorage.ObjectListResponse:
     properties:
+      has_next_page:
+        type: boolean
       items:
         items:
           $ref: '#/definitions/objectstorage.ObjectListBody'

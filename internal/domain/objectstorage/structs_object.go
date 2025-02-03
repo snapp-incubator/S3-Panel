@@ -22,9 +22,20 @@ type ObjectListBody struct {
 }
 
 type ObjectListResponse struct {
-	Items []ObjectListBody `json:"items"`
+	Items       []ObjectListBody `json:"items"`
+	HasNextPage bool             `json:"has_next_page"`
 }
 
 type ObjectDownloadResponse struct {
 	Object []byte `json:"object"`
+}
+
+type ObjectUploadResponse struct {
+	Created bool   `json:"created"`
+	ID      string `json:"id"`
+}
+
+type ObjectDeleteResponse struct {
+	Deleted bool   `json:"deleted"`
+	ID      string `json:"id"`
 }
