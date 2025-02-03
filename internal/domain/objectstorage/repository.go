@@ -3,7 +3,7 @@ package objectstorage
 import "gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
 
 type ObjectStorage interface {
-	ObjectDelete(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectDeleteResponse, error)
+	ObjectsDelete(cfg config.ObjectStorageConfig, meta ObjectDeleteRequestMeta) (ObjectDeleteResponse, error)
 	ObjectDownload(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectDownloadResponse, error)
 	ObjectList(cfg config.ObjectStorageConfig, meta ObjectListRequestMeta) (ObjectListResponse, error)
 	ObjectUpload(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectUploadResponse, error)

@@ -106,8 +106,45 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 	}
 }
 
-func HandleObjectDelete(s *Server) echo.HandlerFunc {
+// HandleObjectsDelete
+//
+//	@Summary		Deletes the list of objects inside a bucket
+//	@Description	Deletes a list of objects specified by name
+//	@Tags			Object
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Param			secret_key	header		string								true	"User given SecretKey"
+//	@Param			bucket		body		string								true	"bucket name"
+//	@Param			objects		body		string								true	"objects names"
+//	@Success		200			{object}	objectstorage.ObjectDeleteResponse	"Successful response with objects delete"
+//	@Failure		400			{object}	map[string]string					"Bad Request"
+//	@Failure		500			{object}	map[string]string					"Internal server error"
+//	@Router			/api/object/list [get]
+func HandleObjectsDelete(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return nil
+		var req objectstorage.ObjectDeleteRequestMeta
+		err := c.Bind(&req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = c.Validate(req)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		objects, err := s.db.ObjectsDelete(s.config.ObjectStorageConfigs, req)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		return c.JSON(http.StatusOK, objects)
 	}
 }

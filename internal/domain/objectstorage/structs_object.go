@@ -8,6 +8,13 @@ type ObjectListRequestMeta struct {
 	MaxKeys   int32  `query:"max_keys"    validate:"required"`
 }
 
+type ObjectDeleteRequestMeta struct {
+	AccessKey string   `header:"access_key" validate:"required"`
+	SecretKey string   `header:"secret_key" validate:"required"`
+	Bucket    string   `query:"bucket"      validate:"required"`
+	Objects   []string `query:"objects"      validate:"required"`
+}
+
 type ObjectRequestMeta struct {
 	AccessKey string `header:"access_key" validate:"required"`
 	SecretKey string `header:"secret_key" validate:"required"`
@@ -31,11 +38,9 @@ type ObjectDownloadResponse struct {
 }
 
 type ObjectUploadResponse struct {
-	Created bool   `json:"created"`
-	ID      string `json:"id"`
+	Created bool `json:"created"`
 }
 
 type ObjectDeleteResponse struct {
-	Deleted bool   `json:"deleted"`
-	ID      string `json:"id"`
+	Deleted bool `json:"deleted"`
 }

@@ -15,8 +15,46 @@ import (
 	"time"
 )
 
-func (c CephObjectStorage) ObjectDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDeleteResponse, error) {
-	return objectstorage.ObjectDeleteResponse{}, nil
+func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectDeleteRequestMeta) (objectstorage.ObjectDeleteResponse, error) {
+	if len(meta.Objects) == 0 {
+		return objectstorage.ObjectDeleteResponse{}, errors.New("no objects specified")
+	}
+
+	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+	if err != nil {
+		return objectstorage.ObjectDeleteResponse{}, err
+	}
+
+	var objects []types.ObjectIdentifier
+	for _, obj := range meta.Objects {
+		objects = append(objects, types.ObjectIdentifier{Key: aws.String(obj)})
+	}
+	input := s3.DeleteObjectsInput{
+		Bucket: aws.String(meta.Bucket),
+		Delete: &types.Delete{
+			Objects: objects,
+			Quiet:   aws.Bool(true),
+		},
+	}
+
+	deleteOut, errDelete := client.DeleteObjects(context.Background(), &input)
+	if errDelete != nil {
+		return objectstorage.ObjectDeleteResponse{}, errDelete
+	} else if len(deleteOut.Errors) > 0 {
+		for _, outErr := range deleteOut.Errors {
+			fmt.Println("Error Happened on deleting object:", outErr.Message)
+		}
+		return objectstorage.ObjectDeleteResponse{}, errors.New(*deleteOut.Errors[0].Message)
+	}
+
+	for _, delObj := range deleteOut.Deleted {
+		err = s3.NewObjectNotExistsWaiter(client).Wait(context.Background(), &s3.HeadObjectInput{Bucket: aws.String(meta.Bucket), Key: delObj.Key}, time.Minute)
+		if err != nil {
+			return objectstorage.ObjectDeleteResponse{}, err
+		}
+	}
+
+	return objectstorage.ObjectDeleteResponse{Deleted: true}, nil
 }
 
 func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDownloadResponse, error) {
@@ -103,7 +141,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		Body:              bytes.NewReader([]byte("hello")),
 		ChecksumAlgorithm: "",
 	}
-	output, errUpload := uploadManager.Upload(context.Background(), input)
+	_, errUpload := uploadManager.Upload(context.Background(), input)
 	if errUpload != nil {
 		var noBucket *types.NoSuchBucket
 		if errors.As(errUpload, &noBucket) {
@@ -121,6 +159,5 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 	}
 	return objectstorage.ObjectUploadResponse{
 		Created: true,
-		ID:      *output.Key,
 	}, nil
 }

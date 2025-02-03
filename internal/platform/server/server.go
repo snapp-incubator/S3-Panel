@@ -73,7 +73,7 @@ func (s *Server) registerRoutes() {
 		apiRoutesObjects.GET("/list", HandleObjectList(s))
 		apiRoutesObjects.PUT("/upload", HandleObjectUpload(s))
 		apiRoutesObjects.GET("/download", HandleObjectDownload(s))
-		apiRoutesObjects.DELETE("/delete", HandleObjectDelete(s))
+		apiRoutesObjects.DELETE("/delete", HandleObjectsDelete(s))
 	}
 
 	apiRoutesUsers := apiRoutes.Group("/user")

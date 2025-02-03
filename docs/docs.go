@@ -275,7 +275,7 @@ const docTemplate = `{
         },
         "/api/object/list": {
             "get": {
-                "description": "Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey",
+                "description": "Deletes a list of objects specified by name",
                 "consumes": [
                     "application/json"
                 ],
@@ -285,7 +285,7 @@ const docTemplate = `{
                 "tags": [
                     "Object"
                 ],
-                "summary": "List of objects of a bucket",
+                "summary": "Deletes the list of objects inside a bucket",
                 "parameters": [
                     {
                         "type": "string",
@@ -302,32 +302,29 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
                         "description": "bucket name",
                         "name": "bucket",
-                        "in": "query",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
-                        "description": "max_keys of pagination",
-                        "name": "max_keys",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "page of pagination",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
+                        "description": "objects names",
+                        "name": "objects",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful response with bucket list",
+                        "description": "Successful response with objects delete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.ObjectListResponse"
+                            "$ref": "#/definitions/objectstorage.ObjectDeleteResponse"
                         }
                     },
                     "400": {
@@ -515,6 +512,14 @@ const docTemplate = `{
                 },
                 "used_objects": {
                     "type": "integer"
+                }
+            }
+        },
+        "objectstorage.ObjectDeleteResponse": {
+            "type": "object",
+            "properties": {
+                "deleted": {
+                    "type": "boolean"
                 }
             }
         },

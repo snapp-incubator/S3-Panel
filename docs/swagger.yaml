@@ -41,6 +41,11 @@ definitions:
       used_objects:
         type: integer
     type: object
+  objectstorage.ObjectDeleteResponse:
+    properties:
+      deleted:
+        type: boolean
+    type: object
   objectstorage.ObjectListBody:
     properties:
       last_modified_timestamp:
@@ -274,8 +279,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Fetches list of buckets owned by a user that is specified by AccessKey
-        and SecretKey
+      description: Deletes a list of objects specified by name
       parameters:
       - description: User given AccessKey
         in: header
@@ -288,27 +292,24 @@ paths:
         required: true
         type: string
       - description: bucket name
-        in: query
+        in: body
         name: bucket
         required: true
-        type: string
-      - description: max_keys of pagination
-        in: query
-        name: max_keys
+        schema:
+          type: string
+      - description: objects names
+        in: body
+        name: objects
         required: true
-        type: string
-      - description: page of pagination
-        in: query
-        name: page
-        required: true
-        type: string
+        schema:
+          type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Successful response with bucket list
+          description: Successful response with objects delete
           schema:
-            $ref: '#/definitions/objectstorage.ObjectListResponse'
+            $ref: '#/definitions/objectstorage.ObjectDeleteResponse'
         "400":
           description: Bad Request
           schema:
@@ -321,7 +322,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: List of objects of a bucket
+      summary: Deletes the list of objects inside a bucket
       tags:
       - Object
   /api/user/id:
