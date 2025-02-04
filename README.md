@@ -18,7 +18,7 @@ Users
 
 Objects
 - [x] Object List
-- [] Object Delete
+- [x] Object Delete
 - [] Object Download
 - [] Object Upload
 
@@ -55,6 +55,27 @@ curl -XGET "127.0.0.1:8080/api/object/list?max_keys=10&page=1&bucket=X" -H "Cont
 ### Objects Delete
 
 curl -XDELETE "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "objects":["object1.png", "object2.txt"]}'
+
+## TODO
+
+Object
+
+[] Object Permanent Link
+[] Object Temporary Link
+[] Search Objects
+[] Object Copy (source/destination bucket)
+[] Object Set/Get Lock
+[] Object Set/Get Retention
+
+Bucket
+
+[] Bucket Set/Get Retention
+
+General
+
+[] Support Directories
+[] Bucket Set/Get Encryption/SSE
+[] Bucket Set/Get Replication
 
 ## Release Plan
 
