@@ -12,23 +12,23 @@ func HandleObjectDownload(s *Server) echo.HandlerFunc {
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
 		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		objects, err := s.db.ObjectDownload(s.config.ObjectStorageConfigs, req)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+		objects, errObjectDownload := s.db.ObjectDownload(s.config.ObjectStorageConfigs, req)
+		if errObjectDownload.Message != nil {
+			return c.JSON(errObjectDownload.Code, errObjectDownload.Message.Error())
 		}
 		return c.JSON(http.StatusOK, objects)
 	}
@@ -40,23 +40,23 @@ func HandleObjectUpload(s *Server) echo.HandlerFunc {
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
 		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		objects, err := s.db.ObjectUpload(s.config.ObjectStorageConfigs, req)
+		objects, errObjectUpload := s.db.ObjectUpload(s.config.ObjectStorageConfigs, req)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+			return c.JSON(errObjectUpload.Code, errObjectUpload.Message.Error())
 		}
 		return c.JSON(http.StatusOK, objects)
 	}
@@ -75,8 +75,8 @@ func HandleObjectUpload(s *Server) echo.HandlerFunc {
 //	@Param			max_keys	query		string								true	"max_keys of pagination"
 //	@Param			page		query		string								true	"page of pagination"
 //	@Success		200			{object}	objectstorage.ObjectListResponse	"Successful response with bucket list"
-//	@Failure		400			{object}	map[string]string					"Bad Request"
-//	@Failure		500			{object}	map[string]string					"Internal server error"
+//	@Failure		400			{object}	string								"Bad Request"
+//	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/object/list [get]
 func HandleObjectList(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -84,13 +84,13 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
 		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
 		err = c.Validate(req)
@@ -98,9 +98,9 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err)
 		}
 
-		objects, err := s.db.ObjectList(s.config.ObjectStorageConfigs, req)
+		objects, errObjectList := s.db.ObjectList(s.config.ObjectStorageConfigs, req)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+			return c.JSON(errObjectList.Code, errObjectList.Message.Error())
 		}
 		return c.JSON(http.StatusOK, objects)
 	}
@@ -118,8 +118,9 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 //	@Param			bucket		body		string								true	"bucket name"
 //	@Param			objects		body		string								true	"objects names"
 //	@Success		200			{object}	objectstorage.ObjectDeleteResponse	"Successful response with objects delete"
-//	@Failure		400			{object}	map[string]string					"Bad Request"
-//	@Failure		500			{object}	map[string]string					"Internal server error"
+//	@Failure		400			{object}	string								"Bad Request"
+//	@Failure		401			{object}	string								"Unauthorized"
+//	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/object/list [get]
 func HandleObjectsDelete(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -127,23 +128,23 @@ func HandleObjectsDelete(s *Server) echo.HandlerFunc {
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
 		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		objects, err := s.db.ObjectsDelete(s.config.ObjectStorageConfigs, req)
+		objects, errObjectDelete := s.db.ObjectsDelete(s.config.ObjectStorageConfigs, req)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+			return c.JSON(errObjectDelete.Code, errObjectDelete.Message.Error())
 		}
 		return c.JSON(http.StatusOK, objects)
 	}

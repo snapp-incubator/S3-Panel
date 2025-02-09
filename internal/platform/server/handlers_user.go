@@ -16,8 +16,9 @@ import (
 //	@Produce		json
 //	@Param			access_key	header		string							true	"User given AccessKey"
 //	@Success		200			{object}	objectstorage.UserQuotaResponse	"Successful response with user quota"
-//	@Failure		400			{object}	map[string]string				"Bad Request"
-//	@Failure		500			{object}	map[string]string				"Internal server error"
+//	@Failure		400			{object}	string							"Bad Request"
+//	@Failure		401			{object}	string							"Unauthorized"
+//	@Failure		500			{object}	string							"Internal server error"
 //	@Router			/api/user/quota [get]
 func HandleUserQuota(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -25,16 +26,16 @@ func HandleUserQuota(s *Server) echo.HandlerFunc {
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		userQuota, err := s.db.UserQuota(s.config.ObjectStorageConfigs, req)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+		userQuota, errUserQuota := s.db.UserQuota(s.config.ObjectStorageConfigs, req)
+		if errUserQuota.Message != nil {
+			return c.JSON(errUserQuota.Code, errUserQuota.Message.Error())
 		}
 		return c.JSON(http.StatusOK, userQuota)
 	}
@@ -51,6 +52,7 @@ func HandleUserQuota(s *Server) echo.HandlerFunc {
 //	@Param			access_key	header		string										true	"User given AccessKey"
 //	@Success		200			{object}	objectstorage.UserIdentificationResponse	"Successful response with user identification"
 //	@Failure		400			{object}	map[string]string							"Bad Request"
+//	@Failure		401			{object}	string										"Unauthorized"
 //	@Failure		500			{object}	map[string]string							"Internal server error"
 //	@Router			/api/user/id [get]
 func HandleUserIdentification(s *Server) echo.HandlerFunc {
@@ -59,18 +61,16 @@ func HandleUserIdentification(s *Server) echo.HandlerFunc {
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		userData, err := s.db.UserIdentification(s.config.ObjectStorageConfigs, req)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
-		} else if userData.UserNotFound {
-			return c.JSON(http.StatusUnauthorized, userData)
+		userData, errUserID := s.db.UserIdentification(s.config.ObjectStorageConfigs, req)
+		if errUserID.Message != nil {
+			return c.JSON(errUserID.Code, errUserID.Message.Error())
 		}
 		return c.JSON(http.StatusOK, userData)
 	}

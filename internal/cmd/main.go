@@ -15,6 +15,7 @@ import (
 
 func Execute() {
 	var configPath string
+	cancelCtx, cancelFunc := context.WithCancel(context.Background())
 
 	cmd := &cli.Command{
 		Name:        "snapp-object-store",
@@ -26,7 +27,7 @@ func Execute() {
 				Action: func(_ context.Context, _ *cli.Command) error {
 					cfg := config.Provide(configPath)
 					loggerObj := logger.Provide(cfg.LoggerConfigs)
-					err := server.StartServer(cfg, loggerObj)
+					err := server.StartServer(cancelCtx, cancelFunc, cfg, loggerObj)
 					if err != nil {
 						return err
 					}

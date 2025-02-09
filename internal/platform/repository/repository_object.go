@@ -3,7 +3,6 @@ package repository
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
@@ -12,17 +11,19 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
+	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
+	"net/http"
 	"time"
 )
 
-func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectDeleteRequestMeta) (objectstorage.ObjectDeleteResponse, error) {
+func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectDeleteRequestMeta) (objectstorage.ObjectDeleteResponse, objectstorage.HTTPErrorWithCode) {
 	if len(meta.Objects) == 0 {
-		return objectstorage.ObjectDeleteResponse{}, errors.New("no objects specified")
+		return objectstorage.ObjectDeleteResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusBadRequest, Message: fmt.Errorf("you should specify at least one object")}
 	}
 
-	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
-		return objectstorage.ObjectDeleteResponse{}, err
+		return objectstorage.ObjectDeleteResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
 	var objects []types.ObjectIdentifier
@@ -39,28 +40,28 @@ func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageC
 
 	deleteOut, errDelete := client.DeleteObjects(context.Background(), &input)
 	if errDelete != nil {
-		return objectstorage.ObjectDeleteResponse{}, errDelete
+		return objectstorage.ObjectDeleteResponse{}, CustomizedErrorContents(errDelete)
 	} else if len(deleteOut.Errors) > 0 {
 		for _, outErr := range deleteOut.Errors {
 			fmt.Println("Error Happened on deleting object:", outErr.Message)
 		}
-		return objectstorage.ObjectDeleteResponse{}, errors.New(*deleteOut.Errors[0].Message)
+		return objectstorage.ObjectDeleteResponse{}, CustomizedErrorContents(fmt.Errorf(*deleteOut.Errors[0].Message))
 	}
 
 	for _, delObj := range deleteOut.Deleted {
 		err = s3.NewObjectNotExistsWaiter(client).Wait(context.Background(), &s3.HeadObjectInput{Bucket: aws.String(meta.Bucket), Key: delObj.Key}, time.Minute)
 		if err != nil {
-			return objectstorage.ObjectDeleteResponse{}, err
+			return objectstorage.ObjectDeleteResponse{}, CustomizedErrorContents(err)
 		}
 	}
 
-	return objectstorage.ObjectDeleteResponse{Deleted: true}, nil
+	return objectstorage.ObjectDeleteResponse{Deleted: true}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
-func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDownloadResponse, error) {
-	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDownloadResponse, objectstorage.HTTPErrorWithCode) {
+	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
-		return objectstorage.ObjectDownloadResponse{}, err
+		return objectstorage.ObjectDownloadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
 	var partSize int64 = 10 * 1024 * 1024
@@ -75,18 +76,18 @@ func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorage
 	})
 	if errDownload != nil {
 		fmt.Printf("Couldn't download large object from %v:%v. Here's why: %v\n", meta.Bucket, meta.Object, errDownload)
-		return objectstorage.ObjectDownloadResponse{}, errDownload
+		return objectstorage.ObjectDownloadResponse{}, CustomizedErrorContents(errDownload)
 	}
 
 	return objectstorage.ObjectDownloadResponse{
 		Object: buffer.Bytes(),
-	}, nil
+	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
-func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectListRequestMeta) (objectstorage.ObjectListResponse, error) {
-	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectListRequestMeta) (objectstorage.ObjectListResponse, objectstorage.HTTPErrorWithCode) {
+	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
-		return objectstorage.ObjectListResponse{}, err
+		return objectstorage.ObjectListResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
 	if meta.MaxKeys <= 0 {
@@ -106,7 +107,7 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 	for paginator.HasMorePages() {
 		output, errNextPage := paginator.NextPage(context.Background())
 		if errNextPage != nil {
-			return objectstorage.ObjectListResponse{}, errNextPage
+			return objectstorage.ObjectListResponse{}, CustomizedErrorContents(errNextPage)
 		}
 		if currentPage == meta.Page {
 			for _, object := range output.Contents {
@@ -124,13 +125,13 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 	return objectstorage.ObjectListResponse{
 		Items:       desiredObjects,
 		HasNextPage: paginator.HasMorePages(),
-	}, nil
+	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
-func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectUploadResponse, error) {
-	client, err := NewS3Client(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectUploadResponse, objectstorage.HTTPErrorWithCode) {
+	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
-		return objectstorage.ObjectUploadResponse{}, err
+		return objectstorage.ObjectUploadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
 	uploadManager := manager.NewUploader(client)
@@ -143,21 +144,17 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 	}
 	_, errUpload := uploadManager.Upload(context.Background(), input)
 	if errUpload != nil {
-		var noBucket *types.NoSuchBucket
-		if errors.As(errUpload, &noBucket) {
-			errUpload = noBucket
-		}
-		return objectstorage.ObjectUploadResponse{}, errUpload
+		return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(errUpload)
 	} else {
 		err = s3.NewObjectExistsWaiter(client).Wait(context.Background(), &s3.HeadObjectInput{
 			Bucket: aws.String(meta.Bucket),
 			Key:    aws.String(meta.Object),
 		}, time.Minute)
 		if err != nil {
-			return objectstorage.ObjectUploadResponse{}, err
+			return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(err)
 		}
 	}
 	return objectstorage.ObjectUploadResponse{
 		Created: true,
-	}, nil
+	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }

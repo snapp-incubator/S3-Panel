@@ -16,16 +16,20 @@ import (
 )
 
 type Server struct {
-	config config.Config
-	logger *zap.Logger
-	router *echo.Echo
-	db     objectstorage.ObjectStorage
+	config     config.Config
+	cancelCtx  context.Context
+	cancelFunc context.CancelFunc
+	db         objectstorage.ObjectStorage
+	logger     *zap.Logger
+	router     *echo.Echo
 }
 
-func NewServer(cfg config.Config, logger *zap.Logger) (*Server, error) {
+func NewServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Config, logger *zap.Logger) (*Server, error) {
 	s := &Server{
-		config: cfg,
-		logger: logger,
+		config:     cfg,
+		cancelCtx:  ctx,
+		cancelFunc: cancelFunc,
+		logger:     logger,
 	}
 
 	err := s.registerCephRepository()
@@ -88,15 +92,15 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) ShutDown() error {
-	err := s.router.Shutdown(context.Background())
+	err := s.router.Shutdown(s.cancelCtx)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func StartServer(cfg config.Config, logger *zap.Logger) error {
-	server, err := NewServer(cfg, logger)
+func StartServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Config, logger *zap.Logger) error {
+	server, err := NewServer(ctx, cancelFunc, cfg, logger)
 	go func() {
 		errServerStart := server.Start()
 		if errServerStart != nil {
@@ -109,6 +113,8 @@ func StartServer(cfg config.Config, logger *zap.Logger) error {
 	sig := <-sigChan
 	logger.Info(fmt.Sprintf("Received %s signal, gracefully shutting down services", sig.String()))
 
+	// call cancel function of the Server
+	server.cancelFunc()
 	err = server.ShutDown()
 	if err != nil {
 		logger.Error("Failed to shutdown server:", zap.Error(err))

@@ -30,8 +30,7 @@ type BucketListResponse struct {
 }
 
 type BucketCreateResponse struct {
-	AlreadyExist bool `json:"already_exist"`
-	Created      bool `json:"created"`
+	Created bool `json:"created"`
 }
 
 type BucketDeleteResponse struct {

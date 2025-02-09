@@ -1,8 +1,6 @@
 definitions:
   objectstorage.BucketCreateResponse:
     properties:
-      already_exist:
-        type: boolean
       created:
         type: boolean
     type: object
@@ -139,15 +137,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Bucket Already Exists
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Creates Bucket
       tags:
       - Bucket
@@ -183,15 +185,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Deletes Bucket
       tags:
       - Bucket
@@ -222,15 +224,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: List of buckets of a user
       tags:
       - Bucket
@@ -239,7 +241,6 @@ paths:
       consumes:
       - application/json
       description: Fetches Quota of buckets owned by a user that is specified by AccessKey
-        and SecretKey
       parameters:
       - description: User given AccessKey
         in: header
@@ -263,15 +264,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Quota of buckets of a user
       tags:
       - Bucket
@@ -313,15 +314,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Deletes the list of objects inside a bucket
       tags:
       - Object
@@ -349,6 +350,10 @@ paths:
             additionalProperties:
               type: string
             type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
@@ -379,15 +384,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Fetch User Quota from AccessKey
       tags:
       - User
