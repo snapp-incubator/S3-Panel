@@ -60,22 +60,22 @@ curl -XDELETE "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/j
 
 Object
 
-[] Object Permanent Link
-[] Object Temporary Link
-[] Search Objects
-[] Object Copy (source/destination bucket)
-[] Object Set/Get Lock
-[] Object Set/Get Retention
+- [] Object Permanent Link
+- [] Object Temporary Link
+- [] Search Objects
+- [] Object Copy (source/destination bucket)
+- [] Object Set/Get Lock
+- [] Object Set/Get Retention
 
 Bucket
 
-[] Bucket Set/Get Retention
+- [] Bucket Set/Get Retention
 
 General
 
-[] Support Directories
-[] Bucket Set/Get Encryption/SSE
-[] Bucket Set/Get Replication
+- [] Support Directories
+- [] Bucket Set/Get Encryption/SSE
+- [] Bucket Set/Get Replication
 
 ## Release Plan
 
