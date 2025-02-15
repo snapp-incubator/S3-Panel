@@ -17,10 +17,11 @@ Users
 - [x] User Quota
 
 Objects
+- [x] Objects Delete
 - [x] Object List
-- [x] Object Delete
-- [] Object Download
-- [] Object Upload
+- [x] Object Download
+- [x] Object Upload
+- [x] Object Head
 
 ## APIs Curls
 
@@ -56,6 +57,18 @@ curl -XGET "127.0.0.1:8080/api/object/list?max_keys=10&page=1&bucket=X" -H "Cont
 
 curl -XDELETE "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "objects":["object1.png", "object2.txt"]}'
 
+### Object Upload
+
+curl -XPUT "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "object": "X", "content": "X"}'
+
+### Object Download
+
+curl -XGET "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "object": "X"}'
+
+### Object Head
+
+curl -XGET "127.0.0.1:8080/api/object/head" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "object": "X"}'
+
 ## TODO
 
 Object
@@ -81,5 +94,4 @@ General
 
 This list is prioritized from top to bottom. we will work on 2 items in a sprint.
 
-- Object Download
-- Object Upload
+- None left

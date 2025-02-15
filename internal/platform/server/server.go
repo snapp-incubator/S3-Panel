@@ -77,6 +77,7 @@ func (s *Server) registerRoutes() {
 		apiRoutesObjects.GET("/list", HandleObjectList(s))
 		apiRoutesObjects.PUT("/upload", HandleObjectUpload(s))
 		apiRoutesObjects.GET("/download", HandleObjectDownload(s))
+		apiRoutesObjects.GET("/head", HandleObjectHead(s))
 		apiRoutesObjects.DELETE("/delete", HandleObjectsDelete(s))
 	}
 

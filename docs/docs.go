@@ -279,8 +279,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/object/list": {
-            "get": {
+        "/api/object/delete": {
+            "delete": {
                 "description": "Deletes a list of objects specified by name",
                 "consumes": [
                     "application/json"
@@ -322,7 +322,10 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 ],
@@ -331,6 +334,308 @@ const docTemplate = `{
                         "description": "Successful response with objects delete",
                         "schema": {
                             "$ref": "#/definitions/objectstorage.ObjectDeleteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/object/download": {
+            "get": {
+                "description": "This functions downloads an object from bucket.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Object"
+                ],
+                "summary": "download an object to bucket",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "bucket name",
+                        "name": "bucket",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "object name",
+                        "name": "object",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with bucket download",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.ObjectDownloadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/object/head": {
+            "get": {
+                "description": "check if an object exists",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Object"
+                ],
+                "summary": "check if an object exists",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "bucket name",
+                        "name": "bucket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "objects name",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with objects head",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.ObjectHeadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/object/list": {
+            "get": {
+                "description": "Fetches list of buckets owned by a user that is specified by AccessKey and SecretKey",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Object"
+                ],
+                "summary": "List of objects of a bucket",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "bucket name",
+                        "name": "bucket",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "max_keys of pagination",
+                        "name": "max_keys",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "page of pagination",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with bucket list",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.ObjectListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/object/upload": {
+            "put": {
+                "description": "This functions uploads an object to bucket.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Object"
+                ],
+                "summary": "upload an object to bucket",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "bucket name",
+                        "name": "bucket",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "object name",
+                        "name": "object",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "content",
+                        "name": "content",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with bucket upload",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.ObjectUploadResponse"
                         }
                     },
                     "400": {
@@ -532,6 +837,22 @@ const docTemplate = `{
                 }
             }
         },
+        "objectstorage.ObjectDownloadResponse": {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "type": "string"
+                }
+            }
+        },
+        "objectstorage.ObjectHeadResponse": {
+            "type": "object",
+            "properties": {
+                "exists": {
+                    "type": "boolean"
+                }
+            }
+        },
         "objectstorage.ObjectListBody": {
             "type": "object",
             "properties": {
@@ -557,6 +878,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/objectstorage.ObjectListBody"
                     }
+                }
+            }
+        },
+        "objectstorage.ObjectUploadResponse": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "boolean"
                 }
             }
         },

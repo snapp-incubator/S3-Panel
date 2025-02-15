@@ -22,6 +22,14 @@ type ObjectRequestMeta struct {
 	Object    string `query:"object"      validate:"required"`
 }
 
+type ObjectUploadRequestMeta struct {
+	AccessKey string `header:"access_key" validate:"required"`
+	SecretKey string `header:"secret_key" validate:"required"`
+	Bucket    string `query:"bucket"      validate:"required"`
+	Object    string `query:"object"      validate:"required"`
+	Content   string `query:"content"     validate:"required"`
+}
+
 type ObjectListBody struct {
 	Name                  *string `json:"name"`
 	Size                  *int64  `json:"size"`
@@ -34,7 +42,7 @@ type ObjectListResponse struct {
 }
 
 type ObjectDownloadResponse struct {
-	Object []byte `json:"object"`
+	Object string `json:"object"`
 }
 
 type ObjectUploadResponse struct {
@@ -43,4 +51,8 @@ type ObjectUploadResponse struct {
 
 type ObjectDeleteResponse struct {
 	Deleted bool `json:"deleted"`
+}
+
+type ObjectHeadResponse struct {
+	Exists bool `json:"exists"`
 }

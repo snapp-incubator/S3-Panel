@@ -44,6 +44,16 @@ definitions:
       deleted:
         type: boolean
     type: object
+  objectstorage.ObjectDownloadResponse:
+    properties:
+      object:
+        type: string
+    type: object
+  objectstorage.ObjectHeadResponse:
+    properties:
+      exists:
+        type: boolean
+    type: object
   objectstorage.ObjectListBody:
     properties:
       last_modified_timestamp:
@@ -61,6 +71,11 @@ definitions:
         items:
           $ref: '#/definitions/objectstorage.ObjectListBody'
         type: array
+    type: object
+  objectstorage.ObjectUploadResponse:
+    properties:
+      created:
+        type: boolean
     type: object
   objectstorage.UserIdentificationResponse:
     properties:
@@ -276,8 +291,8 @@ paths:
       summary: Quota of buckets of a user
       tags:
       - Bucket
-  /api/object/list:
-    get:
+  /api/object/delete:
+    delete:
       consumes:
       - application/json
       description: Deletes a list of objects specified by name
@@ -303,7 +318,9 @@ paths:
         name: objects
         required: true
         schema:
-          type: string
+          items:
+            type: string
+          type: array
       produces:
       - application/json
       responses:
@@ -324,6 +341,211 @@ paths:
           schema:
             type: string
       summary: Deletes the list of objects inside a bucket
+      tags:
+      - Object
+  /api/object/download:
+    get:
+      consumes:
+      - application/json
+      description: This functions downloads an object from bucket.
+      parameters:
+      - description: User given AccessKey
+        in: header
+        name: access_key
+        required: true
+        type: string
+      - description: User given SecretKey
+        in: header
+        name: secret_key
+        required: true
+        type: string
+      - description: bucket name
+        in: query
+        name: bucket
+        required: true
+        type: string
+      - description: object name
+        in: query
+        name: object
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with bucket download
+          schema:
+            $ref: '#/definitions/objectstorage.ObjectDownloadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: download an object to bucket
+      tags:
+      - Object
+  /api/object/head:
+    get:
+      consumes:
+      - application/json
+      description: check if an object exists
+      parameters:
+      - description: User given AccessKey
+        in: header
+        name: access_key
+        required: true
+        type: string
+      - description: User given SecretKey
+        in: header
+        name: secret_key
+        required: true
+        type: string
+      - description: bucket name
+        in: body
+        name: bucket
+        required: true
+        schema:
+          type: string
+      - description: objects name
+        in: body
+        name: object
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with objects head
+          schema:
+            $ref: '#/definitions/objectstorage.ObjectHeadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: check if an object exists
+      tags:
+      - Object
+  /api/object/list:
+    get:
+      consumes:
+      - application/json
+      description: Fetches list of buckets owned by a user that is specified by AccessKey
+        and SecretKey
+      parameters:
+      - description: User given AccessKey
+        in: header
+        name: access_key
+        required: true
+        type: string
+      - description: User given SecretKey
+        in: header
+        name: secret_key
+        required: true
+        type: string
+      - description: bucket name
+        in: query
+        name: bucket
+        required: true
+        type: string
+      - description: max_keys of pagination
+        in: query
+        name: max_keys
+        required: true
+        type: string
+      - description: page of pagination
+        in: query
+        name: page
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with bucket list
+          schema:
+            $ref: '#/definitions/objectstorage.ObjectListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: List of objects of a bucket
+      tags:
+      - Object
+  /api/object/upload:
+    put:
+      consumes:
+      - application/json
+      description: This functions uploads an object to bucket.
+      parameters:
+      - description: User given AccessKey
+        in: header
+        name: access_key
+        required: true
+        type: string
+      - description: User given SecretKey
+        in: header
+        name: secret_key
+        required: true
+        type: string
+      - description: bucket name
+        in: query
+        name: bucket
+        required: true
+        type: string
+      - description: object name
+        in: query
+        name: object
+        required: true
+        type: string
+      - description: content
+        in: query
+        name: content
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with bucket upload
+          schema:
+            $ref: '#/definitions/objectstorage.ObjectUploadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: upload an object to bucket
       tags:
       - Object
   /api/user/id:

@@ -79,8 +79,10 @@ func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorage
 		return objectstorage.ObjectDownloadResponse{}, CustomizedErrorContents(errDownload)
 	}
 
+	var stringBuffer bytes.Buffer
+	stringBuffer.Write(buffer.Bytes())
 	return objectstorage.ObjectDownloadResponse{
-		Object: buffer.Bytes(),
+		Object: stringBuffer.String(),
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
@@ -128,7 +130,7 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
-func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectUploadResponse, objectstorage.HTTPErrorWithCode) {
+func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectUploadRequestMeta) (objectstorage.ObjectUploadResponse, objectstorage.HTTPErrorWithCode) {
 	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
 		return objectstorage.ObjectUploadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
@@ -139,7 +141,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 	input := &s3.PutObjectInput{
 		Bucket:            aws.String(meta.Bucket),
 		Key:               aws.String(meta.Object),
-		Body:              bytes.NewReader([]byte("hello")),
+		Body:              bytes.NewReader([]byte(meta.Content)),
 		ChecksumAlgorithm: "",
 	}
 	_, errUpload := uploadManager.Upload(context.Background(), input)
@@ -157,4 +159,27 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 	return objectstorage.ObjectUploadResponse{
 		Created: true,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
+}
+
+func (c CephObjectStorage) ObjectHead(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectHeadResponse, objectstorage.HTTPErrorWithCode) {
+	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+	if err != nil {
+		return objectstorage.ObjectHeadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
+	}
+
+	headObjectInput := s3.HeadObjectInput{
+		Bucket: aws.String(meta.Bucket),
+		Key:    aws.String(meta.Object),
+	}
+	_, headObjectError := client.HeadObject(context.Background(), &headObjectInput)
+
+	if headObjectError != nil {
+		httpErrorCode := CustomizedErrorContents(headObjectError)
+		if httpErrorCode.Code != http.StatusInternalServerError {
+			return objectstorage.ObjectHeadResponse{Exists: false}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
+		}
+		return objectstorage.ObjectHeadResponse{}, httpErrorCode
+	}
+
+	return objectstorage.ObjectHeadResponse{Exists: true}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }

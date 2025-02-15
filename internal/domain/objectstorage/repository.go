@@ -16,7 +16,8 @@ type ObjectStorage interface {
 	ObjectsDelete(cfg config.ObjectStorageConfig, meta ObjectDeleteRequestMeta) (ObjectDeleteResponse, HTTPErrorWithCode)
 	ObjectDownload(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectDownloadResponse, HTTPErrorWithCode)
 	ObjectList(cfg config.ObjectStorageConfig, meta ObjectListRequestMeta) (ObjectListResponse, HTTPErrorWithCode)
-	ObjectUpload(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectUploadResponse, HTTPErrorWithCode)
+	ObjectUpload(cfg config.ObjectStorageConfig, meta ObjectUploadRequestMeta) (ObjectUploadResponse, HTTPErrorWithCode)
+	ObjectHead(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectHeadResponse, HTTPErrorWithCode)
 
 	BucketCreate(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketCreateResponse, HTTPErrorWithCode)
 	BucketDelete(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketDeleteResponse, HTTPErrorWithCode)
