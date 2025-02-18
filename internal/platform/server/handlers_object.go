@@ -59,21 +59,21 @@ func HandleObjectDownload(s *Server) echo.HandlerFunc {
 
 // HandleObjectUpload
 //
-//		@Summary		upload an object to bucket
-//		@Description	This functions uploads an object to bucket.
-//		@Tags			Object
-//		@Accept			mpfd
-//		@Produce		json
-//		@Param			access_key	header		string								true	"User given AccessKey"
-//		@Param			secret_key	header		string								true	"User given SecretKey"
-//	    @Param          bucket      formData    string								true	"bucket name"
-//		@Success		200			{object}	objectstorage.ObjectUploadResponse	"Successful response with bucket upload"
-//		@Failure		400			{object}	string								"Bad Request"
-//		@Failure		401			{object}	string								"Unauthorized"
-//		@Failure		403			{object}	string								"Forbidden"
-//		@Failure		409			{object}	string								"Already Exists"
-//		@Failure		500			{object}	string								"Internal server error"
-//		@Router			/api/object/upload [post]
+//	@Summary		upload an object to bucket
+//	@Description	This functions uploads an object to bucket.
+//	@Tags			Object
+//	@Accept			mpfd
+//	@Produce		json
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Param			secret_key	header		string								true	"User given SecretKey"
+//	@Param			bucket		formData	string								true	"bucket name"
+//	@Success		200			{object}	objectstorage.ObjectUploadResponse	"Successful response with bucket upload"
+//	@Failure		400			{object}	string								"Bad Request"
+//	@Failure		401			{object}	string								"Unauthorized"
+//	@Failure		403			{object}	string								"Forbidden"
+//	@Failure		409			{object}	string								"Already Exists"
+//	@Failure		500			{object}	string								"Internal server error"
+//	@Router			/api/object/upload [post]
 func HandleObjectUpload(s *Server) echo.HandlerFunc {
 	formFieldBucket := "bucket"
 	var maxUploadSize int64 = 1024 * 1024 * 1024
@@ -193,21 +193,21 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 
 // HandleObjectsDelete
 //
-//		@Summary		Deletes the list of objects inside a bucket
-//		@Description	Deletes a list of objects specified by name
-//		@Tags			Object
-//		@Accept			json
-//		@Produce		json
-//		@Param			access_key	header		string								true	"User given AccessKey"
-//		@Param			secret_key	header		string								true	"User given SecretKey"
-//		@Param			bucket		body		string								true	"bucket name"
-//		@Param			objects		body		[]string							true	"objects names"
-//		@Success		200			{object}	objectstorage.ObjectDeleteResponse	"Successful response with objects delete"
-//		@Failure		400			{object}	string								"Bad Request"
-//		@Failure		401			{object}	string								"Unauthorized"
-//	 @Failure        403         {object}    string                              "Object Does not exist"
-//		@Failure		500			{object}	string								"Internal server error"
-//		@Router			/api/object/delete [delete]
+//	@Summary		Deletes the list of objects inside a bucket
+//	@Description	Deletes a list of objects specified by name
+//	@Tags			Object
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Param			secret_key	header		string								true	"User given SecretKey"
+//	@Param			bucket		body		string								true	"bucket name"
+//	@Param			objects		body		[]string							true	"objects names"
+//	@Success		200			{object}	objectstorage.ObjectDeleteResponse	"Successful response with objects delete"
+//	@Failure		400			{object}	string								"Bad Request"
+//	@Failure		401			{object}	string								"Unauthorized"
+//	@Failure		403			{object}	string								"Object Does not exist"
+//	@Failure		500			{object}	string								"Internal server error"
+//	@Router			/api/object/delete [delete]
 func HandleObjectsDelete(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.ObjectDeleteRequestMeta

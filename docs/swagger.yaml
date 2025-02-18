@@ -336,6 +336,10 @@ paths:
           description: Unauthorized
           schema:
             type: string
+        "403":
+          description: Object Does not exist
+          schema:
+            type: string
         "500":
           description: Internal server error
           schema:
@@ -496,9 +500,9 @@ paths:
       tags:
       - Object
   /api/object/upload:
-    put:
+    post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: This functions uploads an object to bucket.
       parameters:
       - description: User given AccessKey
@@ -512,18 +516,8 @@ paths:
         required: true
         type: string
       - description: bucket name
-        in: query
+        in: formData
         name: bucket
-        required: true
-        type: string
-      - description: object name
-        in: query
-        name: object
-        required: true
-        type: string
-      - description: content
-        in: query
-        name: content
         required: true
         type: string
       produces:
@@ -539,6 +533,14 @@ paths:
             type: string
         "401":
           description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+        "409":
+          description: Already Exists
           schema:
             type: string
         "500":

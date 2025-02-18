@@ -348,6 +348,12 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "403": {
+                        "description": "Object Does not exist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
@@ -582,10 +588,10 @@ const docTemplate = `{
             }
         },
         "/api/object/upload": {
-            "put": {
+            "post": {
                 "description": "This functions uploads an object to bucket.",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -613,21 +619,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "bucket name",
                         "name": "bucket",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "object name",
-                        "name": "object",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "content",
-                        "name": "content",
-                        "in": "query",
+                        "in": "formData",
                         "required": true
                     }
                 ],
@@ -646,6 +638,18 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Already Exists",
                         "schema": {
                             "type": "string"
                         }
