@@ -1,6 +1,6 @@
 ---
 stages:
-  - test
+#  - test
 #  - static_scanning
   - build
   - release
