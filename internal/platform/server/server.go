@@ -16,7 +16,7 @@ import (
 )
 
 type Server struct {
-	config     config.Config
+	Config     config.Config
 	cancelCtx  context.Context
 	cancelFunc context.CancelFunc
 	db         objectstorage.ObjectStorage
@@ -26,7 +26,7 @@ type Server struct {
 
 func NewServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Config, logger *zap.Logger) (*Server, error) {
 	s := &Server{
-		config:     cfg,
+		Config:     cfg,
 		cancelCtx:  ctx,
 		cancelFunc: cancelFunc,
 		logger:     logger,
@@ -75,7 +75,7 @@ func (s *Server) registerRoutes() {
 	apiRoutesObjects := apiRoutes.Group("/object")
 	{
 		apiRoutesObjects.GET("/list", HandleObjectList(s))
-		apiRoutesObjects.PUT("/upload", HandleObjectUpload(s))
+		apiRoutesObjects.POST("/upload", HandleObjectUpload(s))
 		apiRoutesObjects.GET("/download", HandleObjectDownload(s))
 		apiRoutesObjects.GET("/head", HandleObjectHead(s))
 		apiRoutesObjects.DELETE("/delete", HandleObjectsDelete(s))
@@ -89,7 +89,7 @@ func (s *Server) registerRoutes() {
 }
 
 func (s *Server) Start() error {
-	return s.router.Start(fmt.Sprintf("%s:%s", s.config.ServerConfigs.Address, s.config.ServerConfigs.Port))
+	return s.router.Start(fmt.Sprintf("%s:%s", s.Config.ServerConfigs.Address, s.Config.ServerConfigs.Port))
 }
 
 func (s *Server) ShutDown() error {

@@ -11,7 +11,7 @@ import (
 // CORSMiddleware to handle CORS config
 func (s *Server) CORSMiddleware() echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     s.config.ServerCorsConfigs.AllowedOrigins, // Specify your allowed origin(s)
+		AllowOrigins:     s.Config.ServerCorsConfigs.AllowedOrigins, // Specify your allowed origin(s)
 		AllowMethods:     []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		AllowCredentials: true,
@@ -21,18 +21,18 @@ func (s *Server) CORSMiddleware() echo.MiddlewareFunc {
 func (s *Server) AuthMiddleware() echo.MiddlewareFunc {
 	return middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		Skipper: func(c echo.Context) bool {
-			if isServerAuthEnabled(s.config.ServerConfigs.AuthEnabled) {
+			if isServerAuthEnabled(s.Config.ServerConfigs.AuthEnabled) {
 				return false
 			} else {
 				return true
 			}
 		},
-		KeyLookup: s.config.ServerConfigs.AuthKeyLookup,
+		KeyLookup: s.Config.ServerConfigs.AuthKeyLookup,
 		Validator: func(auth string, c echo.Context) (bool, error) {
-			if len(strings.TrimSpace(s.config.ServerConfigs.AuthToken)) == 0 {
+			if len(strings.TrimSpace(s.Config.ServerConfigs.AuthToken)) == 0 {
 				s.logger.Warn("Authentication is enabled but token is not set")
 			}
-			if strings.Compare(auth, s.config.ServerConfigs.AuthToken) == 0 {
+			if strings.Compare(auth, s.Config.ServerConfigs.AuthToken) == 0 {
 				return true, nil
 			}
 			s.logger.Info("Unauthenticated Request", zap.String("address", c.Request().Host))

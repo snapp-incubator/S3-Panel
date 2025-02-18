@@ -11,4 +11,8 @@ const (
 	ErrServiceUnavailable = "ServiceUnavailable"
 
 	FailedToCreateClient = "failed to create the S3 client"
+
+	AuthKeyNotProvided = "missing key in request header"
+
+	NotFound = "NotFound"
 )

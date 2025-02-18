@@ -59,7 +59,7 @@ curl -XDELETE "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/j
 
 ### Object Upload
 
-curl -XPUT "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "object": "X", "content": "X"}'
+curl -XPOST "127.0.0.1:8080/api/object/upload" -H "Content-Type: multipart/form-data" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -F 'files=@/path/to/file' -F 'files=@/path/to/file2' -F 'bucket="X"'
 
 ### Object Download
 

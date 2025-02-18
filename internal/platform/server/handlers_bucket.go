@@ -34,7 +34,7 @@ func HandleBucketList(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		buckets, errBucketList := s.db.BucketList(s.config.ObjectStorageConfigs, req)
+		buckets, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, req)
 		if errBucketList.Message != nil {
 			s.logger.Error(errBucketList.Message.Error())
 			return c.JSON(errBucketList.Code, errBucketList.Message.Error())
@@ -71,13 +71,13 @@ func HandleBucketQuota(s *Server) echo.HandlerFunc {
 		}
 
 		// first we try to get a BucketList to make sure the provided credentials are correct
-		_, errBucketList := s.db.BucketList(s.config.ObjectStorageConfigs, req)
+		_, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, req)
 		if errBucketList.Message != nil {
 			s.logger.Error(errBucketList.Message.Error())
 			return c.JSON(errBucketList.Code, errBucketList.Message.Error())
 		}
 
-		quotaInfo, errBucketQuota := s.db.BucketQuota(s.config.ObjectStorageConfigs, req)
+		quotaInfo, errBucketQuota := s.db.BucketQuota(s.Config.ObjectStorageConfigs, req)
 		if errBucketQuota.Message != nil {
 			s.logger.Error(errBucketQuota.Message.Error())
 			return c.JSON(errBucketQuota.Code, errBucketQuota.Message.Error())
@@ -126,7 +126,7 @@ func HandleBucketCreate(s *Server) echo.HandlerFunc {
 			AccessKey: req.AccessKey,
 			SecretKey: req.SecretKey,
 		}
-		bucketList, errBucketList := s.db.BucketList(s.config.ObjectStorageConfigs, bucketListInput)
+		bucketList, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, bucketListInput)
 		if errBucketList.Message != nil {
 			return c.JSON(errBucketList.Code, errBucketList.Message.Error())
 		}
@@ -136,7 +136,7 @@ func HandleBucketCreate(s *Server) echo.HandlerFunc {
 			}
 		}
 
-		createdBucket, errBucketCreate := s.db.BucketCreate(s.config.ObjectStorageConfigs, req)
+		createdBucket, errBucketCreate := s.db.BucketCreate(s.Config.ObjectStorageConfigs, req)
 		if errBucketCreate.Message != nil {
 			s.logger.Error(errBucketCreate.Message.Error())
 			return c.JSON(errBucketCreate.Code, errBucketCreate.Message.Error())
@@ -180,7 +180,7 @@ func HandleBucketDelete(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err)
 		}
 
-		deleteBucket, errBucketDelete := s.db.BucketDelete(s.config.ObjectStorageConfigs, req)
+		deleteBucket, errBucketDelete := s.db.BucketDelete(s.Config.ObjectStorageConfigs, req)
 		if errBucketDelete.Message != nil {
 			s.logger.Error(errBucketDelete.Message.Error())
 			return c.JSON(errBucketDelete.Code, errBucketDelete.Message.Error())

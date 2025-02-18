@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	"net/http"
@@ -43,12 +44,12 @@ func HandleObjectDownload(s *Server) echo.HandlerFunc {
 		}
 
 		// check if object exists before downloading
-		_, existsErr := s.db.ObjectHead(s.config.ObjectStorageConfigs, req)
+		_, existsErr := s.db.ObjectHead(s.Config.ObjectStorageConfigs, req)
 		if existsErr.Message != nil {
 			return c.JSON(existsErr.Code, existsErr.Message.Error())
 		}
 
-		objects, errObjectDownload := s.db.ObjectDownload(s.config.ObjectStorageConfigs, req)
+		objects, errObjectDownload := s.db.ObjectDownload(s.Config.ObjectStorageConfigs, req)
 		if errObjectDownload.Message != nil {
 			return c.JSON(errObjectDownload.Code, errObjectDownload.Message.Error())
 		}
@@ -58,22 +59,25 @@ func HandleObjectDownload(s *Server) echo.HandlerFunc {
 
 // HandleObjectUpload
 //
-//	@Summary		upload an object to bucket
-//	@Description	This functions uploads an object to bucket.
-//	@Tags			Object
-//	@Accept			json
-//	@Produce		json
-//	@Param			access_key	header		string								true	"User given AccessKey"
-//	@Param			secret_key	header		string								true	"User given SecretKey"
-//	@Param			bucket		query		string								true	"bucket name"
-//	@Param			object		query		string								true	"object name"
-//	@Param			content		query		string								true	"content"
-//	@Success		200			{object}	objectstorage.ObjectUploadResponse	"Successful response with bucket upload"
-//	@Failure		400			{object}	string								"Bad Request"
-//	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		500			{object}	string								"Internal server error"
-//	@Router			/api/object/upload [put]
+//		@Summary		upload an object to bucket
+//		@Description	This functions uploads an object to bucket.
+//		@Tags			Object
+//		@Accept			mpfd
+//		@Produce		json
+//		@Param			access_key	header		string								true	"User given AccessKey"
+//		@Param			secret_key	header		string								true	"User given SecretKey"
+//	    @Param          bucket      formData    string								true	"bucket name"
+//		@Success		200			{object}	objectstorage.ObjectUploadResponse	"Successful response with bucket upload"
+//		@Failure		400			{object}	string								"Bad Request"
+//		@Failure		401			{object}	string								"Unauthorized"
+//		@Failure		403			{object}	string								"Forbidden"
+//		@Failure		409			{object}	string								"Already Exists"
+//		@Failure		500			{object}	string								"Internal server error"
+//		@Router			/api/object/upload [post]
 func HandleObjectUpload(s *Server) echo.HandlerFunc {
+	formFieldBucket := "bucket"
+	var maxUploadSize int64 = 1024 * 1024 * 1024
+
 	return func(c echo.Context) error {
 		var req objectstorage.ObjectUploadRequestMeta
 		err := c.Bind(&req)
@@ -93,23 +97,52 @@ func HandleObjectUpload(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		// check if object exists before upload
-		headReq := objectstorage.ObjectRequestMeta{
-			AccessKey: req.AccessKey,
-			SecretKey: req.SecretKey,
-			Bucket:    req.Bucket,
-			Object:    req.Object,
-		}
-		_, existsErr := s.db.ObjectHead(s.config.ObjectStorageConfigs, headReq)
-		if existsErr.Message != nil {
-			return c.JSON(existsErr.Code, existsErr.Message.Error())
+		req.Bucket = c.FormValue(formFieldBucket)
+		if req.Bucket == "" {
+			return c.JSON(http.StatusBadRequest, "Bucket can not be empty")
 		}
 
-		objects, errObjectUpload := s.db.ObjectUpload(s.config.ObjectStorageConfigs, req)
-		if err != nil {
-			return c.JSON(errObjectUpload.Code, errObjectUpload.Message.Error())
+		form, errForm := c.MultipartForm()
+		if errForm != nil {
+			return c.JSON(http.StatusBadRequest, errForm.Error())
 		}
-		return c.JSON(http.StatusOK, objects)
+
+		files := form.File["files"]
+
+		hasLargeFile := false
+		for _, file := range files {
+			// do not allow uploading files larger than 1G
+			if file.Size > maxUploadSize {
+				hasLargeFile = true
+				break
+			}
+
+			// check if object exists before upload
+			headReq := objectstorage.ObjectRequestMeta{
+				AccessKey: req.AccessKey,
+				SecretKey: req.SecretKey,
+				Bucket:    req.Bucket,
+				Object:    file.Filename,
+			}
+			existOut, existsErr := s.db.ObjectHead(s.Config.ObjectStorageConfigs, headReq)
+			if existsErr.Message != nil {
+				return c.JSON(existsErr.Code, existsErr.Message.Error())
+			} else if existOut.Exists {
+				return c.JSON(http.StatusConflict, fmt.Sprintf("File %s already exists", file.Filename))
+			}
+		}
+
+		if hasLargeFile {
+			return c.JSON(http.StatusForbidden, "files larger than 1G are not allowed to upload")
+		}
+
+		for _, file := range files {
+			_, errObjectUpload := s.db.ObjectUpload(s.Config.ObjectStorageConfigs, req, file)
+			if err != nil {
+				return c.JSON(errObjectUpload.Code, errObjectUpload.Message.Error())
+			}
+		}
+		return c.JSON(http.StatusOK, objectstorage.ObjectUploadResponse{Created: true})
 	}
 }
 
@@ -150,8 +183,8 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err)
 		}
 
-		objects, errObjectList := s.db.ObjectList(s.config.ObjectStorageConfigs, req)
-		if err != nil {
+		objects, errObjectList := s.db.ObjectList(s.Config.ObjectStorageConfigs, req)
+		if errObjectList.Message != nil {
 			return c.JSON(errObjectList.Code, errObjectList.Message.Error())
 		}
 		return c.JSON(http.StatusOK, objects)
@@ -160,20 +193,21 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 
 // HandleObjectsDelete
 //
-//	@Summary		Deletes the list of objects inside a bucket
-//	@Description	Deletes a list of objects specified by name
-//	@Tags			Object
-//	@Accept			json
-//	@Produce		json
-//	@Param			access_key	header		string								true	"User given AccessKey"
-//	@Param			secret_key	header		string								true	"User given SecretKey"
-//	@Param			bucket		body		string								true	"bucket name"
-//	@Param			objects		body		[]string							true	"objects names"
-//	@Success		200			{object}	objectstorage.ObjectDeleteResponse	"Successful response with objects delete"
-//	@Failure		400			{object}	string								"Bad Request"
-//	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		500			{object}	string								"Internal server error"
-//	@Router			/api/object/delete [delete]
+//		@Summary		Deletes the list of objects inside a bucket
+//		@Description	Deletes a list of objects specified by name
+//		@Tags			Object
+//		@Accept			json
+//		@Produce		json
+//		@Param			access_key	header		string								true	"User given AccessKey"
+//		@Param			secret_key	header		string								true	"User given SecretKey"
+//		@Param			bucket		body		string								true	"bucket name"
+//		@Param			objects		body		[]string							true	"objects names"
+//		@Success		200			{object}	objectstorage.ObjectDeleteResponse	"Successful response with objects delete"
+//		@Failure		400			{object}	string								"Bad Request"
+//		@Failure		401			{object}	string								"Unauthorized"
+//	 @Failure        403         {object}    string                              "Object Does not exist"
+//		@Failure		500			{object}	string								"Internal server error"
+//		@Router			/api/object/delete [delete]
 func HandleObjectsDelete(s *Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.ObjectDeleteRequestMeta
@@ -202,14 +236,16 @@ func HandleObjectsDelete(s *Server) echo.HandlerFunc {
 				Bucket:    req.Bucket,
 				Object:    obj,
 			}
-			_, existsErr := s.db.ObjectHead(s.config.ObjectStorageConfigs, headReq)
+			existOut, existsErr := s.db.ObjectHead(s.Config.ObjectStorageConfigs, headReq)
 			if existsErr.Message != nil {
 				return c.JSON(existsErr.Code, existsErr.Message.Error())
+			} else if !existOut.Exists {
+				return c.JSON(http.StatusForbidden, fmt.Sprintf("File %s does not exist", obj))
 			}
 		}
 
-		objects, errObjectDelete := s.db.ObjectsDelete(s.config.ObjectStorageConfigs, req)
-		if err != nil {
+		objects, errObjectDelete := s.db.ObjectsDelete(s.Config.ObjectStorageConfigs, req)
+		if errObjectDelete.Message != nil {
 			return c.JSON(errObjectDelete.Code, errObjectDelete.Message.Error())
 		}
 		return c.JSON(http.StatusOK, objects)
@@ -252,9 +288,9 @@ func HandleObjectHead(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		objects, errObjectDelete := s.db.ObjectHead(s.config.ObjectStorageConfigs, req)
-		if err != nil {
-			return c.JSON(errObjectDelete.Code, errObjectDelete.Message.Error())
+		objects, errObjectHead := s.db.ObjectHead(s.Config.ObjectStorageConfigs, req)
+		if errObjectHead.Message != nil {
+			return c.JSON(errObjectHead.Code, errObjectHead.Message.Error())
 		}
 		return c.JSON(http.StatusOK, objects)
 	}

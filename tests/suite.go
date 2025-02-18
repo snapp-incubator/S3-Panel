@@ -10,11 +10,15 @@ import (
 )
 
 var conf config.Config
-var confPath = "./../configs/configs-test.yaml"
+var confPath = "./../configs/test-config.yaml"
 
 func init() {
 	cfg := config.Provide(confPath)
 	conf = cfg
+}
+
+type HttpMessageError struct {
+	Message string `json:"message"`
 }
 
 type BaseTestSuite struct {
@@ -25,7 +29,7 @@ type BaseTestSuite struct {
 	*require.Assertions
 }
 
-func (s *BaseTestSuite) SetupTest() {
+func (s *BaseTestSuite) SetupSuite() {
 	ctx, cancel := context.WithCancel(context.Background())
 	s.context = ctx
 	s.cancel = cancel
@@ -44,7 +48,7 @@ func (s *BaseTestSuite) SetupTest() {
 	}()
 }
 
-func (s *BaseTestSuite) TearDownTest() {
+func (s *BaseTestSuite) TearDownSuite() {
 	s.cancel()
 
 	if err := s.server.ShutDown(); err != nil {

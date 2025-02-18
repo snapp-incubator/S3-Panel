@@ -12,6 +12,7 @@ import (
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
+	"mime/multipart"
 	"net/http"
 	"time"
 )
@@ -130,7 +131,7 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
-func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectUploadRequestMeta) (objectstorage.ObjectUploadResponse, objectstorage.HTTPErrorWithCode) {
+func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectUploadRequestMeta, file *multipart.FileHeader) (objectstorage.ObjectUploadResponse, objectstorage.HTTPErrorWithCode) {
 	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
 		return objectstorage.ObjectUploadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
@@ -138,10 +139,14 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 
 	uploadManager := manager.NewUploader(client)
 
+	src, errOpen := file.Open()
+	if errOpen != nil {
+		return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(errOpen)
+	}
 	input := &s3.PutObjectInput{
 		Bucket:            aws.String(meta.Bucket),
-		Key:               aws.String(meta.Object),
-		Body:              bytes.NewReader([]byte(meta.Content)),
+		Key:               aws.String(file.Filename),
+		Body:              src,
 		ChecksumAlgorithm: "",
 	}
 	_, errUpload := uploadManager.Upload(context.Background(), input)
@@ -150,7 +155,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 	} else {
 		err = s3.NewObjectExistsWaiter(client).Wait(context.Background(), &s3.HeadObjectInput{
 			Bucket: aws.String(meta.Bucket),
-			Key:    aws.String(meta.Object),
+			Key:    aws.String(file.Filename),
 		}, time.Minute)
 		if err != nil {
 			return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(err)
@@ -175,7 +180,7 @@ func (c CephObjectStorage) ObjectHead(serverAdminConfig config.ObjectStorageConf
 
 	if headObjectError != nil {
 		httpErrorCode := CustomizedErrorContents(headObjectError)
-		if httpErrorCode.Code != http.StatusInternalServerError {
+		if httpErrorCode.Message.Error() == language.NotFound {
 			return objectstorage.ObjectHeadResponse{Exists: false}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 		}
 		return objectstorage.ObjectHeadResponse{}, httpErrorCode

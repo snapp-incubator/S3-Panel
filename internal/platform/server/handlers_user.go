@@ -33,7 +33,7 @@ func HandleUserQuota(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		userQuota, errUserQuota := s.db.UserQuota(s.config.ObjectStorageConfigs, req)
+		userQuota, errUserQuota := s.db.UserQuota(s.Config.ObjectStorageConfigs, req)
 		if errUserQuota.Message != nil {
 			return c.JSON(errUserQuota.Code, errUserQuota.Message.Error())
 		}
@@ -68,7 +68,7 @@ func HandleUserIdentification(s *Server) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		userData, errUserID := s.db.UserIdentification(s.config.ObjectStorageConfigs, req)
+		userData, errUserID := s.db.UserIdentification(s.Config.ObjectStorageConfigs, req)
 		if errUserID.Message != nil {
 			return c.JSON(errUserID.Code, errUserID.Message.Error())
 		}

@@ -3,6 +3,7 @@ package objectstorage
 import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
+	"mime/multipart"
 )
 
 type HTTPErrorWithCode struct {
@@ -16,7 +17,7 @@ type ObjectStorage interface {
 	ObjectsDelete(cfg config.ObjectStorageConfig, meta ObjectDeleteRequestMeta) (ObjectDeleteResponse, HTTPErrorWithCode)
 	ObjectDownload(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectDownloadResponse, HTTPErrorWithCode)
 	ObjectList(cfg config.ObjectStorageConfig, meta ObjectListRequestMeta) (ObjectListResponse, HTTPErrorWithCode)
-	ObjectUpload(cfg config.ObjectStorageConfig, meta ObjectUploadRequestMeta) (ObjectUploadResponse, HTTPErrorWithCode)
+	ObjectUpload(cfg config.ObjectStorageConfig, meta ObjectUploadRequestMeta, files *multipart.FileHeader) (ObjectUploadResponse, HTTPErrorWithCode)
 	ObjectHead(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectHeadResponse, HTTPErrorWithCode)
 
 	BucketCreate(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketCreateResponse, HTTPErrorWithCode)
