@@ -10,6 +10,7 @@ import (
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/health"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/repository"
 	"go.uber.org/zap"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -63,6 +64,10 @@ func (s *Server) registerRoutes() {
 		s.AuthMiddleware(),
 		s.TimeOutMiddleware(),
 	)
+
+	apiRoutes.OPTIONS("/*", func(c echo.Context) error {
+		return c.NoContent(http.StatusNoContent)
+	})
 
 	apiRoutesBuckets := apiRoutes.Group("/bucket")
 	{

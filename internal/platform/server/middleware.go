@@ -13,7 +13,7 @@ func (s *Server) CORSMiddleware() echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     s.Config.ServerCorsConfigs.AllowedOrigins, // Specify your allowed origin(s)
 		AllowMethods:     []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.PATCH, echo.OPTIONS},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, echo.HeaderXCSRFToken},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, echo.HeaderXCSRFToken, echo.HeaderAccessControlAllowMethods},
 		AllowCredentials: true,
 	})
 }
