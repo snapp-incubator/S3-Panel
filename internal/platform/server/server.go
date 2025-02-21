@@ -111,8 +111,12 @@ func StartServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	sig := <-sigChan
-	logger.Info(fmt.Sprintf("Received %s signal, gracefully shutting down services", sig.String()))
+	select {
+	case <-ctx.Done():
+		logger.Warn("Done Context. Shutting down services")
+	case sig := <-sigChan:
+		logger.Warn(fmt.Sprintf("Received %s signal, gracefully shutting down services", sig.String()))
+	}
 
 	// call cancel function of the Server
 	server.cancelFunc()

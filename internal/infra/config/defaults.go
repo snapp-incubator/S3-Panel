@@ -4,6 +4,7 @@ const (
 	DefaultLogLevel      = "debug"
 	DefaultServerAddress = "127.0.0.1"
 	DefaultServerPort    = "8080"
+	DefaultDownloadPath  = "/tmp"
 )
 
 func DefaultConfig() Config {
@@ -12,8 +13,9 @@ func DefaultConfig() Config {
 	}
 
 	serverConfig := ServerConfig{
-		Address: DefaultServerAddress,
-		Port:    DefaultServerPort,
+		Address:      DefaultServerAddress,
+		Port:         DefaultServerPort,
+		DownloadPath: DefaultDownloadPath,
 	}
 
 	serverCorsConfig := ServerCorsConfig{

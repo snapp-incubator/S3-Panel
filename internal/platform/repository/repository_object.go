@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -14,6 +13,7 @@ import (
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -60,6 +60,11 @@ func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageC
 }
 
 func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDownloadResponse, objectstorage.HTTPErrorWithCode) {
+	createdFile, errCreate := os.Create(meta.TemporaryPath)
+	if errCreate != nil {
+		return objectstorage.ObjectDownloadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf("could not create temporary file, error: %s", errCreate)}
+	}
+
 	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
 	if err != nil {
 		return objectstorage.ObjectDownloadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
@@ -69,8 +74,7 @@ func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorage
 	downloader := manager.NewDownloader(client, func(d *manager.Downloader) {
 		d.PartSize = partSize
 	})
-	buffer := manager.NewWriteAtBuffer([]byte{})
-	_, errDownload := downloader.Download(context.Background(), buffer, &s3.GetObjectInput{
+	_, errDownload := downloader.Download(context.Background(), createdFile, &s3.GetObjectInput{
 		Bucket:       aws.String(meta.Bucket),
 		Key:          aws.String(meta.Object),
 		ChecksumMode: types.ChecksumModeEnabled,
@@ -80,10 +84,8 @@ func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorage
 		return objectstorage.ObjectDownloadResponse{}, CustomizedErrorContents(errDownload)
 	}
 
-	var stringBuffer bytes.Buffer
-	stringBuffer.Write(buffer.Bytes())
 	return objectstorage.ObjectDownloadResponse{
-		Object: stringBuffer.String(),
+		Downloaded: true,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 

@@ -49,11 +49,16 @@ func HandleObjectDownload(s *Server) echo.HandlerFunc {
 			return c.JSON(existsErr.Code, existsErr.Message.Error())
 		}
 
-		objects, errObjectDownload := s.db.ObjectDownload(s.Config.ObjectStorageConfigs, req)
+		req.TemporaryPath, err = createObjectPath(s.Config.ServerConfigs.DownloadPath, req.AccessKey, req.Object)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
+
+		_, errObjectDownload := s.db.ObjectDownload(s.Config.ObjectStorageConfigs, req)
 		if errObjectDownload.Message != nil {
 			return c.JSON(errObjectDownload.Code, errObjectDownload.Message.Error())
 		}
-		return c.JSON(http.StatusOK, objects)
+		return c.Attachment(req.TemporaryPath, req.Object)
 	}
 }
 
@@ -200,8 +205,8 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 //	@Produce		json
 //	@Param			access_key	header		string								true	"User given AccessKey"
 //	@Param			secret_key	header		string								true	"User given SecretKey"
-//	@Param			bucket		body		string								true	"bucket name"
-//	@Param			objects		body		[]string							true	"objects names"
+//	@Param			bucket		query		string								true	"bucket name"
+//	@Param			objects		query		[]string							true	"objects names"
 //	@Success		200			{object}	objectstorage.ObjectDeleteResponse	"Successful response with objects delete"
 //	@Failure		400			{object}	string								"Bad Request"
 //	@Failure		401			{object}	string								"Unauthorized"

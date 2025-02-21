@@ -55,7 +55,7 @@ curl -XGET "127.0.0.1:8080/api/object/list?max_keys=10&page=1&bucket=X" -H "Cont
 
 ### Objects Delete
 
-curl -XDELETE "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "objects":["object1.png", "object2.txt"]}'
+curl -XDELETE "127.0.0.1:8080/api/object/delete?bucket=X&objects=X1&objects=X2" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
 
 ### Object Upload
 

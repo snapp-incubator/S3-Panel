@@ -16,10 +16,11 @@ type ObjectDeleteRequestMeta struct {
 }
 
 type ObjectRequestMeta struct {
-	AccessKey string `header:"access_key" validate:"required"`
-	SecretKey string `header:"secret_key" validate:"required"`
-	Bucket    string `query:"bucket"      validate:"required"`
-	Object    string `query:"object"      validate:"required"`
+	AccessKey     string `header:"access_key" validate:"required"`
+	SecretKey     string `header:"secret_key" validate:"required"`
+	Bucket        string `query:"bucket"      validate:"required"`
+	Object        string `query:"object"      validate:"required"`
+	TemporaryPath string
 }
 
 type ObjectUploadRequestMeta struct {
@@ -40,7 +41,7 @@ type ObjectListResponse struct {
 }
 
 type ObjectDownloadResponse struct {
-	Object string `json:"object"`
+	Downloaded bool `json:"downloaded"`
 }
 
 type ObjectUploadResponse struct {
