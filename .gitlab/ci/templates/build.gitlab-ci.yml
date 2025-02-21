@@ -12,6 +12,6 @@ build:
     paths:
       - ${CI_PROJECT_NAME}-${CI_COMMIT_SHORT_SHA}.tar
     expire_in: 1 day
-  needs: ["test"]
+#  needs: ["test"]
 
 
