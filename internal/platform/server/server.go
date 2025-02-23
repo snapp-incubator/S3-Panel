@@ -22,7 +22,7 @@ type Server struct {
 	cancelFunc context.CancelFunc
 	db         objectstorage.ObjectStorage
 	logger     *zap.Logger
-	router     *echo.Echo
+	Router     *echo.Echo
 }
 
 func NewServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Config, logger *zap.Logger) (*Server, error) {
@@ -52,14 +52,14 @@ func (s *Server) registerCephRepository() error {
 func (s *Server) registerRouter() {
 	newRouter := echo.New()
 	newRouter.Validator = &CustomValidator{validator: NewRawValidator()}
-	s.router = newRouter
+	s.Router = newRouter
 }
 
 func (s *Server) registerRoutes() {
-	s.router.GET("/health", health.HandleHealth())
-	s.router.GET("/docs/*", echoSwagger.WrapHandler)
+	s.Router.GET("/health", health.HandleHealth)
+	s.Router.GET("/docs/*", echoSwagger.WrapHandler)
 
-	apiRoutes := s.router.Group("/api",
+	apiRoutes := s.Router.Group("/api",
 		s.CORSMiddleware(),
 		s.AuthMiddleware(),
 		s.TimeOutMiddleware(),
@@ -71,34 +71,34 @@ func (s *Server) registerRoutes() {
 
 	apiRoutesBuckets := apiRoutes.Group("/bucket")
 	{
-		apiRoutesBuckets.GET("/list", HandleBucketList(s))
-		apiRoutesBuckets.GET("/quota", HandleBucketQuota(s))
-		apiRoutesBuckets.POST("/create", HandleBucketCreate(s))
-		apiRoutesBuckets.DELETE("/delete", HandleBucketDelete(s))
+		apiRoutesBuckets.GET("/list", s.HandleBucketList())
+		apiRoutesBuckets.GET("/quota", s.HandleBucketQuota())
+		apiRoutesBuckets.POST("/create", s.HandleBucketCreate)
+		apiRoutesBuckets.DELETE("/delete", s.HandleBucketDelete())
 	}
 
 	apiRoutesObjects := apiRoutes.Group("/object")
 	{
-		apiRoutesObjects.GET("/list", HandleObjectList(s))
-		apiRoutesObjects.POST("/upload", HandleObjectUpload(s))
-		apiRoutesObjects.GET("/download", HandleObjectDownload(s))
-		apiRoutesObjects.GET("/head", HandleObjectHead(s))
-		apiRoutesObjects.DELETE("/delete", HandleObjectsDelete(s))
+		apiRoutesObjects.GET("/list", s.HandleObjectList())
+		apiRoutesObjects.POST("/upload", s.HandleObjectUpload())
+		apiRoutesObjects.GET("/download", s.HandleObjectDownload())
+		apiRoutesObjects.GET("/head", s.HandleObjectHead())
+		apiRoutesObjects.DELETE("/delete", s.HandleObjectsDelete())
 	}
 
 	apiRoutesUsers := apiRoutes.Group("/user")
 	{
-		apiRoutesUsers.GET("/quota", HandleUserQuota(s))
-		apiRoutesUsers.GET("/id", HandleUserIdentification(s))
+		apiRoutesUsers.GET("/quota", s.HandleUserQuota())
+		apiRoutesUsers.GET("/id", s.HandleUserIdentification())
 	}
 }
 
 func (s *Server) Start() error {
-	return s.router.Start(fmt.Sprintf("%s:%s", s.Config.ServerConfigs.Address, s.Config.ServerConfigs.Port))
+	return s.Router.Start(fmt.Sprintf("%s:%s", s.Config.ServerConfigs.Address, s.Config.ServerConfigs.Port))
 }
 
 func (s *Server) ShutDown() error {
-	err := s.router.Shutdown(s.cancelCtx)
+	err := s.Router.Shutdown(s.cancelCtx)
 	if err != nil {
 		return err
 	}

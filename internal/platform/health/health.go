@@ -2,18 +2,16 @@ package health
 
 import (
 	"github.com/labstack/echo/v4"
+	lang "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
 	"net/http"
 )
 
-const (
-	Healthy = "Healthy"
-)
+type ApplicationHealth struct {
+	Status string `json:"status"`
+}
 
-func HandleHealth() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		healthData := map[string]string{
-			"status": Healthy,
-		}
-		return c.JSON(http.StatusOK, healthData)
-	}
+func HandleHealth(c echo.Context) error {
+	var appHealth ApplicationHealth
+	appHealth.Status = lang.ApplicationHealthy
+	return c.JSON(http.StatusOK, appHealth)
 }

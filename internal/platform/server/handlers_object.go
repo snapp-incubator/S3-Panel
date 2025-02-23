@@ -23,7 +23,7 @@ import (
 //	@Failure		401			{object}	string									"Unauthorized"
 //	@Failure		500			{object}	string									"Internal server error"
 //	@Router			/api/object/download [get]
-func HandleObjectDownload(s *Server) echo.HandlerFunc {
+func (s *Server) HandleObjectDownload() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.ObjectRequestMeta
 		err := c.Bind(&req)
@@ -79,7 +79,7 @@ func HandleObjectDownload(s *Server) echo.HandlerFunc {
 //	@Failure		409			{object}	string								"Already Exists"
 //	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/object/upload [post]
-func HandleObjectUpload(s *Server) echo.HandlerFunc {
+func (s *Server) HandleObjectUpload() echo.HandlerFunc {
 	formFieldBucket := "bucket"
 	var maxUploadSize int64 = 1024 * 1024 * 1024
 
@@ -168,7 +168,7 @@ func HandleObjectUpload(s *Server) echo.HandlerFunc {
 //	@Failure		401			{object}	string								"Unauthorized"
 //	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/object/list [get]
-func HandleObjectList(s *Server) echo.HandlerFunc {
+func (s *Server) HandleObjectList() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.ObjectListRequestMeta
 		err := c.Bind(&req)
@@ -213,7 +213,7 @@ func HandleObjectList(s *Server) echo.HandlerFunc {
 //	@Failure		403			{object}	string								"Object Does not exist"
 //	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/object/delete [delete]
-func HandleObjectsDelete(s *Server) echo.HandlerFunc {
+func (s *Server) HandleObjectsDelete() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.ObjectDeleteRequestMeta
 		err := c.Bind(&req)
@@ -273,7 +273,7 @@ func HandleObjectsDelete(s *Server) echo.HandlerFunc {
 //	@Failure		401			{object}	string								"Unauthorized"
 //	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/object/head [get]
-func HandleObjectHead(s *Server) echo.HandlerFunc {
+func (s *Server) HandleObjectHead() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.ObjectRequestMeta
 		err := c.Bind(&req)

@@ -21,7 +21,7 @@ import (
 //	@Failure		401			{object}	string								"Unauthorized"
 //	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/bucket/list [get]
-func HandleBucketList(s *Server) echo.HandlerFunc {
+func (s *Server) HandleBucketList() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.BucketInfoRequestMeta
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
@@ -57,7 +57,7 @@ func HandleBucketList(s *Server) echo.HandlerFunc {
 //	@Failure		401			{object}	string								"Unauthorized"
 //	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/bucket/quota [get]
-func HandleBucketQuota(s *Server) echo.HandlerFunc {
+func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.BucketInfoRequestMeta
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
@@ -102,47 +102,45 @@ func HandleBucketQuota(s *Server) echo.HandlerFunc {
 //	@Failure		403			{object}	string								"Bucket Already Exists"
 //	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/bucket/create [post]
-func HandleBucketCreate(s *Server) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var req objectstorage.BucketActionRequestMeta
-		err := c.Bind(&req)
-		if err != nil {
-			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
-		if err != nil {
-			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		err = c.Validate(req)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		bucketListInput := objectstorage.BucketInfoRequestMeta{
-			AccessKey: req.AccessKey,
-			SecretKey: req.SecretKey,
-		}
-		bucketList, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, bucketListInput)
-		if errBucketList.Message != nil {
-			return c.JSON(errBucketList.Code, errBucketList.Message.Error())
-		}
-		for _, bucket := range bucketList.BucketList {
-			if bucket == req.Bucket {
-				return c.JSON(http.StatusForbidden, language.ErrBucketAlreadyExists)
-			}
-		}
-
-		createdBucket, errBucketCreate := s.db.BucketCreate(s.Config.ObjectStorageConfigs, req)
-		if errBucketCreate.Message != nil {
-			s.logger.Error(errBucketCreate.Message.Error())
-			return c.JSON(errBucketCreate.Code, errBucketCreate.Message.Error())
-		}
-		return c.JSON(http.StatusCreated, createdBucket)
+func (s *Server) HandleBucketCreate(c echo.Context) error {
+	var req objectstorage.BucketActionRequestMeta
+	err := c.Bind(&req)
+	if err != nil {
+		s.logger.Error(err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
+	if err != nil {
+		s.logger.Error(err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	bucketListInput := objectstorage.BucketInfoRequestMeta{
+		AccessKey: req.AccessKey,
+		SecretKey: req.SecretKey,
+	}
+	bucketList, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, bucketListInput)
+	if errBucketList.Message != nil {
+		return c.JSON(errBucketList.Code, errBucketList.Message.Error())
+	}
+	for _, bucket := range bucketList.BucketList {
+		if bucket == req.Bucket {
+			return c.JSON(http.StatusForbidden, language.ErrBucketAlreadyExists)
+		}
+	}
+
+	createdBucket, errBucketCreate := s.db.BucketCreate(s.Config.ObjectStorageConfigs, req)
+	if errBucketCreate.Message != nil {
+		s.logger.Error(errBucketCreate.Message.Error())
+		return c.JSON(errBucketCreate.Code, errBucketCreate.Message.Error())
+	}
+	return c.JSON(http.StatusCreated, createdBucket)
 }
 
 // HandleBucketDelete
@@ -160,7 +158,7 @@ func HandleBucketCreate(s *Server) echo.HandlerFunc {
 //	@Failure		401			{object}	string								"Unauthorized"
 //	@Failure		500			{object}	string								"Internal server error"
 //	@Router			/api/bucket/delete [delete]
-func HandleBucketDelete(s *Server) echo.HandlerFunc {
+func (s *Server) HandleBucketDelete() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.BucketActionRequestMeta
 		err := c.Bind(&req)

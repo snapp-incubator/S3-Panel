@@ -1,3 +1,5 @@
 package language
 
-const ()
+const (
+	ApplicationHealthy = "Healthy"
+)

@@ -20,7 +20,7 @@ import (
 //	@Failure		401			{object}	string							"Unauthorized"
 //	@Failure		500			{object}	string							"Internal server error"
 //	@Router			/api/user/quota [get]
-func HandleUserQuota(s *Server) echo.HandlerFunc {
+func (s *Server) HandleUserQuota() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.UserRequestMeta
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
@@ -55,7 +55,7 @@ func HandleUserQuota(s *Server) echo.HandlerFunc {
 //	@Failure		401			{object}	string										"Unauthorized"
 //	@Failure		500			{object}	map[string]string							"Internal server error"
 //	@Router			/api/user/id [get]
-func HandleUserIdentification(s *Server) echo.HandlerFunc {
+func (s *Server) HandleUserIdentification() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.UserRequestMeta
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
