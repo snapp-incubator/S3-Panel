@@ -2,8 +2,11 @@ package server
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
+	"time"
 )
 
 func isServerAuthEnabled(s string) bool {
@@ -21,4 +24,23 @@ func createObjectPath(baseDownloadPath, accessKey, objName string) (string, erro
 		return "", errMkdir
 	}
 	return fmt.Sprintf("%s/%s", objectDir, objName), nil
+}
+
+func PruneObjectPathDir(downloadPath string) error {
+	return filepath.WalkDir(downloadPath, func(path string, d fs.DirEntry, err error) error {
+		if !d.IsDir() {
+			info, errInfo := d.Info()
+			if errInfo != nil {
+				return errInfo
+			}
+			if time.Now().Sub(info.ModTime()) > time.Hour*1 {
+				fmt.Println("Deleting", path)
+				errRemove := os.Remove(path)
+				if errRemove != nil {
+					return errRemove
+				}
+			}
+		}
+		return err
+	})
 }

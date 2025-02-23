@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 type Server struct {
@@ -40,6 +41,7 @@ func NewServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Co
 
 	s.registerRouter()
 	s.registerRoutes()
+	s.registerPruner()
 
 	return s, nil
 }
@@ -91,6 +93,29 @@ func (s *Server) registerRoutes() {
 		apiRoutesUsers.GET("/quota", s.HandleUserQuota())
 		apiRoutesUsers.GET("/id", s.HandleUserIdentification())
 	}
+}
+
+func (s *Server) registerPruner() {
+	go func() {
+		ticker := time.NewTicker(1 * time.Hour)
+		shouldBreak := false
+		for {
+			select {
+			case <-s.cancelCtx.Done():
+				fmt.Println("Shutting Down Ticker due to canceling context")
+				shouldBreak = true
+			case <-ticker.C:
+				fmt.Println("Triggered Pruner: ", time.Now())
+				errPrune := PruneObjectPathDir(s.Config.ServerConfigs.DownloadPath)
+				if errPrune != nil {
+					s.logger.Error(errPrune.Error())
+				}
+			}
+			if shouldBreak {
+				break
+			}
+		}
+	}()
 }
 
 func (s *Server) Start() error {
