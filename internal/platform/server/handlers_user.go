@@ -14,11 +14,12 @@ import (
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
-//	@Param			access_key	header		string							true	"User given AccessKey"
-//	@Success		200			{object}	objectstorage.UserQuotaResponse	"Successful response with user quota"
-//	@Failure		400			{object}	string							"Bad Request"
-//	@Failure		401			{object}	string							"Unauthorized"
-//	@Failure		500			{object}	string							"Internal server error"
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Success		200			{object}	objectstorage.UserQuotaResponse		"Successful response with user quota"
+//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
+//	@Failure		401			{object}	string								"Unauthorized"
+//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/user/quota [get]
 func (s *Server) HandleUserQuota() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -26,16 +27,17 @@ func (s *Server) HandleUserQuota() echo.HandlerFunc {
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
 		userQuota, errUserQuota := s.db.UserQuota(s.Config.ObjectStorageConfigs, req)
 		if errUserQuota.Message != nil {
-			return c.JSON(errUserQuota.Code, errUserQuota.Message.Error())
+			s.logger.Error(errUserQuota.Message.Error())
+			return c.JSON(errUserQuota.Code, objectstorage.OperationErrWithMsg{Message: errUserQuota.Message.Error()})
 		}
 		return c.JSON(http.StatusOK, userQuota)
 	}
@@ -51,9 +53,10 @@ func (s *Server) HandleUserQuota() echo.HandlerFunc {
 //	@Produce		json
 //	@Param			access_key	header		string										true	"User given AccessKey"
 //	@Success		200			{object}	objectstorage.UserIdentificationResponse	"Successful response with user identification"
-//	@Failure		400			{object}	map[string]string							"Bad Request"
+//	@Failure		400			{object}	objectstorage.OperationErrWithMsg			"Bad Request"
 //	@Failure		401			{object}	string										"Unauthorized"
-//	@Failure		500			{object}	map[string]string							"Internal server error"
+//	@Failure		422			{object}	objectstorage.OperationErrWithMsg			"Action didn't complete"
+//	@Failure		500			{object}	objectstorage.OperationErrWithMsg			"Internal server error"
 //	@Router			/api/user/id [get]
 func (s *Server) HandleUserIdentification() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -61,16 +64,17 @@ func (s *Server) HandleUserIdentification() echo.HandlerFunc {
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
 		userData, errUserID := s.db.UserIdentification(s.Config.ObjectStorageConfigs, req)
 		if errUserID.Message != nil {
-			return c.JSON(errUserID.Code, errUserID.Message.Error())
+			s.logger.Error(errUserID.Message.Error())
+			return c.JSON(errUserID.Code, objectstorage.OperationErrWithMsg{Message: errUserID.Message.Error()})
 		}
 		return c.JSON(http.StatusOK, userData)
 	}

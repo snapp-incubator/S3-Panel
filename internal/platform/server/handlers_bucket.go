@@ -17,9 +17,10 @@ import (
 //	@Param			access_key	header		string								true	"User given AccessKey"
 //	@Param			secret_key	header		string								true	"User given SecretKey"
 //	@Success		200			{object}	objectstorage.BucketListResponse	"Successful response with bucket list"
-//	@Failure		400			{object}	string								"Bad Request"
+//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
 //	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		500			{object}	string								"Internal server error"
+//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/bucket/list [get]
 func (s *Server) HandleBucketList() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -27,17 +28,17 @@ func (s *Server) HandleBucketList() echo.HandlerFunc {
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
 		buckets, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, req)
 		if errBucketList.Message != nil {
 			s.logger.Error(errBucketList.Message.Error())
-			return c.JSON(errBucketList.Code, errBucketList.Message.Error())
+			return c.JSON(errBucketList.Code, objectstorage.OperationErrWithMsg{Message: errBucketList.Message.Error()})
 		}
 		return c.JSON(http.StatusOK, buckets)
 	}
@@ -53,9 +54,10 @@ func (s *Server) HandleBucketList() echo.HandlerFunc {
 //	@Param			access_key	header		string								true	"User given AccessKey"
 //	@Param			secret_key	header		string								true	"User given SecretKey"
 //	@Success		200			{object}	[]objectstorage.BucketQuotaResponse	"Successful response with buckets quota"
-//	@Failure		400			{object}	string								"Bad Request"
+//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
 //	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		500			{object}	string								"Internal server error"
+//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/bucket/quota [get]
 func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -63,24 +65,24 @@ func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
 		// first we try to get a BucketList to make sure the provided credentials are correct
 		_, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, req)
 		if errBucketList.Message != nil {
 			s.logger.Error(errBucketList.Message.Error())
-			return c.JSON(errBucketList.Code, errBucketList.Message.Error())
+			return c.JSON(errBucketList.Code, objectstorage.OperationErrWithMsg{Message: errBucketList.Message.Error()})
 		}
 
 		quotaInfo, errBucketQuota := s.db.BucketQuota(s.Config.ObjectStorageConfigs, req)
 		if errBucketQuota.Message != nil {
 			s.logger.Error(errBucketQuota.Message.Error())
-			return c.JSON(errBucketQuota.Code, errBucketQuota.Message.Error())
+			return c.JSON(errBucketQuota.Code, objectstorage.OperationErrWithMsg{Message: errBucketQuota.Message.Error()})
 		}
 		return c.JSON(http.StatusOK, quotaInfo)
 	}
@@ -97,28 +99,29 @@ func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 //	@Param			secret_key	header		string								true	"User given SecretKey"
 //	@Param			bucket		body		string								true	"Bucket Name to Create"
 //	@Success		201			{object}	objectstorage.BucketCreateResponse	"Bucket created successfully"
-//	@Failure		400			{object}	string								"Bad Request"
+//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
 //	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		403			{object}	string								"Bucket Already Exists"
-//	@Failure		500			{object}	string								"Internal server error"
+//	@Failure		403			{object}	objectstorage.OperationErrWithMsg	"Bucket Already Exists"
+//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/bucket/create [post]
 func (s *Server) HandleBucketCreate(c echo.Context) error {
 	var req objectstorage.BucketActionRequestMeta
 	err := c.Bind(&req)
 	if err != nil {
 		s.logger.Error(err.Error())
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 	}
 
 	err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
 	if err != nil {
 		s.logger.Error(err.Error())
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 	}
 
 	err = c.Validate(req)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 	}
 
 	bucketListInput := objectstorage.BucketInfoRequestMeta{
@@ -127,18 +130,18 @@ func (s *Server) HandleBucketCreate(c echo.Context) error {
 	}
 	bucketList, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, bucketListInput)
 	if errBucketList.Message != nil {
-		return c.JSON(errBucketList.Code, errBucketList.Message.Error())
+		return c.JSON(errBucketList.Code, objectstorage.OperationErrWithMsg{Message: errBucketList.Message.Error()})
 	}
 	for _, bucket := range bucketList.BucketList {
 		if bucket == req.Bucket {
-			return c.JSON(http.StatusForbidden, language.ErrBucketAlreadyExists)
+			return c.JSON(http.StatusForbidden, objectstorage.OperationErrWithMsg{Message: language.ErrBucketAlreadyExists})
 		}
 	}
 
 	createdBucket, errBucketCreate := s.db.BucketCreate(s.Config.ObjectStorageConfigs, req)
 	if errBucketCreate.Message != nil {
 		s.logger.Error(errBucketCreate.Message.Error())
-		return c.JSON(errBucketCreate.Code, errBucketCreate.Message.Error())
+		return c.JSON(errBucketCreate.Code, objectstorage.OperationErrWithMsg{Message: errBucketCreate.Message.Error()})
 	}
 	return c.JSON(http.StatusCreated, createdBucket)
 }
@@ -154,9 +157,10 @@ func (s *Server) HandleBucketCreate(c echo.Context) error {
 //	@Param			secret_key	header		string								true	"User given SecretKey"
 //	@Param			bucket		body		string								true	"Bucket Name to Delete"
 //	@Success		200			{object}	objectstorage.BucketDeleteResponse	"Bucket deleted successfully"
-//	@Failure		400			{object}	string								"Bad Request"
+//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
 //	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		500			{object}	string								"Internal server error"
+//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/bucket/delete [delete]
 func (s *Server) HandleBucketDelete() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -164,24 +168,24 @@ func (s *Server) HandleBucketDelete() echo.HandlerFunc {
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
 		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
-			return c.JSON(http.StatusBadRequest, err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
 		err = c.Validate(req)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
 		deleteBucket, errBucketDelete := s.db.BucketDelete(s.Config.ObjectStorageConfigs, req)
 		if errBucketDelete.Message != nil {
 			s.logger.Error(errBucketDelete.Message.Error())
-			return c.JSON(errBucketDelete.Code, errBucketDelete.Message.Error())
+			return c.JSON(errBucketDelete.Code, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 		return c.JSON(http.StatusOK, deleteBucket)
 	}

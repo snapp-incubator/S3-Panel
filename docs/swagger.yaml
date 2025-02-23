@@ -46,8 +46,8 @@ definitions:
     type: object
   objectstorage.ObjectDownloadResponse:
     properties:
-      object:
-        type: string
+      downloaded:
+        type: boolean
     type: object
   objectstorage.ObjectHeadResponse:
     properties:
@@ -76,6 +76,11 @@ definitions:
     properties:
       created:
         type: boolean
+    type: object
+  objectstorage.OperationErrWithMsg:
+    properties:
+      message:
+        type: string
     type: object
   objectstorage.UserIdentificationResponse:
     properties:
@@ -152,7 +157,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -160,11 +165,15 @@ paths:
         "403":
           description: Bucket Already Exists
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: Creates Bucket
       tags:
       - Bucket
@@ -200,15 +209,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
             type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: Deletes Bucket
       tags:
       - Bucket
@@ -239,15 +252,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
             type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: List of buckets of a user
       tags:
       - Bucket
@@ -279,15 +296,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
             type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: Quota of buckets of a user
       tags:
       - Bucket
@@ -308,19 +329,18 @@ paths:
         required: true
         type: string
       - description: bucket name
-        in: body
+        in: query
         name: bucket
         required: true
-        schema:
+        type: string
+      - collectionFormat: csv
+        description: objects names
+        in: query
+        items:
           type: string
-      - description: objects names
-        in: body
         name: objects
         required: true
-        schema:
-          items:
-            type: string
-          type: array
+        type: array
       produces:
       - application/json
       responses:
@@ -331,7 +351,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -339,11 +359,15 @@ paths:
         "403":
           description: Object Does not exist
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: Deletes the list of objects inside a bucket
       tags:
       - Object
@@ -383,15 +407,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
             type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: download an object to bucket
       tags:
       - Object
@@ -433,15 +461,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
             type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: check if an object exists
       tags:
       - Object
@@ -487,15 +519,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
             type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: List of objects of a bucket
       tags:
       - Object
@@ -530,7 +566,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -538,15 +574,19 @@ paths:
         "403":
           description: Forbidden
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "409":
           description: Already Exists
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: upload an object to bucket
       tags:
       - Object
@@ -571,19 +611,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
             type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: Fetch User Identification information using AccessKey
       tags:
       - User
@@ -608,15 +648,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
             type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: Fetch User Quota from AccessKey
       tags:
       - User

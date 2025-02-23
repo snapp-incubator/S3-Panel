@@ -72,7 +72,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -84,13 +84,19 @@ const docTemplate = `{
                     "403": {
                         "description": "Bucket Already Exists",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -144,7 +150,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -153,10 +159,16 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -201,7 +213,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -210,10 +222,16 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -261,7 +279,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -270,10 +288,16 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -308,25 +332,22 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
                         "description": "bucket name",
                         "name": "bucket",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
                         "description": "objects names",
                         "name": "objects",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -339,7 +360,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -351,13 +372,19 @@ const docTemplate = `{
                     "403": {
                         "description": "Object Does not exist",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -416,7 +443,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -425,10 +452,16 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -491,7 +524,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -500,10 +533,16 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -569,7 +608,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -578,10 +617,16 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -633,7 +678,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -645,19 +690,25 @@ const docTemplate = `{
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "409": {
                         "description": "Already Exists",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -695,10 +746,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -707,13 +755,16 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -751,7 +802,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -760,10 +811,16 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -844,8 +901,8 @@ const docTemplate = `{
         "objectstorage.ObjectDownloadResponse": {
             "type": "object",
             "properties": {
-                "object": {
-                    "type": "string"
+                "downloaded": {
+                    "type": "boolean"
                 }
             }
         },
@@ -890,6 +947,14 @@ const docTemplate = `{
             "properties": {
                 "created": {
                     "type": "boolean"
+                }
+            }
+        },
+        "objectstorage.OperationErrWithMsg": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },
