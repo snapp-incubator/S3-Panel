@@ -871,7 +871,7 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/objectstorage.SingleBucketListResponse"
+                        "type": "string"
                     }
                 }
             }
@@ -951,14 +951,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "objectstorage.SingleBucketListResponse": {
-            "type": "object",
-            "properties": {
-                "bucket": {
                     "type": "string"
                 }
             }

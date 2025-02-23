@@ -15,7 +15,7 @@ definitions:
     properties:
       items:
         items:
-          $ref: '#/definitions/objectstorage.SingleBucketListResponse'
+          type: string
         type: array
     type: object
   objectstorage.BucketQuotaResponse:
@@ -66,11 +66,6 @@ definitions:
   objectstorage.OperationErrWithMsg:
     properties:
       message:
-        type: string
-    type: object
-  objectstorage.SingleBucketListResponse:
-    properties:
-      bucket:
         type: string
     type: object
   objectstorage.SingleBucketQuotaResponse:
