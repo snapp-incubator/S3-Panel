@@ -31,11 +31,7 @@ type SingleBucketQuotaResponse struct {
 }
 
 type BucketListResponse struct {
-	Items []SingleBucketListResponse `json:"items"`
-}
-
-type SingleBucketListResponse struct {
-	Bucket string `json:"bucket"`
+	Items []string `json:"items"`
 }
 
 type BucketCreateResponse struct {

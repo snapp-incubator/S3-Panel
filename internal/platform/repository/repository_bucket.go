@@ -63,7 +63,7 @@ func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageC
 		return objectstorage.BucketListResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
-	var buckets []objectstorage.SingleBucketListResponse
+	var buckets []string
 	bucketPaginator := s3.NewListBucketsPaginator(client, &s3.ListBucketsInput{})
 	for bucketPaginator.HasMorePages() {
 		output, errNextPage := bucketPaginator.NextPage(context.Background())
@@ -74,7 +74,7 @@ func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageC
 				if meta.SearchString != "" && !strings.Contains(*bucket.Name, meta.SearchString) {
 					continue
 				}
-				buckets = append(buckets, objectstorage.SingleBucketListResponse{Bucket: *bucket.Name})
+				buckets = append(buckets, *bucket.Name)
 			}
 		}
 	}

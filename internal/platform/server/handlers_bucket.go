@@ -145,7 +145,7 @@ func (s *Server) HandleBucketCreate(c echo.Context) error {
 		return c.JSON(errBucketList.Code, objectstorage.OperationErrWithMsg{Message: errBucketList.Message.Error()})
 	}
 	for _, bucket := range bucketList.Items {
-		if bucket.Bucket == req.Bucket {
+		if bucket == req.Bucket {
 			return c.JSON(http.StatusForbidden, objectstorage.OperationErrWithMsg{Message: language.ErrBucketAlreadyExists})
 		}
 	}
