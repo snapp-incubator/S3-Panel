@@ -9,9 +9,9 @@ type BucketActionRequestMeta struct {
 
 // BucketInfoRequestMeta used for APIs that don't need the "bucket" name to take actions, like "Quota", "List"
 type BucketInfoRequestMeta struct {
-	AccessKey    string `header:"access_key" validate:"required"`
-	SecretKey    string `header:"secret_key" validate:"required"`
-	SearchString string `query:"search_string"`
+	AccessKey    string `header:"access_key"   validate:"required"`
+	SecretKey    string `header:"secret_key"   validate:"required"`
+	SearchString string `query:"search_string" validate:"optional"`
 }
 
 type BucketQuotaResponse struct {

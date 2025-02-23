@@ -1,12 +1,12 @@
 package objectstorage
 
 type ObjectListRequestMeta struct {
-	AccessKey    string `header:"access_key" validate:"required"`
-	SecretKey    string `header:"secret_key" validate:"required"`
-	Bucket       string `query:"bucket"      validate:"required"`
-	Page         int32  `query:"page"        validate:"required"`
-	MaxKeys      int32  `query:"max_keys"    validate:"required"`
-	SearchString string `query:"search_string"`
+	AccessKey    string `header:"access_key"   validate:"required"`
+	SecretKey    string `header:"secret_key"   validate:"required"`
+	Bucket       string `query:"bucket"        validate:"required"`
+	Page         int32  `query:"page"          validate:"required"`
+	MaxKeys      int32  `query:"max_keys"      validate:"required"`
+	SearchString string `query:"search_string" validate:"optional"`
 }
 
 type ObjectDeleteRequestMeta struct {
@@ -27,7 +27,7 @@ type ObjectRequestMeta struct {
 type ObjectUploadRequestMeta struct {
 	AccessKey string `header:"access_key" validate:"required"`
 	SecretKey string `header:"secret_key" validate:"required"`
-	Bucket    string `form:"bucket"      validate:"required"`
+	Bucket    string `form:"bucket"       validate:"required"`
 }
 
 type ObjectListBody struct {
