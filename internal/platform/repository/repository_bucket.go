@@ -10,6 +10,7 @@ import (
 	configApp "gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -62,7 +63,7 @@ func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageC
 		return objectstorage.BucketListResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
-	var buckets []string
+	var buckets []objectstorage.SingleBucketListResponse
 	bucketPaginator := s3.NewListBucketsPaginator(client, &s3.ListBucketsInput{})
 	for bucketPaginator.HasMorePages() {
 		output, errNextPage := bucketPaginator.NextPage(context.Background())
@@ -70,34 +71,40 @@ func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageC
 			return objectstorage.BucketListResponse{}, CustomizedErrorContents(errNextPage)
 		} else {
 			for _, bucket := range output.Buckets {
-				buckets = append(buckets, *bucket.Name)
+				if meta.SearchString != "" && !strings.Contains(*bucket.Name, meta.SearchString) {
+					continue
+				}
+				buckets = append(buckets, objectstorage.SingleBucketListResponse{Bucket: *bucket.Name})
 			}
 		}
 	}
 	return objectstorage.BucketListResponse{
-		BucketList: buckets,
+		Items: buckets,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
-func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketInfoRequestMeta) ([]objectstorage.BucketQuotaResponse, objectstorage.HTTPErrorWithCode) {
+func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketInfoRequestMeta) (objectstorage.BucketQuotaResponse, objectstorage.HTTPErrorWithCode) {
 	radosClient, err := NewRadosClient(serverAdminConfig.URL, serverAdminConfig.AccessKeyAdmin, serverAdminConfig.SecretKeyAdmin)
 	if err != nil {
-		return nil, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
+		return objectstorage.BucketQuotaResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
 	userData, errUser := radosClient.GetUser(context.Background(), admin.User{Keys: []admin.UserKeySpec{{AccessKey: meta.AccessKey}}})
 	if errUser != nil {
-		return nil, CustomizedErrorContents(errUser)
+		return objectstorage.BucketQuotaResponse{}, CustomizedErrorContents(errUser)
 	}
 
 	bucketsData, errBuckets := radosClient.ListUsersBucketsWithStat(context.Background(), userData.Keys[0].User)
 	if errBuckets != nil {
-		return []objectstorage.BucketQuotaResponse{}, CustomizedErrorContents(errBuckets)
+		return objectstorage.BucketQuotaResponse{}, CustomizedErrorContents(errBuckets)
 	}
 
-	var aggregatedBucketData []objectstorage.BucketQuotaResponse
+	var aggregatedBucketData []objectstorage.SingleBucketQuotaResponse
 	for _, bucketData := range bucketsData {
-		bucketQuotaInfo := objectstorage.BucketQuotaResponse{
+		if meta.SearchString != "" && !strings.Contains(bucketData.Bucket, meta.SearchString) {
+			continue
+		}
+		bucketQuotaInfo := objectstorage.SingleBucketQuotaResponse{
 			BucketName:      bucketData.Bucket,
 			QuotaEnabled:    bucketData.BucketQuota.Enabled,
 			UsedBytes:       bucketData.Usage.RgwMain.SizeActual,
@@ -111,5 +118,5 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 		aggregatedBucketData = append(aggregatedBucketData, bucketQuotaInfo)
 	}
 
-	return aggregatedBucketData, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
+	return objectstorage.BucketQuotaResponse{Items: aggregatedBucketData}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }

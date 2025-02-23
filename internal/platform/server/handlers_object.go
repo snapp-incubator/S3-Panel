@@ -166,16 +166,17 @@ func (s *Server) HandleObjectUpload() echo.HandlerFunc {
 //	@Tags			Object
 //	@Accept			json
 //	@Produce		json
-//	@Param			access_key	header		string								true	"User given AccessKey"
-//	@Param			secret_key	header		string								true	"User given SecretKey"
-//	@Param			bucket		query		string								true	"bucket name"
-//	@Param			max_keys	query		string								true	"max_keys of pagination"
-//	@Param			page		query		string								true	"page of pagination"
-//	@Success		200			{object}	objectstorage.ObjectListResponse	"Successful response with bucket list"
-//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
-//	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
-//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
+//	@Param			access_key		header		string								true	"User given AccessKey"
+//	@Param			secret_key		header		string								true	"User given SecretKey"
+//	@Param			bucket			query		string								true	"bucket name"
+//	@Param			max_keys		query		string								true	"max_keys of pagination"
+//	@Param			page			query		string								true	"page of pagination"
+//	@Param			search_string	query		string								true	"search by given string, could be empty"
+//	@Success		200				{object}	objectstorage.ObjectListResponse	"Successful response with bucket list"
+//	@Failure		400				{object}	objectstorage.OperationErrWithMsg	"Bad Request"
+//	@Failure		401				{object}	string								"Unauthorized"
+//	@Failure		422				{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500				{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/object/list [get]
 func (s *Server) HandleObjectList() echo.HandlerFunc {
 	return func(c echo.Context) error {

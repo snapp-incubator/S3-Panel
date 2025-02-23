@@ -13,31 +13,17 @@ definitions:
     type: object
   objectstorage.BucketListResponse:
     properties:
-      bucket_list:
+      items:
         items:
-          type: string
+          $ref: '#/definitions/objectstorage.SingleBucketListResponse'
         type: array
     type: object
   objectstorage.BucketQuotaResponse:
     properties:
-      access:
-        type: string
-      bucket:
-        type: string
-      hard_bytes:
-        type: integer
-      hard_objects:
-        type: integer
-      modify_time_stamp:
-        type: string
-      quota_enabled:
-        type: boolean
-      tenant:
-        type: string
-      used_bytes:
-        type: integer
-      used_objects:
-        type: integer
+      items:
+        items:
+          $ref: '#/definitions/objectstorage.SingleBucketQuotaResponse'
+        type: array
     type: object
   objectstorage.ObjectDeleteResponse:
     properties:
@@ -81,6 +67,32 @@ definitions:
     properties:
       message:
         type: string
+    type: object
+  objectstorage.SingleBucketListResponse:
+    properties:
+      bucket:
+        type: string
+    type: object
+  objectstorage.SingleBucketQuotaResponse:
+    properties:
+      access:
+        type: string
+      bucket:
+        type: string
+      hard_bytes:
+        type: integer
+      hard_objects:
+        type: integer
+      modify_time_stamp:
+        type: string
+      quota_enabled:
+        type: boolean
+      tenant:
+        type: string
+      used_bytes:
+        type: integer
+      used_objects:
+        type: integer
     type: object
   objectstorage.UserIdentificationResponse:
     properties:
@@ -242,6 +254,11 @@ paths:
         name: secret_key
         required: true
         type: string
+      - description: search by given string, could be empty
+        in: query
+        name: search_string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -284,15 +301,18 @@ paths:
         name: secret_key
         required: true
         type: string
+      - description: search by given string, could be empty
+        in: query
+        name: search_string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: Successful response with buckets quota
           schema:
-            items:
-              $ref: '#/definitions/objectstorage.BucketQuotaResponse'
-            type: array
+            $ref: '#/definitions/objectstorage.BucketQuotaResponse'
         "400":
           description: Bad Request
           schema:
@@ -507,6 +527,11 @@ paths:
       - description: page of pagination
         in: query
         name: page
+        required: true
+        type: string
+      - description: search by given string, could be empty
+        in: query
+        name: search_string
         required: true
         type: string
       produces:

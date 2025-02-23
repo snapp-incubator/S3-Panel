@@ -14,6 +14,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -116,6 +117,9 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 		}
 		if currentPage == meta.Page {
 			for _, object := range output.Contents {
+				if meta.SearchString != "" && !strings.Contains(*object.Key, meta.SearchString) {
+					continue
+				}
 				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
 					Name:                  object.Key,
 					LastModifiedTimestamp: object.LastModified.String(),

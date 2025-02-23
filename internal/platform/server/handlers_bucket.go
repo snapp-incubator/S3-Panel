@@ -14,18 +14,24 @@ import (
 //	@Tags			Bucket
 //	@Accept			json
 //	@Produce		json
-//	@Param			access_key	header		string								true	"User given AccessKey"
-//	@Param			secret_key	header		string								true	"User given SecretKey"
-//	@Success		200			{object}	objectstorage.BucketListResponse	"Successful response with bucket list"
-//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
-//	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
-//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
+//	@Param			access_key		header		string								true	"User given AccessKey"
+//	@Param			secret_key		header		string								true	"User given SecretKey"
+//	@Param			search_string	query		string								true	"search by given string, could be empty"
+//	@Success		200				{object}	objectstorage.BucketListResponse	"Successful response with bucket list"
+//	@Failure		400				{object}	objectstorage.OperationErrWithMsg	"Bad Request"
+//	@Failure		401				{object}	string								"Unauthorized"
+//	@Failure		422				{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500				{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/bucket/list [get]
 func (s *Server) HandleBucketList() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.BucketInfoRequestMeta
-		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
+		err := c.Bind(&req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
 			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
@@ -51,18 +57,24 @@ func (s *Server) HandleBucketList() echo.HandlerFunc {
 //	@Tags			Bucket
 //	@Accept			json
 //	@Produce		json
-//	@Param			access_key	header		string								true	"User given AccessKey"
-//	@Param			secret_key	header		string								true	"User given SecretKey"
-//	@Success		200			{object}	[]objectstorage.BucketQuotaResponse	"Successful response with buckets quota"
-//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
-//	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
-//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
+//	@Param			access_key		header		string								true	"User given AccessKey"
+//	@Param			secret_key		header		string								true	"User given SecretKey"
+//	@Param			search_string	query		string								true	"search by given string, could be empty"
+//	@Success		200				{object}	objectstorage.BucketQuotaResponse	"Successful response with buckets quota"
+//	@Failure		400				{object}	objectstorage.OperationErrWithMsg	"Bad Request"
+//	@Failure		401				{object}	string								"Unauthorized"
+//	@Failure		422				{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500				{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/bucket/quota [get]
 func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req objectstorage.BucketInfoRequestMeta
-		err := (&echo.DefaultBinder{}).BindHeaders(c, &req)
+		err := c.Bind(&req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
 		if err != nil {
 			s.logger.Error(err.Error())
 			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
@@ -132,8 +144,8 @@ func (s *Server) HandleBucketCreate(c echo.Context) error {
 	if errBucketList.Message != nil {
 		return c.JSON(errBucketList.Code, objectstorage.OperationErrWithMsg{Message: errBucketList.Message.Error()})
 	}
-	for _, bucket := range bucketList.BucketList {
-		if bucket == req.Bucket {
+	for _, bucket := range bucketList.Items {
+		if bucket.Bucket == req.Bucket {
 			return c.JSON(http.StatusForbidden, objectstorage.OperationErrWithMsg{Message: language.ErrBucketAlreadyExists})
 		}
 	}

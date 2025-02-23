@@ -201,6 +201,13 @@ const docTemplate = `{
                         "name": "secret_key",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "search by given string, could be empty",
+                        "name": "search_string",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -264,16 +271,20 @@ const docTemplate = `{
                         "name": "secret_key",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "search by given string, could be empty",
+                        "name": "search_string",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Successful response with buckets quota",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/objectstorage.BucketQuotaResponse"
-                            }
+                            "$ref": "#/definitions/objectstorage.BucketQuotaResponse"
                         }
                     },
                     "400": {
@@ -596,6 +607,13 @@ const docTemplate = `{
                         "name": "page",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "search by given string, could be empty",
+                        "name": "search_string",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -850,10 +868,10 @@ const docTemplate = `{
         "objectstorage.BucketListResponse": {
             "type": "object",
             "properties": {
-                "bucket_list": {
+                "items": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/objectstorage.SingleBucketListResponse"
                     }
                 }
             }
@@ -861,32 +879,11 @@ const docTemplate = `{
         "objectstorage.BucketQuotaResponse": {
             "type": "object",
             "properties": {
-                "access": {
-                    "type": "string"
-                },
-                "bucket": {
-                    "type": "string"
-                },
-                "hard_bytes": {
-                    "type": "integer"
-                },
-                "hard_objects": {
-                    "type": "integer"
-                },
-                "modify_time_stamp": {
-                    "type": "string"
-                },
-                "quota_enabled": {
-                    "type": "boolean"
-                },
-                "tenant": {
-                    "type": "string"
-                },
-                "used_bytes": {
-                    "type": "integer"
-                },
-                "used_objects": {
-                    "type": "integer"
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/objectstorage.SingleBucketQuotaResponse"
+                    }
                 }
             }
         },
@@ -955,6 +952,46 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "objectstorage.SingleBucketListResponse": {
+            "type": "object",
+            "properties": {
+                "bucket": {
+                    "type": "string"
+                }
+            }
+        },
+        "objectstorage.SingleBucketQuotaResponse": {
+            "type": "object",
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "bucket": {
+                    "type": "string"
+                },
+                "hard_bytes": {
+                    "type": "integer"
+                },
+                "hard_objects": {
+                    "type": "integer"
+                },
+                "modify_time_stamp": {
+                    "type": "string"
+                },
+                "quota_enabled": {
+                    "type": "boolean"
+                },
+                "tenant": {
+                    "type": "string"
+                },
+                "used_bytes": {
+                    "type": "integer"
+                },
+                "used_objects": {
+                    "type": "integer"
                 }
             }
         },

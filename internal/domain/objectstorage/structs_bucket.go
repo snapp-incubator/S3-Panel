@@ -4,16 +4,21 @@ package objectstorage
 type BucketActionRequestMeta struct {
 	AccessKey string `header:"access_key" validate:"required"`
 	SecretKey string `header:"secret_key" validate:"required"`
-	Bucket    string `query:"bucket"       validate:"required"`
+	Bucket    string `query:"bucket"      validate:"required"`
 }
 
 // BucketInfoRequestMeta used for APIs that don't need the "bucket" name to take actions, like "Quota", "List"
 type BucketInfoRequestMeta struct {
-	AccessKey string `header:"access_key" validate:"required"`
-	SecretKey string `header:"secret_key" validate:"required"`
+	AccessKey    string `header:"access_key" validate:"required"`
+	SecretKey    string `header:"secret_key" validate:"required"`
+	SearchString string `query:"search_string"`
 }
 
 type BucketQuotaResponse struct {
+	Items []SingleBucketQuotaResponse `json:"items"`
+}
+
+type SingleBucketQuotaResponse struct {
 	BucketName      string  `json:"bucket"`
 	QuotaEnabled    *bool   `json:"quota_enabled"`
 	UsedBytes       *uint64 `json:"used_bytes"`
@@ -26,7 +31,11 @@ type BucketQuotaResponse struct {
 }
 
 type BucketListResponse struct {
-	BucketList []string `json:"bucket_list"`
+	Items []SingleBucketListResponse `json:"items"`
+}
+
+type SingleBucketListResponse struct {
+	Bucket string `json:"bucket"`
 }
 
 type BucketCreateResponse struct {

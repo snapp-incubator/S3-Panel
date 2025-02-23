@@ -23,7 +23,7 @@ type ObjectStorage interface {
 	BucketCreate(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketCreateResponse, HTTPErrorWithCode)
 	BucketDelete(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketDeleteResponse, HTTPErrorWithCode)
 	BucketList(cfg config.ObjectStorageConfig, meta BucketInfoRequestMeta) (BucketListResponse, HTTPErrorWithCode)
-	BucketQuota(cfg config.ObjectStorageConfig, meta BucketInfoRequestMeta) ([]BucketQuotaResponse, HTTPErrorWithCode)
+	BucketQuota(cfg config.ObjectStorageConfig, meta BucketInfoRequestMeta) (BucketQuotaResponse, HTTPErrorWithCode)
 
 	UserQuota(cfg config.ObjectStorageConfig, meta UserRequestMeta) (UserQuotaResponse, HTTPErrorWithCode)
 	UserIdentification(cfg config.ObjectStorageConfig, meta UserRequestMeta) (UserIdentificationResponse, HTTPErrorWithCode)
