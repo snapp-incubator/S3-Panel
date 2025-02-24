@@ -71,7 +71,7 @@ func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageC
 			return objectstorage.BucketListResponse{}, CustomizedErrorContents(errNextPage)
 		} else {
 			for _, bucket := range output.Buckets {
-				if meta.SearchString != "" && !strings.Contains(*bucket.Name, meta.SearchString) {
+				if meta.SearchString != "" && !strings.Contains(strings.ToLower(*bucket.Name), strings.ToLower(meta.SearchString)) {
 					continue
 				}
 				buckets = append(buckets, *bucket.Name)
@@ -101,7 +101,7 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 
 	var aggregatedBucketData []objectstorage.SingleBucketQuotaResponse
 	for _, bucketData := range bucketsData {
-		if meta.SearchString != "" && !strings.Contains(bucketData.Bucket, meta.SearchString) {
+		if meta.SearchString != "" && !strings.Contains(strings.ToLower(bucketData.Bucket), strings.ToLower(meta.SearchString)) {
 			continue
 		}
 		bucketQuotaInfo := objectstorage.SingleBucketQuotaResponse{

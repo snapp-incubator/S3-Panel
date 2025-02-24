@@ -117,7 +117,7 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 		}
 		if currentPage == meta.Page {
 			for _, object := range output.Contents {
-				if meta.SearchString != "" && !strings.Contains(*object.Key, meta.SearchString) {
+				if meta.SearchString != "" && !strings.Contains(strings.ToLower(*object.Key), strings.ToLower(meta.SearchString)) {
 					continue
 				}
 				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
