@@ -11,7 +11,7 @@ type BucketActionRequestMeta struct {
 type BucketInfoRequestMeta struct {
 	AccessKey    string `header:"access_key"   validate:"required"`
 	SecretKey    string `header:"secret_key"   validate:"required"`
-	SearchString string `query:"search_string" validate:"optional"`
+	SearchString string `query:"search_string"`
 }
 
 type BucketQuotaResponse struct {
