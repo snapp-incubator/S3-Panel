@@ -6,7 +6,7 @@ type ObjectListRequestMeta struct {
 	Bucket       string `query:"bucket"        validate:"required"`
 	Page         int32  `query:"page"          validate:"required"`
 	MaxKeys      int32  `query:"max_keys"      validate:"required"`
-	SearchString string `query:"search_string" validate:"optional"`
+	SearchString string `query:"search_string"`
 }
 
 type ObjectDeleteRequestMeta struct {
