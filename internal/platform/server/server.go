@@ -64,6 +64,7 @@ func (s *Server) registerRoutes() {
 	apiRoutes := s.Router.Group("/api",
 		s.CORSMiddleware(),
 		s.AuthMiddleware(),
+		s.TimeOutMiddleware(),
 	)
 
 	apiRoutes.OPTIONS("/*", func(c echo.Context) error {
@@ -71,7 +72,6 @@ func (s *Server) registerRoutes() {
 	})
 
 	apiRoutesBuckets := apiRoutes.Group("/bucket")
-	apiRoutesBuckets.Use(s.TimeOutMiddleware(30))
 	{
 		apiRoutesBuckets.GET("/list", s.HandleBucketList())
 		apiRoutesBuckets.GET("/quota", s.HandleBucketQuota())
@@ -80,7 +80,6 @@ func (s *Server) registerRoutes() {
 	}
 
 	apiRoutesObjects := apiRoutes.Group("/object")
-	apiRoutesObjects.Use(s.TimeOutMiddleware(300))
 	{
 		apiRoutesObjects.GET("/list", s.HandleObjectList())
 		apiRoutesObjects.POST("/upload", s.HandleObjectUpload())
@@ -90,7 +89,6 @@ func (s *Server) registerRoutes() {
 	}
 
 	apiRoutesUsers := apiRoutes.Group("/user")
-	apiRoutesUsers.Use(s.TimeOutMiddleware(30))
 	{
 		apiRoutesUsers.GET("/quota", s.HandleUserQuota())
 		apiRoutesUsers.GET("/id", s.HandleUserIdentification())

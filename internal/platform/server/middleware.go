@@ -41,8 +41,8 @@ func (s *Server) AuthMiddleware() echo.MiddlewareFunc {
 	})
 }
 
-func (s *Server) TimeOutMiddleware(timeOutSeconds int) echo.MiddlewareFunc {
+func (s *Server) TimeOutMiddleware() echo.MiddlewareFunc {
 	return middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Timeout: time.Duration(timeOutSeconds) * time.Second,
+		Timeout: 600 * time.Second,
 	})
 }
