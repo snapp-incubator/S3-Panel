@@ -23,17 +23,30 @@ func (c CephObjectStorage) UserQuota(serverAdminConfig config.ObjectStorageConfi
 		return objectstorage.UserQuotaResponse{}, CustomizedErrorContents(errBucket)
 	}
 
-	usedBytes := calculateUsedBytes(bucketsData)
-	usedObjects := calculateUsedObjects(bucketsData)
+	rawUsedBytes := calculateUsedBytes(bucketsData)
+	usedBytesValue, usedBytesUnit := convertSizeToUnit(rawUsedBytes)
+	hardBytesValue, hardBytesUnit := convertSizeToUnit(userData.UserQuota.MaxSize)
+
+	var usedObjectValue int
+	usedObject := calculateUsedObjects(bucketsData)
+	if usedObject == nil {
+		usedObjectValue = 0
+	} else {
+		usedObjectValue = int(*usedObject)
+	}
 
 	return objectstorage.UserQuotaResponse{
-		QuotaEnabled: userData.UserQuota.Enabled,
-		UsedBytes:    usedBytes,
-		HardBytes:    userData.UserQuota.MaxSize,
-		UsedObjects:  usedObjects,
-		HardObjects:  userData.UserQuota.MaxObjects,
-		UsedBuckets:  len(bucketsData),
-		HardBuckets:  userData.MaxBuckets,
+		QuotaEnabled:  userData.UserQuota.Enabled,
+		UsedBytesRaw:  rawUsedBytes,
+		UsedBytes:     usedBytesValue,
+		UsedBytesUnit: usedBytesUnit,
+		HardBytesRaw:  userData.UserQuota.MaxSize,
+		HardBytes:     hardBytesValue,
+		HardBytesUnit: hardBytesUnit,
+		UsedObjects:   usedObjectValue,
+		HardObjects:   userData.UserQuota.MaxObjects,
+		UsedBuckets:   len(bucketsData),
+		HardBuckets:   userData.MaxBuckets,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 

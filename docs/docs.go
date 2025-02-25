@@ -246,7 +246,7 @@ const docTemplate = `{
         },
         "/api/bucket/quota": {
             "get": {
-                "description": "Fetches Quota of buckets owned by a user that is specified by AccessKey",
+                "description": "Fetches Quota of buckets owned by a user that is specified by AccessKey. if status code is 200 and the BucketQuotaResponse hard_bytes or hard_objects is -1, mean no limitation on quota_storage or quota_objects is applied.",
                 "consumes": [
                     "application/json"
                 ],
@@ -920,8 +920,11 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "size": {
-                    "type": "integer"
+                "size_unit": {
+                    "type": "string"
+                },
+                "size_value": {
+                    "type": "number"
                 }
             }
         },
@@ -965,7 +968,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "hard_bytes": {
-                    "type": "integer"
+                    "type": "number"
+                },
+                "hard_bytes_unit": {
+                    "type": "string"
                 },
                 "hard_objects": {
                     "type": "integer"
@@ -980,7 +986,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "used_bytes": {
-                    "type": "integer"
+                    "type": "number"
+                },
+                "used_bytes_unit": {
+                    "type": "string"
                 },
                 "used_objects": {
                     "type": "integer"
@@ -1014,7 +1023,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "hard_bytes": {
+                    "type": "number"
+                },
+                "hard_bytes_raw": {
                     "type": "integer"
+                },
+                "hard_bytes_unit": {
+                    "type": "string"
                 },
                 "hard_objects": {
                     "type": "integer"
@@ -1026,7 +1041,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "used_bytes": {
+                    "type": "number"
+                },
+                "used_bytes_raw": {
                     "type": "integer"
+                },
+                "used_bytes_unit": {
+                    "type": "string"
                 },
                 "used_objects": {
                     "type": "integer"

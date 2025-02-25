@@ -13,11 +13,15 @@ type UserIdentificationResponse struct {
 }
 
 type UserQuotaResponse struct {
-	QuotaEnabled *bool   `json:"quota_enabled"`
-	UsedBytes    *uint64 `json:"used_bytes"`
-	HardBytes    *int64  `json:"hard_bytes"`
-	UsedObjects  *uint64 `json:"used_objects"`
-	HardObjects  *int64  `json:"hard_objects"`
-	UsedBuckets  int     `json:"used_buckets"`
-	HardBuckets  *int    `json:"hard_buckets"`
+	QuotaEnabled  *bool   `json:"quota_enabled"`
+	UsedBytesRaw  *uint64 `json:"used_bytes_raw"`
+	UsedBytes     float64 `json:"used_bytes"`
+	UsedBytesUnit string  `json:"used_bytes_unit"`
+	HardBytesRaw  *int64  `json:"hard_bytes_raw"`
+	HardBytes     float64 `json:"hard_bytes"`
+	HardBytesUnit string  `json:"hard_bytes_unit"`
+	UsedObjects   int     `json:"used_objects"`
+	HardObjects   *int64  `json:"hard_objects"`
+	UsedBuckets   int     `json:"used_buckets"`
+	HardBuckets   *int    `json:"hard_buckets"`
 }

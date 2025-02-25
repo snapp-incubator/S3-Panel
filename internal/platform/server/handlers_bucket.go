@@ -53,7 +53,7 @@ func (s *Server) HandleBucketList() echo.HandlerFunc {
 // HandleBucketQuota
 //
 //	@Summary		Quota of buckets of a user
-//	@Description	Fetches Quota of buckets owned by a user that is specified by AccessKey
+//	@Description	Fetches Quota of buckets owned by a user that is specified by AccessKey. if status code is 200 and the BucketQuotaResponse hard_bytes or hard_objects is -1, mean no limitation on quota_storage or quota_objects is applied.
 //	@Tags			Bucket
 //	@Accept			json
 //	@Produce		json

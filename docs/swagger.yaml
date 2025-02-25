@@ -46,8 +46,10 @@ definitions:
         type: string
       name:
         type: string
-      size:
-        type: integer
+      size_unit:
+        type: string
+      size_value:
+        type: number
     type: object
   objectstorage.ObjectListResponse:
     properties:
@@ -75,7 +77,9 @@ definitions:
       bucket:
         type: string
       hard_bytes:
-        type: integer
+        type: number
+      hard_bytes_unit:
+        type: string
       hard_objects:
         type: integer
       modify_time_stamp:
@@ -85,7 +89,9 @@ definitions:
       tenant:
         type: string
       used_bytes:
-        type: integer
+        type: number
+      used_bytes_unit:
+        type: string
       used_objects:
         type: integer
     type: object
@@ -107,7 +113,11 @@ definitions:
       hard_buckets:
         type: integer
       hard_bytes:
+        type: number
+      hard_bytes_raw:
         type: integer
+      hard_bytes_unit:
+        type: string
       hard_objects:
         type: integer
       quota_enabled:
@@ -115,7 +125,11 @@ definitions:
       used_buckets:
         type: integer
       used_bytes:
+        type: number
+      used_bytes_raw:
         type: integer
+      used_bytes_unit:
+        type: string
       used_objects:
         type: integer
     type: object
@@ -284,7 +298,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Fetches Quota of buckets owned by a user that is specified by AccessKey
+      description: Fetches Quota of buckets owned by a user that is specified by AccessKey.
+        if status code is 200 and the BucketQuotaResponse hard_bytes or hard_objects
+        is -1, mean no limitation on quota_storage or quota_objects is applied.
       parameters:
       - description: User given AccessKey
         in: header

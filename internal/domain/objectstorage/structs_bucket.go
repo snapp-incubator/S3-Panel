@@ -21,9 +21,11 @@ type BucketQuotaResponse struct {
 type SingleBucketQuotaResponse struct {
 	BucketName      string  `json:"bucket"`
 	QuotaEnabled    *bool   `json:"quota_enabled"`
-	UsedBytes       *uint64 `json:"used_bytes"`
-	HardBytes       *int64  `json:"hard_bytes"`
-	UsedObjects     *uint64 `json:"used_objects"`
+	UsedBytes       float64 `json:"used_bytes"`
+	UsedBytesUnit   string  `json:"used_bytes_unit"`
+	HardBytes       float64 `json:"hard_bytes"`
+	HardBytesUnit   string  `json:"hard_bytes_unit"`
+	UsedObjects     int     `json:"used_objects"`
 	HardObjects     *int64  `json:"hard_objects"`
 	ModifyTimeStamp string  `json:"modify_time_stamp"`
 	Tenant          string  `json:"tenant"`

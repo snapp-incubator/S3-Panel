@@ -104,12 +104,22 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 		if meta.SearchString != "" && !strings.Contains(strings.ToLower(bucketData.Bucket), strings.ToLower(meta.SearchString)) {
 			continue
 		}
+		usedByteValue, usedByteUnit := convertSizeToUnit(bucketData.Usage.RgwMain.SizeActual)
+		hardByteValue, hardByteUnit := convertSizeToUnit(bucketData.BucketQuota.MaxSize)
+		var usedObjects int
+		if bucketData.Usage.RgwMain.NumObjects == nil {
+			usedObjects = 0
+		} else {
+			usedObjects = int(*bucketData.Usage.RgwMain.NumObjects)
+		}
 		bucketQuotaInfo := objectstorage.SingleBucketQuotaResponse{
 			BucketName:      bucketData.Bucket,
 			QuotaEnabled:    bucketData.BucketQuota.Enabled,
-			UsedBytes:       bucketData.Usage.RgwMain.SizeActual,
-			HardBytes:       bucketData.BucketQuota.MaxSize,
-			UsedObjects:     bucketData.Usage.RgwMain.NumObjects,
+			UsedBytes:       usedByteValue,
+			UsedBytesUnit:   usedByteUnit,
+			HardBytes:       hardByteValue,
+			HardBytesUnit:   hardByteUnit,
+			UsedObjects:     usedObjects,
 			HardObjects:     bucketData.BucketQuota.MaxObjects,
 			ModifyTimeStamp: bucketData.Mtime,
 			Tenant:          bucketData.Tenant,

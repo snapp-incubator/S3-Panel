@@ -104,8 +104,9 @@ func (s *Server) registerPruner() {
 				s.logger.Warn("Shutting Down Ticker due to canceling context")
 				shouldBreak = true
 			case <-ticker.C:
-				s.logger.Warn(fmt.Sprintf("Triggered Pruner: %s", time.Now()))
+				s.logger.Warn("Triggered Pruner")
 				errPrune := PruneObjectPathDir(s.Config.ServerConfigs.DownloadPath)
+				s.logger.Info(fmt.Sprintf("Pruning Done. Output: %s", errPrune.Error()))
 				if errPrune != nil {
 					s.logger.Error(errPrune.Error())
 				}

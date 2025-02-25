@@ -11,6 +11,14 @@ import (
 	"net/http"
 )
 
+const (
+	B = 1 << (10 * iota)
+	KiB
+	MiB
+	GiB
+	TiB
+)
+
 // CustomizedErrorContents goal is to return valid errors to user
 // 401 code
 // 403 code -> bucket creation quota exceed
@@ -107,4 +115,37 @@ func calculateUsedObjects(buckets []admin.Bucket) *uint64 {
 		}
 	}
 	return &s
+}
+
+func convertSizeToUnit(sizeInBytes interface{}) (float64, string) {
+	var size float64
+	switch v := sizeInBytes.(type) {
+	case *uint64:
+		if v == nil {
+			return 0, "B"
+		}
+		size = float64(*v)
+	case *int64:
+		if v == nil {
+			return 0, "B"
+		}
+		size = float64(*v)
+	case int:
+		size = float64(v)
+	default:
+		return 0, "B"
+	}
+
+	switch {
+	case size < KiB:
+		return size, "B"
+	case size < MiB:
+		return size / KiB, "KiB"
+	case size < GiB:
+		return size / MiB, "MiB"
+	case size < TiB:
+		return size / GiB, "GiB"
+	default:
+		return size, "B"
+	}
 }

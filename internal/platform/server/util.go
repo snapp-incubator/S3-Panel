@@ -33,6 +33,7 @@ func PruneObjectPathDir(downloadPath string) error {
 			if errInfo != nil {
 				return errInfo
 			}
+			fmt.Println(fmt.Sprintf("Checking path %s and time sub is %s", path, time.Now().Sub(info.ModTime())))
 			if time.Now().Sub(info.ModTime()) > time.Hour*1 {
 				fmt.Println("Deleting", path)
 				errRemove := os.Remove(path)

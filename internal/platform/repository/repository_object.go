@@ -120,10 +120,12 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 				if meta.SearchString != "" && !strings.Contains(strings.ToLower(*object.Key), strings.ToLower(meta.SearchString)) {
 					continue
 				}
+				objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
 				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
 					Name:                  object.Key,
 					LastModifiedTimestamp: object.LastModified.String(),
-					Size:                  object.Size,
+					SizeUnit:              objSizeUnit,
+					SizeValue:             objSizeValue,
 				})
 			}
 			break

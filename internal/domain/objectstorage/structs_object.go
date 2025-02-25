@@ -32,7 +32,8 @@ type ObjectUploadRequestMeta struct {
 
 type ObjectListBody struct {
 	Name                  *string `json:"name"`
-	Size                  *int64  `json:"size"`
+	SizeValue             float64 `json:"size_value"`
+	SizeUnit              string  `json:"size_unit"`
 	LastModifiedTimestamp string  `json:"last_modified_timestamp"`
 }
 
