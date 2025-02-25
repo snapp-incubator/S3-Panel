@@ -91,7 +91,9 @@ func NewRadosClient(endpoint, adminAccessKey, adminSecretKey string) (*admin.API
 func calculateUsedBytes(buckets []admin.Bucket) *uint64 {
 	var s uint64 = 0
 	for _, bucket := range buckets {
-		s += *bucket.Usage.RgwMain.SizeActual
+		if bucket.Usage.RgwMain.SizeActual != nil {
+			s += *bucket.Usage.RgwMain.SizeActual
+		}
 	}
 	return &s
 }
@@ -100,7 +102,9 @@ func calculateUsedBytes(buckets []admin.Bucket) *uint64 {
 func calculateUsedObjects(buckets []admin.Bucket) *uint64 {
 	var s uint64 = 0
 	for _, bucket := range buckets {
-		s += *bucket.Usage.RgwMain.NumObjects
+		if bucket.Usage.RgwMain.NumObjects != nil {
+			s += *bucket.Usage.RgwMain.NumObjects
+		}
 	}
 	return &s
 }
