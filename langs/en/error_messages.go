@@ -5,6 +5,7 @@ const (
 	ErrNoSuchBucket        = "NoSuchBucket"
 	ErrInvalidBucketName   = "InvalidBucketName"
 	ErrBucketAlreadyExists = "Bucket Already Exists"
+	ErrTooManyBuckets      = "TooManyBuckets"
 
 	ErrInvalidAccessKeyID = "InvalidAccessKeyId"
 	ErrAccessDenied       = "AccessDenied"

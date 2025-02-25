@@ -13,6 +13,7 @@ import (
 
 // CustomizedErrorContents goal is to return valid errors to user
 // 401 code
+// 403 code -> bucket creation quota exceed
 // 404 code -> bucket not found
 // 422 code -> Not processable
 // 500 code -> service unavailable
@@ -44,6 +45,11 @@ func CustomizedErrorContents(err error) objectstorage.HTTPErrorWithCode {
 			return objectstorage.HTTPErrorWithCode{
 				Code:    http.StatusInternalServerError,
 				Message: fmt.Errorf("service unavailable"),
+			}
+		case language.ErrTooManyBuckets:
+			return objectstorage.HTTPErrorWithCode{
+				Code:    http.StatusForbidden,
+				Message: fmt.Errorf("bucket creation quota exceeded"),
 			}
 		}
 	}

@@ -143,7 +143,10 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		return objectstorage.ObjectUploadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
-	uploadManager := manager.NewUploader(client)
+	var partSize int64 = 10 * 1024 * 1024
+	uploadManager := manager.NewUploader(client, func(uploader *manager.Uploader) {
+		uploader.PartSize = partSize
+	})
 
 	src, errOpen := file.Open()
 	if errOpen != nil {

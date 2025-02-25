@@ -64,7 +64,6 @@ func (s *Server) registerRoutes() {
 	apiRoutes := s.Router.Group("/api",
 		s.CORSMiddleware(),
 		s.AuthMiddleware(),
-		s.TimeOutMiddleware(),
 	)
 
 	apiRoutes.OPTIONS("/*", func(c echo.Context) error {

@@ -150,8 +150,8 @@ func (s *Server) HandleObjectUpload() echo.HandlerFunc {
 
 		for _, file := range files {
 			_, errObjectUpload := s.db.ObjectUpload(s.Config.ObjectStorageConfigs, req, file)
-			if err != nil {
-				s.logger.Error(err.Error())
+			if errObjectUpload.Message != nil {
+				s.logger.Error(errObjectUpload.Message.Error())
 				return c.JSON(errObjectUpload.Code, objectstorage.OperationErrWithMsg{Message: errObjectUpload.Message.Error()})
 			}
 		}

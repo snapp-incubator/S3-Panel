@@ -5,7 +5,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
 	"strings"
-	"time"
 )
 
 // CORSMiddleware to handle CORS config
@@ -38,11 +37,5 @@ func (s *Server) AuthMiddleware() echo.MiddlewareFunc {
 			s.logger.Info("Unauthenticated Request", zap.String("address", c.Request().Host))
 			return false, nil
 		},
-	})
-}
-
-func (s *Server) TimeOutMiddleware() echo.MiddlewareFunc {
-	return middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Timeout: 600 * time.Second,
 	})
 }
