@@ -8,6 +8,7 @@ import (
 	"github.com/ceph/go-ceph/rgw/admin"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
+	"math"
 	"net/http"
 )
 
@@ -138,14 +139,14 @@ func convertSizeToUnit(sizeInBytes interface{}) (float64, string) {
 
 	switch {
 	case size < KiB:
-		return size, "B"
+		return math.Round(size*100) / 100, "B"
 	case size < MiB:
-		return size / KiB, "KiB"
+		return math.Round(size/KiB*100) / 100, "KiB"
 	case size < GiB:
-		return size / MiB, "MiB"
+		return math.Round(size/MiB*100) / 100, "MiB"
 	case size < TiB:
-		return size / GiB, "GiB"
+		return math.Round(size/GiB*100) / 100, "GiB"
 	default:
-		return size, "B"
+		return math.Round(size*100) / 100, "B"
 	}
 }
