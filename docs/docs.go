@@ -82,7 +82,7 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "Bucket Already Exists",
+                        "description": "Bucket Already Exists / Bucket creation quota exceeded",
                         "schema": {
                             "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
                         }

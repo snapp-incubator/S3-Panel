@@ -113,7 +113,7 @@ func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 //	@Success		201			{object}	objectstorage.BucketCreateResponse	"Bucket created successfully"
 //	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
 //	@Failure		401			{object}	string								"Unauthorized"
-//	@Failure		403			{object}	objectstorage.OperationErrWithMsg	"Bucket Already Exists"
+//	@Failure		403			{object}	objectstorage.OperationErrWithMsg	"Bucket Already Exists / Bucket creation quota exceeded"
 //	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
 //	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
 //	@Router			/api/bucket/create [post]
