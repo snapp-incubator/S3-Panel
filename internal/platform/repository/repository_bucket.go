@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/ceph/go-ceph/rgw/admin"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	configApp "gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
@@ -89,12 +88,7 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 		return objectstorage.BucketQuotaResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
-	userData, errUser := radosClient.GetUser(context.Background(), admin.User{Keys: []admin.UserKeySpec{{AccessKey: meta.AccessKey}}})
-	if errUser != nil {
-		return objectstorage.BucketQuotaResponse{}, CustomizedErrorContents(errUser)
-	}
-
-	bucketsData, errBuckets := radosClient.ListUsersBucketsWithStat(context.Background(), userData.Keys[0].User)
+	bucketsData, errBuckets := radosClient.ListUsersBucketsWithStat(context.Background(), meta.UID)
 	if errBuckets != nil {
 		return objectstorage.BucketQuotaResponse{}, CustomizedErrorContents(errBuckets)
 	}
@@ -117,8 +111,10 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 			QuotaEnabled:    bucketData.BucketQuota.Enabled,
 			UsedBytes:       usedByteValue,
 			UsedBytesUnit:   usedByteUnit,
+			UsedBytesRaw:    bucketData.Usage.RgwMain.SizeActual,
 			HardBytes:       hardByteValue,
 			HardBytesUnit:   hardByteUnit,
+			HardBytesRaw:    bucketData.BucketQuota.MaxSize,
 			UsedObjects:     usedObjects,
 			HardObjects:     bucketData.BucketQuota.MaxObjects,
 			ModifyTimeStamp: bucketData.Mtime,

@@ -13,12 +13,21 @@ func (c CephObjectStorage) UserQuota(serverAdminConfig config.ObjectStorageConfi
 		return objectstorage.UserQuotaResponse{}, CustomizedErrorContents(err)
 	}
 
-	userData, errUser := radosClient.GetUser(context.Background(), admin.User{Keys: []admin.UserKeySpec{{AccessKey: meta.AccessKey}}})
+	userData, errUser := radosClient.GetUser(context.Background(), admin.User{Keys: []admin.UserKeySpec{{AccessKey: meta.AccessKey, UID: meta.UID}}})
 	if errUser != nil {
 		return objectstorage.UserQuotaResponse{}, CustomizedErrorContents(errUser)
 	}
 
-	bucketsData, errBucket := radosClient.ListUsersBucketsWithStat(context.Background(), userData.Keys[0].User)
+	// this code block is to fix the issue with different versions of ceph
+	if userData.UserQuota.Enabled == nil {
+		userQuotaData, errGetUserQuota := radosClient.GetUserQuota(context.Background(), admin.QuotaSpec{UID: meta.UID})
+		if errGetUserQuota != nil {
+			return objectstorage.UserQuotaResponse{}, CustomizedErrorContents(errGetUserQuota)
+		}
+		userData.UserQuota = userQuotaData
+	}
+
+	bucketsData, errBucket := radosClient.ListUsersBucketsWithStat(context.Background(), meta.UID)
 	if errBucket != nil {
 		return objectstorage.UserQuotaResponse{}, CustomizedErrorContents(errBucket)
 	}
@@ -56,7 +65,7 @@ func (c CephObjectStorage) UserIdentification(serverAdminConfig config.ObjectSto
 		return objectstorage.UserIdentificationResponse{}, CustomizedErrorContents(err)
 	}
 
-	user, errUser := radosClient.GetUser(context.Background(), admin.User{Keys: []admin.UserKeySpec{{AccessKey: meta.AccessKey}}})
+	user, errUser := radosClient.GetUser(context.Background(), admin.User{Keys: []admin.UserKeySpec{{AccessKey: meta.AccessKey, UID: meta.UID}}})
 	if errUser != nil {
 		return objectstorage.UserIdentificationResponse{}, CustomizedErrorContents(errUser)
 	}

@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/labstack/echo/v4"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
+	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/repository"
 	"net/http"
 )
 
@@ -33,6 +34,17 @@ func (s *Server) HandleUserQuota() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
+
+		radosClient, err := repository.NewRadosClient(s.Config.ObjectStorageConfigs.URL, s.Config.ObjectStorageConfigs.AccessKeyAdmin, s.Config.ObjectStorageConfigs.SecretKeyAdmin)
+		if err != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		userID, errGetUser, _ := FindUserID(s, radosClient, req.AccessKey)
+		if errGetUser != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: errGetUser.Error()})
+		}
+		req.UID = userID
 
 		userQuota, errUserQuota := s.db.UserQuota(s.Config.ObjectStorageConfigs, req)
 		if errUserQuota.Message != nil {
@@ -70,6 +82,17 @@ func (s *Server) HandleUserIdentification() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
+
+		radosClient, err := repository.NewRadosClient(s.Config.ObjectStorageConfigs.URL, s.Config.ObjectStorageConfigs.AccessKeyAdmin, s.Config.ObjectStorageConfigs.SecretKeyAdmin)
+		if err != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		userID, errGetUser, _ := FindUserID(s, radosClient, req.AccessKey)
+		if errGetUser != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: errGetUser.Error()})
+		}
+		req.UID = userID
 
 		userData, errUserID := s.db.UserIdentification(s.Config.ObjectStorageConfigs, req)
 		if errUserID.Message != nil {

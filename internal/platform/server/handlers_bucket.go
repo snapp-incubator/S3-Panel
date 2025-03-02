@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/labstack/echo/v4"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
+	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/repository"
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
 	"net/http"
 )
@@ -40,6 +41,17 @@ func (s *Server) HandleBucketList() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
+
+		radosClient, err := repository.NewRadosClient(s.Config.ObjectStorageConfigs.URL, s.Config.ObjectStorageConfigs.AccessKeyAdmin, s.Config.ObjectStorageConfigs.SecretKeyAdmin)
+		if err != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		userID, errGetUser, _ := FindUserID(s, radosClient, req.AccessKey)
+		if errGetUser != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: errGetUser.Error()})
+		}
+		req.UID = userID
 
 		buckets, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, req)
 		if errBucketList.Message != nil {
@@ -83,6 +95,17 @@ func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
+
+		radosClient, err := repository.NewRadosClient(s.Config.ObjectStorageConfigs.URL, s.Config.ObjectStorageConfigs.AccessKeyAdmin, s.Config.ObjectStorageConfigs.SecretKeyAdmin)
+		if err != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		userID, errGetUser, _ := FindUserID(s, radosClient, req.AccessKey)
+		if errGetUser != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: errGetUser.Error()})
+		}
+		req.UID = userID
 
 		// first we try to get a BucketList to make sure the provided credentials are correct
 		_, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, req)

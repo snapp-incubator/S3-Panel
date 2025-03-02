@@ -970,6 +970,9 @@ const docTemplate = `{
                 "hard_bytes": {
                     "type": "number"
                 },
+                "hard_bytes_raw": {
+                    "type": "integer"
+                },
                 "hard_bytes_unit": {
                     "type": "string"
                 },
@@ -987,6 +990,9 @@ const docTemplate = `{
                 },
                 "used_bytes": {
                     "type": "number"
+                },
+                "used_bytes_raw": {
+                    "type": "integer"
                 },
                 "used_bytes_unit": {
                     "type": "string"

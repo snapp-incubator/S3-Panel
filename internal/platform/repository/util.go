@@ -18,6 +18,7 @@ const (
 	MiB
 	GiB
 	TiB
+	PiB
 )
 
 // CustomizedErrorContents goal is to return valid errors to user
@@ -146,6 +147,8 @@ func convertSizeToUnit(sizeInBytes interface{}) (float64, string) {
 		return math.Round(size/MiB*100) / 100, "MiB"
 	case size < TiB:
 		return math.Round(size/GiB*100) / 100, "GiB"
+	case size < PiB:
+		return math.Round(size/TiB*100) / 100, "TiB"
 	default:
 		return math.Round(size*100) / 100, "B"
 	}

@@ -78,6 +78,8 @@ definitions:
         type: string
       hard_bytes:
         type: number
+      hard_bytes_raw:
+        type: integer
       hard_bytes_unit:
         type: string
       hard_objects:
@@ -90,6 +92,8 @@ definitions:
         type: string
       used_bytes:
         type: number
+      used_bytes_raw:
+        type: integer
       used_bytes_unit:
         type: string
       used_objects:

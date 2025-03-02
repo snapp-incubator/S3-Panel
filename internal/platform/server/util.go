@@ -1,7 +1,9 @@
 package server
 
 import (
+	"context"
 	"fmt"
+	"github.com/ceph/go-ceph/rgw/admin"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -44,4 +46,44 @@ func PruneObjectPathDir(downloadPath string) error {
 		}
 		return err
 	})
+}
+
+func FindUserID(s *Server, client *admin.API, accessKey string) (string, error, bool) {
+	value, errGet := s.cache.Get(accessKey)
+	if errGet == nil {
+		return value, nil, true
+	}
+	usersData, errUsers := client.GetUsers(context.Background())
+	if errUsers != nil {
+		s.logger.Error(errUsers.Error())
+		return "", errUsers, false
+	} else if usersData == nil {
+		return "", fmt.Errorf("could not unmarshal users data into json"), false
+	}
+	for _, userData := range *usersData {
+		user, err := client.GetUser(context.Background(), admin.User{ID: userData})
+		if err != nil {
+			s.logger.Error(fmt.Sprintf("Error happened while getting user: %s", err.Error()))
+			continue
+		}
+
+		// Check if any key matches
+		for _, key := range user.Keys {
+			if key.AccessKey == accessKey {
+				errStore := s.cache.Set(accessKey, userData)
+				if errStore != nil {
+					s.logger.Error(fmt.Sprintf("Storing to cache failed: %s", errStore.Error()))
+				}
+				return userData, nil, true
+			}
+			_, errGetCache := s.cache.Get(key.AccessKey)
+			if errGetCache != nil {
+				errSet := s.cache.Set(key.AccessKey, key.User)
+				if errSet != nil {
+					s.logger.Error(fmt.Sprintf("Storing to cache failed: %s", errSet.Error()))
+				}
+			}
+		}
+	}
+	return "", nil, false
 }

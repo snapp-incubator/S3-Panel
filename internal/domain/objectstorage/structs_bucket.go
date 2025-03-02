@@ -12,6 +12,7 @@ type BucketInfoRequestMeta struct {
 	AccessKey    string `header:"access_key"   validate:"required"`
 	SecretKey    string `header:"secret_key"   validate:"required"`
 	SearchString string `query:"search_string"`
+	UID          string
 }
 
 type BucketQuotaResponse struct {
@@ -23,8 +24,10 @@ type SingleBucketQuotaResponse struct {
 	QuotaEnabled    *bool   `json:"quota_enabled"`
 	UsedBytes       float64 `json:"used_bytes"`
 	UsedBytesUnit   string  `json:"used_bytes_unit"`
+	UsedBytesRaw    *uint64 `json:"used_bytes_raw"`
 	HardBytes       float64 `json:"hard_bytes"`
 	HardBytesUnit   string  `json:"hard_bytes_unit"`
+	HardBytesRaw    *int64  `json:"hard_bytes_raw"`
 	UsedObjects     int     `json:"used_objects"`
 	HardObjects     *int64  `json:"hard_objects"`
 	ModifyTimeStamp string  `json:"modify_time_stamp"`

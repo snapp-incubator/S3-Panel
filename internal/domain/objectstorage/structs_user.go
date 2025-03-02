@@ -2,6 +2,7 @@ package objectstorage
 
 type UserRequestMeta struct {
 	AccessKey string `header:"access_key" validate:"required"`
+	UID       string
 }
 
 type UserIdentificationResponse struct {

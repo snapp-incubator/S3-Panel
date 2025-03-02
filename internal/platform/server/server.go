@@ -5,14 +5,17 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/cache"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
+	inMemoryCache "gitlab.snapp.ir/platform/snapp_object_store/internal/platform/cache"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/health"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/repository"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -22,6 +25,7 @@ type Server struct {
 	cancelCtx  context.Context
 	cancelFunc context.CancelFunc
 	db         objectstorage.ObjectStorage
+	cache      cache.ServerCache
 	logger     *zap.Logger
 	Router     *echo.Echo
 }
@@ -34,7 +38,10 @@ func NewServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Co
 		logger:     logger,
 	}
 
-	err := s.registerCephRepository()
+	s.registerCephRepository()
+
+	s.registerCache()
+	err := s.initializeCache()
 	if err != nil {
 		return nil, err
 	}
@@ -46,9 +53,28 @@ func NewServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Co
 	return s, nil
 }
 
-func (s *Server) registerCephRepository() error {
+func (s *Server) registerCephRepository() {
+	s.logger.Info("### Registering Ceph Repository ###")
 	s.db = repository.NewCephObjectStorage()
-	return nil
+	s.logger.Info("### Cache Registered ###")
+}
+
+func (s *Server) registerCache() {
+	s.logger.Info("### Registering Cache ###")
+	cacheStore := sync.Map{}
+	s.cache = inMemoryCache.NewInMemoryCache(&cacheStore)
+	s.logger.Info("### Cache Registered ###")
+}
+
+func (s *Server) initializeCache() error {
+	s.logger.Info("### Initializing Cache ###")
+	radosClient, err := repository.NewRadosClient(s.Config.ObjectStorageConfigs.URL, s.Config.ObjectStorageConfigs.AccessKeyAdmin, s.Config.ObjectStorageConfigs.SecretKeyAdmin)
+	if err != nil {
+		return err
+	}
+	_, err, _ = FindUserID(s, radosClient, "X")
+	defer s.logger.Info("### Cache Initialized ###")
+	return err
 }
 
 func (s *Server) registerRouter() {
