@@ -134,8 +134,7 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 		currentPage += 1
 	}
 	return objectstorage.ObjectListResponse{
-		Items:       desiredObjects,
-		HasNextPage: paginator.HasMorePages(),
+		Items: desiredObjects,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 

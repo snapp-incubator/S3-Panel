@@ -53,12 +53,12 @@ definitions:
     type: object
   objectstorage.ObjectListResponse:
     properties:
-      has_next_page:
-        type: boolean
       items:
         items:
           $ref: '#/definitions/objectstorage.ObjectListBody'
         type: array
+      total_pages:
+        type: integer
     type: object
   objectstorage.ObjectUploadResponse:
     properties:

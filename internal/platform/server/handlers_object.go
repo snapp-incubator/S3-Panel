@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
+	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/repository"
 	"net/http"
 )
 
@@ -198,11 +199,48 @@ func (s *Server) HandleObjectList() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
+		radosClient, err := repository.NewRadosClient(s.Config.ObjectStorageConfigs.URL, s.Config.ObjectStorageConfigs.AccessKeyAdmin, s.Config.ObjectStorageConfigs.SecretKeyAdmin)
+		if err != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		userID, errGetUser, _ := FindUserID(s, radosClient, req.AccessKey)
+		if errGetUser != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: errGetUser.Error()})
+		}
+
+		reqList := objectstorage.BucketInfoRequestMeta{
+			AccessKey: req.AccessKey,
+			SecretKey: req.SecretKey,
+			UID:       userID,
+		}
+		outputBucketQuota, errBucketQuota := s.db.BucketQuota(s.Config.ObjectStorageConfigs, reqList)
+		if errBucketQuota.Message != nil {
+			return c.JSON(errBucketQuota.Code, objectstorage.OperationErrWithMsg{Message: errBucketQuota.Message.Error()})
+		}
+
 		objects, errObjectList := s.db.ObjectList(s.Config.ObjectStorageConfigs, req)
 		if errObjectList.Message != nil {
 			s.logger.Error(errObjectList.Message.Error())
 			return c.JSON(errObjectList.Code, objectstorage.OperationErrWithMsg{Message: errObjectList.Message.Error()})
 		}
+
+		var bucketFound = false
+		for _, bucketData := range outputBucketQuota.Items {
+			if bucketData.BucketName == req.Bucket {
+				if bucketData.UsedObjects%int(req.MaxKeys) == 0 {
+					objects.TotalPages = bucketData.UsedObjects / int(req.MaxKeys)
+				} else {
+					objects.TotalPages = (bucketData.UsedObjects / int(req.MaxKeys)) + 1
+				}
+				bucketFound = true
+			}
+		}
+
+		if !bucketFound {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: "Bucket Not Found"})
+		}
+
 		return c.JSON(http.StatusOK, objects)
 	}
 }

@@ -38,8 +38,8 @@ type ObjectListBody struct {
 }
 
 type ObjectListResponse struct {
-	Items       []ObjectListBody `json:"items"`
-	HasNextPage bool             `json:"has_next_page"`
+	Items      []ObjectListBody `json:"items"`
+	TotalPages int              `json:"total_pages"`
 }
 
 type ObjectDownloadResponse struct {
