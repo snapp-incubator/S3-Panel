@@ -103,21 +103,23 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 		meta.Page = 1
 	}
 
-	paginator := s3.NewListObjectsV2Paginator(client, &s3.ListObjectsV2Input{
-		Bucket:  aws.String(meta.Bucket),
-		MaxKeys: &meta.MaxKeys,
-	})
-
 	var desiredObjects []objectstorage.ObjectListBody
 	var currentPage int32 = 1
-	for paginator.HasMorePages() {
-		output, errNextPage := paginator.NextPage(context.Background())
-		if errNextPage != nil {
-			return objectstorage.ObjectListResponse{}, CustomizedErrorContents(errNextPage)
+	var continuationToken *string
+	meta.SearchString = strings.TrimSpace(strings.ToLower(meta.SearchString))
+	for {
+		outputListObjects, errListObjects := client.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
+			Bucket:            aws.String(meta.Bucket),
+			MaxKeys:           &meta.MaxKeys,
+			ContinuationToken: continuationToken,
+		})
+		if errListObjects != nil {
+			return objectstorage.ObjectListResponse{}, CustomizedErrorContents(errListObjects)
 		}
+
 		if currentPage == meta.Page {
-			for _, object := range output.Contents {
-				if meta.SearchString != "" && !strings.Contains(strings.ToLower(*object.Key), strings.ToLower(meta.SearchString)) {
+			for _, object := range outputListObjects.Contents {
+				if meta.SearchString != "" && !strings.Contains(strings.ToLower(*object.Key), meta.SearchString) {
 					continue
 				}
 				objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
@@ -131,7 +133,12 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 			break
 		}
 
-		currentPage += 1
+		if *outputListObjects.IsTruncated {
+			continuationToken = outputListObjects.NextContinuationToken
+			currentPage += 1
+		} else {
+			break
+		}
 	}
 	return objectstorage.ObjectListResponse{
 		Items: desiredObjects,
