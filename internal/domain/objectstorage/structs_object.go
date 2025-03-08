@@ -38,8 +38,9 @@ type ObjectListBody struct {
 }
 
 type ObjectListResponse struct {
-	Items      []ObjectListBody `json:"items"`
-	TotalPages int              `json:"total_pages"`
+	Items             []ObjectListBody `json:"items"`
+	TotalMatchedItems int              `json:"total_matched_items"`
+	TotalPages        int              `json:"total_pages"`
 }
 
 type ObjectDownloadResponse struct {

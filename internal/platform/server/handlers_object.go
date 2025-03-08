@@ -228,10 +228,13 @@ func (s *Server) HandleObjectList() echo.HandlerFunc {
 		var bucketFound = false
 		for _, bucketData := range outputBucketQuota.Items {
 			if bucketData.BucketName == req.Bucket {
-				if bucketData.UsedObjects%int(req.MaxKeys) == 0 {
-					objects.TotalPages = bucketData.UsedObjects / int(req.MaxKeys)
+				if req.SearchString == "" {
+					objects.TotalMatchedItems = bucketData.UsedObjects
+				}
+				if objects.TotalMatchedItems%int(req.MaxKeys) == 0 {
+					objects.TotalPages = objects.TotalMatchedItems / int(req.MaxKeys)
 				} else {
-					objects.TotalPages = (bucketData.UsedObjects / int(req.MaxKeys)) + 1
+					objects.TotalPages = (objects.TotalMatchedItems / int(req.MaxKeys)) + 1
 				}
 				bucketFound = true
 			}

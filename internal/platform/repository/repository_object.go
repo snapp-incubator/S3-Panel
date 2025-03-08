@@ -103,6 +103,14 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 		meta.Page = 1
 	}
 
+	if meta.SearchString != "" {
+		return ObjectListFiltered(client, meta)
+	} else {
+		return ObjectListUnfiltered(client, meta)
+	}
+}
+
+func ObjectListUnfiltered(client *s3.Client, meta objectstorage.ObjectListRequestMeta) (objectstorage.ObjectListResponse, objectstorage.HTTPErrorWithCode) {
 	var desiredObjects []objectstorage.ObjectListBody
 	var currentPage int32 = 1
 	var continuationToken *string
@@ -119,9 +127,6 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 
 		if currentPage == meta.Page {
 			for _, object := range outputListObjects.Contents {
-				if meta.SearchString != "" && !strings.Contains(strings.ToLower(*object.Key), meta.SearchString) {
-					continue
-				}
 				objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
 				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
 					Name:                  object.Key,
@@ -142,6 +147,49 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 	}
 	return objectstorage.ObjectListResponse{
 		Items: desiredObjects,
+	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
+}
+
+func ObjectListFiltered(client *s3.Client, meta objectstorage.ObjectListRequestMeta) (objectstorage.ObjectListResponse, objectstorage.HTTPErrorWithCode) {
+	var desiredObjects []objectstorage.ObjectListBody
+	var totalMatchedItems = 0
+	var continuationToken *string
+	meta.SearchString = strings.TrimSpace(strings.ToLower(meta.SearchString))
+	for {
+		outputListObjects, errListObjects := client.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
+			Bucket:            aws.String(meta.Bucket),
+			MaxKeys:           &meta.MaxKeys,
+			ContinuationToken: continuationToken,
+		})
+		if errListObjects != nil {
+			return objectstorage.ObjectListResponse{}, CustomizedErrorContents(errListObjects)
+		}
+
+		for _, object := range outputListObjects.Contents {
+			if !strings.Contains(strings.ToLower(*object.Key), meta.SearchString) {
+				continue
+			}
+			totalMatchedItems += 1
+			if int(meta.MaxKeys)*(int(meta.Page)-1) < totalMatchedItems && totalMatchedItems < int(meta.MaxKeys)*(int(meta.Page)) {
+				objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
+				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
+					Name:                  object.Key,
+					LastModifiedTimestamp: object.LastModified.String(),
+					SizeUnit:              objSizeUnit,
+					SizeValue:             objSizeValue,
+				})
+			}
+		}
+
+		if *outputListObjects.IsTruncated {
+			continuationToken = outputListObjects.NextContinuationToken
+		} else {
+			break
+		}
+	}
+	return objectstorage.ObjectListResponse{
+		Items:             desiredObjects,
+		TotalMatchedItems: totalMatchedItems,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
