@@ -112,37 +112,42 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 }
 
 func ObjectListUnfiltered(client *s3.Client, meta objectstorage.ObjectListRequestMeta) (objectstorage.ObjectListResponse, objectstorage.HTTPErrorWithCode) {
+	var bulkListKeys int32 = 500
 	var desiredObjects []objectstorage.ObjectListBody
-	var currentPage int32 = 1
-	var continuationToken *string
+	var nextMarker *string
 	var totalItems int
 	meta.SearchString = strings.TrimSpace(strings.ToLower(meta.SearchString))
+	downThreshold := int(meta.MaxKeys) * (int(meta.Page) - 1)
+	upThreshold := int(meta.MaxKeys) * (int(meta.Page))
 	for {
-		outputListObjects, errListObjects := client.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
-			Bucket:            aws.String(meta.Bucket),
-			MaxKeys:           &meta.MaxKeys,
-			ContinuationToken: continuationToken,
+		outputListObjects, errListObjects := client.ListObjects(context.Background(), &s3.ListObjectsInput{
+			Bucket:  aws.String(meta.Bucket),
+			MaxKeys: aws.Int32(bulkListKeys),
+			Marker:  nextMarker,
 		})
 		if errListObjects != nil {
 			return objectstorage.ObjectListResponse{}, CustomizedErrorContents(errListObjects)
 		}
 
-		totalItems += len(outputListObjects.Contents)
-		if currentPage == meta.Page {
+		if totalItems <= upThreshold && totalItems+len(outputListObjects.Contents) >= downThreshold {
 			for _, object := range outputListObjects.Contents {
-				objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
-				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
-					Name:                  object.Key,
-					LastModifiedTimestamp: object.LastModified.String(),
-					SizeUnit:              objSizeUnit,
-					SizeValue:             objSizeValue,
-				})
+				totalItems += 1
+				if downThreshold < totalItems && totalItems <= upThreshold {
+					objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
+					desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
+						Name:                  object.Key,
+						LastModifiedTimestamp: object.LastModified.String(),
+						SizeUnit:              objSizeUnit,
+						SizeValue:             objSizeValue,
+					})
+				}
 			}
+		} else {
+			totalItems += len(outputListObjects.Contents)
 		}
 
 		if *outputListObjects.IsTruncated {
-			continuationToken = outputListObjects.NextContinuationToken
-			currentPage += 1
+			nextMarker = outputListObjects.Contents[len(outputListObjects.Contents)-1].Key
 		} else {
 			break
 		}
@@ -154,15 +159,18 @@ func ObjectListUnfiltered(client *s3.Client, meta objectstorage.ObjectListReques
 }
 
 func ObjectListFiltered(client *s3.Client, meta objectstorage.ObjectListRequestMeta) (objectstorage.ObjectListResponse, objectstorage.HTTPErrorWithCode) {
+	var bulkListKeys int32 = 500
 	var desiredObjects []objectstorage.ObjectListBody
 	var totalMatchedItems = 0
-	var continuationToken *string
+	var nextMarker *string
+	downThreshold := int(meta.MaxKeys) * (int(meta.Page) - 1)
+	upThreshold := int(meta.MaxKeys) * (int(meta.Page))
 	meta.SearchString = strings.TrimSpace(strings.ToLower(meta.SearchString))
 	for {
-		outputListObjects, errListObjects := client.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
-			Bucket:            aws.String(meta.Bucket),
-			MaxKeys:           &meta.MaxKeys,
-			ContinuationToken: continuationToken,
+		outputListObjects, errListObjects := client.ListObjects(context.Background(), &s3.ListObjectsInput{
+			Bucket:  aws.String(meta.Bucket),
+			MaxKeys: aws.Int32(bulkListKeys),
+			Marker:  nextMarker,
 		})
 		if errListObjects != nil {
 			return objectstorage.ObjectListResponse{}, CustomizedErrorContents(errListObjects)
@@ -173,7 +181,7 @@ func ObjectListFiltered(client *s3.Client, meta objectstorage.ObjectListRequestM
 				continue
 			}
 			totalMatchedItems += 1
-			if int(meta.MaxKeys)*(int(meta.Page)-1) < totalMatchedItems && totalMatchedItems < int(meta.MaxKeys)*(int(meta.Page)) {
+			if downThreshold < totalMatchedItems && totalMatchedItems < upThreshold {
 				objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
 				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
 					Name:                  object.Key,
@@ -185,7 +193,7 @@ func ObjectListFiltered(client *s3.Client, meta objectstorage.ObjectListRequestM
 		}
 
 		if *outputListObjects.IsTruncated {
-			continuationToken = outputListObjects.NextContinuationToken
+			nextMarker = outputListObjects.Contents[len(outputListObjects.Contents)-1].Key
 		} else {
 			break
 		}
