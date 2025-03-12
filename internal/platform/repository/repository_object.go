@@ -181,7 +181,7 @@ func ObjectListFiltered(client *s3.Client, meta objectstorage.ObjectListRequestM
 				continue
 			}
 			totalMatchedItems += 1
-			if downThreshold < totalMatchedItems && totalMatchedItems < upThreshold {
+			if downThreshold < totalMatchedItems && totalMatchedItems <= upThreshold {
 				objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
 				desiredObjects = append(desiredObjects, objectstorage.ObjectListBody{
 					Name:                  object.Key,

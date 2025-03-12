@@ -32,7 +32,5 @@ func (c CephObjectStorage) NewClient(endpoint, accessKey, secretKey string) (*s3
 	return s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.BaseEndpoint = aws.String(endpoint)
 		o.UsePathStyle = true
-		o.RequestChecksumCalculation = aws.RequestChecksumCalculationUnset
-		o.ResponseChecksumValidation = aws.ResponseChecksumValidationUnset
 	}), nil
 }
