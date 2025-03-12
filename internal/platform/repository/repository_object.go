@@ -3,6 +3,12 @@ package repository
 import (
 	"context"
 	"fmt"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -11,11 +17,6 @@ import (
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
-	"mime/multipart"
-	"net/http"
-	"os"
-	"strings"
-	"time"
 )
 
 func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectDeleteRequestMeta) (objectstorage.ObjectDeleteResponse, objectstorage.HTTPErrorWithCode) {
@@ -114,6 +115,7 @@ func ObjectListUnfiltered(client *s3.Client, meta objectstorage.ObjectListReques
 	var desiredObjects []objectstorage.ObjectListBody
 	var currentPage int32 = 1
 	var continuationToken *string
+	var totalItems int
 	meta.SearchString = strings.TrimSpace(strings.ToLower(meta.SearchString))
 	for {
 		outputListObjects, errListObjects := client.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
@@ -125,6 +127,7 @@ func ObjectListUnfiltered(client *s3.Client, meta objectstorage.ObjectListReques
 			return objectstorage.ObjectListResponse{}, CustomizedErrorContents(errListObjects)
 		}
 
+		totalItems += len(outputListObjects.Contents)
 		if currentPage == meta.Page {
 			for _, object := range outputListObjects.Contents {
 				objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
@@ -135,7 +138,6 @@ func ObjectListUnfiltered(client *s3.Client, meta objectstorage.ObjectListReques
 					SizeValue:             objSizeValue,
 				})
 			}
-			break
 		}
 
 		if *outputListObjects.IsTruncated {
@@ -146,7 +148,8 @@ func ObjectListUnfiltered(client *s3.Client, meta objectstorage.ObjectListReques
 		}
 	}
 	return objectstorage.ObjectListResponse{
-		Items: desiredObjects,
+		Items:             desiredObjects,
+		TotalMatchedItems: totalItems,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
