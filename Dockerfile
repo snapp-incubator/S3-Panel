@@ -1,7 +1,7 @@
 FROM registry.snapp.tech/docker/golang:1.23-alpine3.20 AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
-RUN go env -w GOPROXY="https://repo.snapp.tech/repository/goproxy,goproxy.io,direct"
+RUN go env -w GOPROXY="https://goproxy.io,https://repo.snapp.tech/repository/goproxy,direct"
 RUN go mod download
 COPY . .
 WORKDIR /app/cmd/snapp_object_store
