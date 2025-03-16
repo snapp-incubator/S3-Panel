@@ -1,8 +1,11 @@
 package repository
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -210,33 +213,95 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		return objectstorage.ObjectUploadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
-	var partSize int64 = 10 * 1024 * 1024
-	uploadManager := manager.NewUploader(client, func(uploader *manager.Uploader) {
-		uploader.PartSize = partSize
-	})
+	uploadMultiPartInput := &s3.CreateMultipartUploadInput{
+		Bucket:            aws.String(meta.Bucket),
+		Key:               aws.String(file.Filename),
+		ChecksumAlgorithm: types.ChecksumAlgorithmCrc32,
+	}
+	respMP, errCreateMP := client.CreateMultipartUpload(context.Background(), uploadMultiPartInput)
+	if errCreateMP != nil {
+		return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(errCreateMP)
+	}
 
 	src, errOpen := file.Open()
 	if errOpen != nil {
 		return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(errOpen)
 	}
-	input := &s3.PutObjectInput{
-		Bucket:            aws.String(meta.Bucket),
-		Key:               aws.String(file.Filename),
-		Body:              src,
-		ChecksumAlgorithm: "",
+	bs := make([]byte, file.Size)
+	_, errReadBuf := bufio.NewReader(src).Read(bs)
+	if errReadBuf != nil && err != io.EOF {
+		return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(errReadBuf)
 	}
-	_, errUpload := uploadManager.Upload(context.Background(), input)
-	if errUpload != nil {
-		return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(errUpload)
-	} else {
-		err = s3.NewObjectExistsWaiter(client).Wait(context.Background(), &s3.HeadObjectInput{
-			Bucket: aws.String(meta.Bucket),
-			Key:    aws.String(file.Filename),
-		}, time.Minute)
-		if err != nil {
-			return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(err)
+
+	const maxPartSize = int64(6 * 1024 * 1024)
+	var curr, partLength int64
+	var remaining = file.Size
+	var completedParts []types.CompletedPart
+	var partNumber int32 = 1
+	for curr = 0; remaining != 0; curr += partLength {
+		partNum := partNumber
+		if remaining < maxPartSize {
+			partLength = remaining
+		} else {
+			partLength = maxPartSize
 		}
+
+		checkSumCRC32 := ComputeCRC32(bs[curr : curr+partLength])
+		partInput := &s3.UploadPartInput{
+			Body:              bytes.NewReader(bs[curr : curr+partLength]),
+			Bucket:            aws.String(meta.Bucket),
+			Key:               aws.String(file.Filename),
+			PartNumber:        &partNum,
+			UploadId:          respMP.UploadId,
+			ChecksumCRC32:     &checkSumCRC32,
+			ChecksumAlgorithm: types.ChecksumAlgorithmCrc32,
+		}
+		uploadResult, errUploadPart := client.UploadPart(context.TODO(), partInput)
+		if errUploadPart != nil {
+			aboInput := &s3.AbortMultipartUploadInput{
+				Bucket:   aws.String(meta.Bucket),
+				Key:      aws.String(file.Filename),
+				UploadId: respMP.UploadId,
+			}
+			_, aboErr := client.AbortMultipartUpload(context.TODO(), aboInput)
+			if aboErr != nil {
+				return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(aboErr)
+			}
+			return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(errUploadPart)
+		}
+
+		completedParts = append(completedParts, types.CompletedPart{
+			ETag:       uploadResult.ETag,
+			PartNumber: &partNum,
+		})
+		remaining -= partLength
+		partNumber += 1
 	}
+
+	compInput := &s3.CompleteMultipartUploadInput{
+		Bucket:   aws.String(meta.Bucket),
+		Key:      aws.String(file.Filename),
+		UploadId: respMP.UploadId,
+		MultipartUpload: &types.CompletedMultipartUpload{
+			Parts: completedParts,
+		},
+		ChecksumType: types.ChecksumTypeComposite,
+	}
+	_, compErr := client.CompleteMultipartUpload(context.Background(), compInput)
+	if compErr != nil {
+		time.Sleep(300 * time.Second)
+		aboInput := &s3.AbortMultipartUploadInput{
+			Bucket:   aws.String(meta.Bucket),
+			Key:      aws.String(file.Filename),
+			UploadId: respMP.UploadId,
+		}
+		_, errAbort := client.AbortMultipartUpload(context.Background(), aboInput)
+		if errAbort != nil {
+			return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(errAbort)
+		}
+		return objectstorage.ObjectUploadResponse{}, CustomizedErrorContents(compErr)
+	}
+
 	return objectstorage.ObjectUploadResponse{
 		Created: true,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}

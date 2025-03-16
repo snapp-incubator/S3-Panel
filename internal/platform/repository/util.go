@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	awsHttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
@@ -8,6 +9,7 @@ import (
 	"github.com/ceph/go-ceph/rgw/admin"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
+	"hash/crc32"
 	"math"
 	"net/http"
 )
@@ -152,4 +154,13 @@ func convertSizeToUnit(sizeInBytes interface{}) (float64, string) {
 	default:
 		return math.Round(size*100) / 100, "B"
 	}
+}
+
+func ComputeCRC32(data []byte) string {
+	crc32q := crc32.MakeTable(crc32.IEEE)
+	checksum := crc32.Checksum(data, crc32q)
+	// S3 expects Base64-encoded checksum
+	return base64.StdEncoding.EncodeToString([]byte{
+		byte(checksum >> 24), byte(checksum >> 16), byte(checksum >> 8), byte(checksum),
+	})
 }
