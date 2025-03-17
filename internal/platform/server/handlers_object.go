@@ -52,16 +52,19 @@ func (s *Server) HandleObjectDownload() echo.HandlerFunc {
 			return c.JSON(existsErr.Code, objectstorage.OperationErrWithMsg{Message: existsErr.Message.Error()})
 		}
 
-		req.TemporaryPath, err = createObjectPath(s.Config.ServerConfigs.DownloadPath, req.AccessKey, req.Object)
-		if err != nil {
-			s.logger.Error(err.Error())
-			return c.JSON(http.StatusInternalServerError, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		tmpPath, exists, errCreatePath := createObjectPath(s.Config.ServerConfigs.DownloadPath, req.AccessKey, req.Object)
+		if errCreatePath != nil {
+			s.logger.Error(errCreatePath.Error())
+			return c.JSON(http.StatusInternalServerError, objectstorage.OperationErrWithMsg{Message: errCreatePath.Error()})
 		}
+		req.TemporaryPath = tmpPath
 
-		_, errObjectDownload := s.db.ObjectDownload(s.Config.ObjectStorageConfigs, req)
-		if errObjectDownload.Message != nil {
-			s.logger.Error(errObjectDownload.Message.Error())
-			return c.JSON(errObjectDownload.Code, objectstorage.OperationErrWithMsg{Message: errObjectDownload.Message.Error()})
+		if !exists {
+			_, errObjectDownload := s.db.ObjectDownload(s.Config.ObjectStorageConfigs, req)
+			if errObjectDownload.Message != nil {
+				s.logger.Error(errObjectDownload.Message.Error())
+				return c.JSON(errObjectDownload.Code, objectstorage.OperationErrWithMsg{Message: errObjectDownload.Message.Error()})
+			}
 		}
 		return c.Attachment(req.TemporaryPath, req.Object)
 	}

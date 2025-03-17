@@ -78,6 +78,9 @@ func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorage
 	var partSize int64 = 10 * 1024 * 1024
 	downloader := manager.NewDownloader(client, func(d *manager.Downloader) {
 		d.PartSize = partSize
+		d.Concurrency = 4
+		d.PartBodyMaxRetries = 3
+		d.LogInterruptedDownloads = true
 	})
 	_, errDownload := downloader.Download(context.Background(), createdFile, &s3.GetObjectInput{
 		Bucket:       aws.String(meta.Bucket),

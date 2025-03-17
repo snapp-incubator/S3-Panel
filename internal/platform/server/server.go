@@ -121,24 +121,20 @@ func (s *Server) registerRoutes() {
 }
 
 func (s *Server) registerPruner() {
+	prunerInterval := 1 * time.Hour
 	go func() {
-		ticker := time.NewTicker(1 * time.Hour)
-		shouldBreak := false
+		ticker := time.NewTicker(prunerInterval)
 		for {
 			select {
 			case <-s.cancelCtx.Done():
 				s.logger.Warn("Shutting Down Ticker due to canceling context")
-				shouldBreak = true
+				break
 			case <-ticker.C:
-				s.logger.Warn("Triggered Pruner")
-				errPrune := PruneObjectPathDir(s.Config.ServerConfigs.DownloadPath)
-				s.logger.Info(fmt.Sprintf("Pruning Done. Output: %s", errPrune.Error()))
+				s.logger.Info("Triggered Pruner")
+				errPrune := PruneObjectPathDir(s.Config.ServerConfigs.DownloadPath, prunerInterval)
 				if errPrune != nil {
 					s.logger.Error(errPrune.Error())
 				}
-			}
-			if shouldBreak {
-				break
 			}
 		}
 	}()
@@ -169,9 +165,9 @@ func StartServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	select {
 	case <-ctx.Done():
-		logger.Warn("Done Context. Shutting down services")
+		logger.Info("Done Context. Shutting down services")
 	case sig := <-sigChan:
-		logger.Warn(fmt.Sprintf("Received %s signal, gracefully shutting down services", sig.String()))
+		logger.Info(fmt.Sprintf("Received %s signal, gracefully shutting down services", sig.String()))
 	}
 
 	// call cancel function of the Server
