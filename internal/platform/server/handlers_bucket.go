@@ -217,6 +217,35 @@ func (s *Server) HandleBucketDelete() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 		}
 
+		radosClient, err := repository.NewRadosClient(s.Config.ObjectStorageConfigs.URL, s.Config.ObjectStorageConfigs.AccessKeyAdmin, s.Config.ObjectStorageConfigs.SecretKeyAdmin)
+		if err != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		userID, errGetUser, _ := FindUserID(s, radosClient, req.AccessKey)
+		if errGetUser != nil {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: errGetUser.Error()})
+		}
+
+		reqBucketQuota := objectstorage.BucketInfoRequestMeta{
+			AccessKey: req.AccessKey,
+			SecretKey: req.SecretKey,
+			UID:       userID,
+		}
+		bucketQuota, bucketQuotaErr := s.db.BucketQuota(s.Config.ObjectStorageConfigs, reqBucketQuota)
+		if bucketQuotaErr.Message != nil {
+			return c.JSON(bucketQuotaErr.Code, bucketQuotaErr.Message.Error())
+		}
+
+		for _, bucket := range bucketQuota.Items {
+			if bucket.BucketName == req.Bucket {
+				if bucket.UsedObjects != 0 {
+					return c.JSON(http.StatusForbidden, "Bucket is not empty for deletion")
+				}
+				break
+			}
+		}
+
 		deleteBucket, errBucketDelete := s.db.BucketDelete(s.Config.ObjectStorageConfigs, req)
 		if errBucketDelete.Message != nil {
 			s.logger.Error(errBucketDelete.Message.Error())
