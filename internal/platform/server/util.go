@@ -21,12 +21,18 @@ func isServerAuthEnabled(s string) bool {
 
 // returns three elements: (path to object / file exists / error)
 func createObjectPath(baseDownloadPath, accessKey, objName string) (string, bool, error) {
-	objectDir := fmt.Sprintf("%s/%s", baseDownloadPath, accessKey)
+	objRootDir := "/"
+	delimiter := "/"
+	parts := strings.Split(objName, delimiter)
+	if len(parts) > 1 {
+		objRootDir = strings.Join(append(parts[:len(parts)-1]), delimiter)
+	}
+	objectDir := fmt.Sprintf("%s/%s/%s", baseDownloadPath, accessKey, objRootDir)
 	errMkdir := os.MkdirAll(objectDir, os.ModePerm)
 	if errMkdir != nil {
 		return "", false, errMkdir
 	}
-	objectPath := fmt.Sprintf("%s/%s", objectDir, objName)
+	objectPath := fmt.Sprintf("%s/%s", objectDir, parts[len(parts)-1])
 	fdStat, errStat := os.Stat(objectPath)
 	if errStat == nil && fdStat.Size() > 0 {
 		return objectPath, true, nil
