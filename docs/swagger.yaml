@@ -611,7 +611,8 @@ paths:
         required: true
         schema:
           type: string
-      - description: URL expiration time
+      - default: 1h
+        description: URL expiration time
         in: body
         name: expiration
         schema:
@@ -620,7 +621,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: "Successful response with object url\"\tdefault(1h)"
+          description: Successful response with object url
           schema:
             $ref: '#/definitions/objectstorage.ObjectShareResponse'
         "400":

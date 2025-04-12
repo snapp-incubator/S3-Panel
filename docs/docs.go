@@ -697,6 +697,7 @@ const docTemplate = `{
                         }
                     },
                     {
+                        "default": "1h",
                         "description": "URL expiration time",
                         "name": "expiration",
                         "in": "body",
@@ -707,7 +708,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful response with object url\"\tdefault(1h)",
+                        "description": "Successful response with object url",
                         "schema": {
                             "$ref": "#/definitions/objectstorage.ObjectShareResponse"
                         }

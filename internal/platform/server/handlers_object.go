@@ -365,12 +365,12 @@ func (s *Server) HandleObjectHead() echo.HandlerFunc {
 //	@Tags			Object
 //	@Accept			json
 //	@Produce		json
-//	@Param			access_key	header		string								true									"User given AccessKey"
-//	@Param			secret_key	header		string								true									"User given SecretKey"
-//	@Param			bucket		body		string								true									"bucket name"
-//	@Param			object		body		string								true									"objects name"
-//	@Param			expiration	body		string								false									"URL expiration time"
-//	@Success		200			{object}	objectstorage.ObjectShareResponse	"Successful response with object url"	default(1h)
+//	@Param			access_key	header		string								true	"User given AccessKey"
+//	@Param			secret_key	header		string								true	"User given SecretKey"
+//	@Param			bucket		body		string								true	"bucket name"
+//	@Param			object		body		string								true	"objects name"
+//	@Param			expiration	body		string								false	"URL expiration time"	default(1h)
+//	@Success		200			{object}	objectstorage.ObjectShareResponse	"Successful response with object url"
 //	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
 //	@Failure		401			{object}	string								"Unauthorized"
 //	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
