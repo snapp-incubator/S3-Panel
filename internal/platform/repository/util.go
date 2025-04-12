@@ -12,6 +12,9 @@ import (
 	"hash/crc32"
 	"math"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
 const (
@@ -163,4 +166,35 @@ func ComputeCRC32(data []byte) string {
 	return base64.StdEncoding.EncodeToString([]byte{
 		byte(checksum >> 24), byte(checksum >> 16), byte(checksum >> 8), byte(checksum),
 	})
+}
+
+func ConvertTimeStringToTimeDuration(input string, defaultExpire time.Duration) (time.Duration, error) {
+	input = strings.TrimSpace(input)
+	if len(input) == 0 {
+		return defaultExpire, nil
+	}
+	if len(input) < 2 {
+		return 0, fmt.Errorf("the expiration should be at least two characters")
+	}
+
+	numStr := input[:len(input)-1]
+	var unit = input[len(input)-1:]
+
+	num, err := strconv.Atoi(numStr)
+	if err != nil {
+		return 0, fmt.Errorf("couldn't convert integers %v to numeric value", err)
+	}
+
+	switch unit {
+	case "m", "M":
+		return time.Duration(num) * time.Minute, nil
+	case "h", "H":
+		return time.Duration(num) * time.Hour, nil
+	case "d", "D":
+		return time.Duration(num) * time.Hour * 24, nil
+	case "w", "W":
+		return time.Duration(num) * time.Hour * 24 * 7, nil
+	default:
+		return 0, fmt.Errorf("invalid unit: %s", unit)
+	}
 }

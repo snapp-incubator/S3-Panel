@@ -111,6 +111,7 @@ func (s *Server) registerRoutes() {
 		apiRoutesObjects.GET("/download", s.HandleObjectDownload())
 		apiRoutesObjects.GET("/head", s.HandleObjectHead())
 		apiRoutesObjects.DELETE("/delete", s.HandleObjectsDelete())
+		apiRoutesObjects.GET("/share", s.HandleObjectShare())
 	}
 
 	apiRoutesUsers := apiRoutes.Group("/user")

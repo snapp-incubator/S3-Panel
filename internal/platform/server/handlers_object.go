@@ -357,3 +357,59 @@ func (s *Server) HandleObjectHead() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, objects)
 	}
 }
+
+// HandleObjectShare
+//
+//	@Summary		share the preSign address of object
+//	@Description	This function uses the PreSign feature of S3 to share object link with expiration time with users
+//	@Tags			Object
+//	@Accept			json
+//	@Produce		json
+//	@Param			access_key	header		string								true									"User given AccessKey"
+//	@Param			secret_key	header		string								true									"User given SecretKey"
+//	@Param			bucket		body		string								true									"bucket name"
+//	@Param			object		body		string								true									"objects name"
+//	@Param			expiration	body		string								false									"URL expiration time"
+//	@Success		200			{object}	objectstorage.ObjectShareResponse	"Successful response with object url"	default(1h)
+//	@Failure		400			{object}	objectstorage.OperationErrWithMsg	"Bad Request"
+//	@Failure		401			{object}	string								"Unauthorized"
+//	@Failure		422			{object}	objectstorage.OperationErrWithMsg	"Action didn't complete"
+//	@Failure		500			{object}	objectstorage.OperationErrWithMsg	"Internal server error"
+//	@Router			/api/object/share [get]
+func (s *Server) HandleObjectShare() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req objectstorage.ObjectRequestMeta
+		err := c.Bind(&req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		err = (&echo.DefaultBinder{}).BindHeaders(c, &req)
+		if err != nil {
+			s.logger.Error(err.Error())
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		err = c.Validate(req)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
+		}
+
+		exists, errObjHead := s.db.ObjectHead(s.Config.ObjectStorageConfigs, req)
+		if errObjHead.Message != nil {
+			s.logger.Error(errObjHead.Message.Error())
+			return c.JSON(errObjHead.Code, objectstorage.OperationErrWithMsg{Message: errObjHead.Message.Error()})
+		}
+		if exists.Exists == false {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: "Object does not exist"})
+		}
+
+		url, errObjShare := s.db.ObjectShare(s.Config.ObjectStorageConfigs, req)
+		if errObjShare.Message != nil {
+			s.logger.Error(errObjShare.Message.Error())
+			return c.JSON(errObjShare.Code, objectstorage.OperationErrWithMsg{Message: errObjShare.Message.Error()})
+		}
+		return c.JSON(http.StatusOK, url)
+	}
+}

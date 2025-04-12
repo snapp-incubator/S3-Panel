@@ -650,6 +650,95 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/object/share": {
+            "get": {
+                "description": "This function uses the PreSign feature of S3 to share object link with expiration time with users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Object"
+                ],
+                "summary": "share the preSign address of object",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User given AccessKey",
+                        "name": "access_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User given SecretKey",
+                        "name": "secret_key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "bucket name",
+                        "name": "bucket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "objects name",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "URL expiration time",
+                        "name": "expiration",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with object url\"\tdefault(1h)",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.ObjectShareResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "422": {
+                        "description": "Action didn't complete",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                        }
+                    }
+                }
+            }
+        },
         "/api/object/upload": {
             "post": {
                 "description": "This functions uploads an object to bucket.",
@@ -937,8 +1026,19 @@ const docTemplate = `{
                         "$ref": "#/definitions/objectstorage.ObjectListBody"
                     }
                 },
+                "total_matched_items": {
+                    "type": "integer"
+                },
                 "total_pages": {
                     "type": "integer"
+                }
+            }
+        },
+        "objectstorage.ObjectShareResponse": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
                 }
             }
         },

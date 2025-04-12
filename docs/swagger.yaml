@@ -57,8 +57,15 @@ definitions:
         items:
           $ref: '#/definitions/objectstorage.ObjectListBody'
         type: array
+      total_matched_items:
+        type: integer
       total_pages:
         type: integer
+    type: object
+  objectstorage.ObjectShareResponse:
+    properties:
+      url:
+        type: string
     type: object
   objectstorage.ObjectUploadResponse:
     properties:
@@ -573,6 +580,66 @@ paths:
           schema:
             $ref: '#/definitions/objectstorage.OperationErrWithMsg'
       summary: List of objects of a bucket
+      tags:
+      - Object
+  /api/object/share:
+    get:
+      consumes:
+      - application/json
+      description: This function uses the PreSign feature of S3 to share object link
+        with expiration time with users
+      parameters:
+      - description: User given AccessKey
+        in: header
+        name: access_key
+        required: true
+        type: string
+      - description: User given SecretKey
+        in: header
+        name: secret_key
+        required: true
+        type: string
+      - description: bucket name
+        in: body
+        name: bucket
+        required: true
+        schema:
+          type: string
+      - description: objects name
+        in: body
+        name: object
+        required: true
+        schema:
+          type: string
+      - description: URL expiration time
+        in: body
+        name: expiration
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "Successful response with object url\"\tdefault(1h)"
+          schema:
+            $ref: '#/definitions/objectstorage.ObjectShareResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Action didn't complete
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+      summary: share the preSign address of object
       tags:
       - Object
   /api/object/upload:

@@ -19,6 +19,7 @@ type ObjectStorage interface {
 	ObjectList(cfg config.ObjectStorageConfig, meta ObjectListRequestMeta) (ObjectListResponse, HTTPErrorWithCode)
 	ObjectUpload(cfg config.ObjectStorageConfig, meta ObjectUploadRequestMeta, files *multipart.FileHeader) (ObjectUploadResponse, HTTPErrorWithCode)
 	ObjectHead(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectHeadResponse, HTTPErrorWithCode)
+	ObjectShare(cfg config.ObjectStorageConfig, meta ObjectRequestMeta) (ObjectShareResponse, HTTPErrorWithCode)
 
 	BucketCreate(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketCreateResponse, HTTPErrorWithCode)
 	BucketDelete(cfg config.ObjectStorageConfig, meta BucketActionRequestMeta) (BucketDeleteResponse, HTTPErrorWithCode)

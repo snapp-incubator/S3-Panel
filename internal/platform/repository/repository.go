@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
+	"time"
 )
 
 type CephObjectStorage struct{}
@@ -34,5 +35,16 @@ func (c CephObjectStorage) NewClient(endpoint, accessKey, secretKey string) (*s3
 		o.UsePathStyle = true
 		o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
 		o.ResponseChecksumValidation = aws.ResponseChecksumValidationWhenRequired
+	}), nil
+}
+
+func (c CephObjectStorage) NewPreSignClient(endpoint, accessKey, secretKey string, expiration time.Duration) (*s3.PresignClient, error) {
+	client, err := c.NewClient(endpoint, accessKey, secretKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return s3.NewPresignClient(client, func(options *s3.PresignOptions) {
+		options.Expires = expiration
 	}), nil
 }

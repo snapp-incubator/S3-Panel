@@ -22,6 +22,8 @@ import (
 	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
 )
 
+const DefaultPreSignShareExpiration = time.Hour * 1
+
 func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectDeleteRequestMeta) (objectstorage.ObjectDeleteResponse, objectstorage.HTTPErrorWithCode) {
 	if len(meta.Objects) == 0 {
 		return objectstorage.ObjectDeleteResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusBadRequest, Message: fmt.Errorf("you should specify at least one object")}
@@ -331,4 +333,27 @@ func (c CephObjectStorage) ObjectHead(serverAdminConfig config.ObjectStorageConf
 	}
 
 	return objectstorage.ObjectHeadResponse{Exists: true}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
+}
+
+func (c CephObjectStorage) ObjectShare(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectShareResponse, objectstorage.HTTPErrorWithCode) {
+	expiration, errConvert := ConvertTimeStringToTimeDuration(meta.Expiration, DefaultPreSignShareExpiration)
+	if errConvert != nil {
+		return objectstorage.ObjectShareResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusUnprocessableEntity, Message: errConvert}
+	}
+
+	preSignClient, err := c.NewPreSignClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey, expiration)
+	if err != nil {
+		return objectstorage.ObjectShareResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
+	}
+
+	objectShareInput := s3.GetObjectInput{
+		Bucket: aws.String(meta.Bucket),
+		Key:    aws.String(meta.Object),
+	}
+	urlPreSign, errPreSignGet := preSignClient.PresignGetObject(context.Background(), &objectShareInput)
+	if errPreSignGet != nil {
+		return objectstorage.ObjectShareResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: errPreSignGet}
+	}
+
+	return objectstorage.ObjectShareResponse{URL: urlPreSign.URL}, objectstorage.HTTPErrorWithCode{}
 }

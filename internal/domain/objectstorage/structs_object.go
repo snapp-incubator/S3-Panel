@@ -21,6 +21,7 @@ type ObjectRequestMeta struct {
 	SecretKey     string `header:"secret_key" validate:"required"`
 	Bucket        string `query:"bucket"      validate:"required"`
 	Object        string `query:"object"      validate:"required"`
+	Expiration    string `query:"expiration"`
 	TemporaryPath string
 }
 
@@ -57,4 +58,8 @@ type ObjectDeleteResponse struct {
 
 type ObjectHeadResponse struct {
 	Exists bool `json:"exists"`
+}
+
+type ObjectShareResponse struct {
+	URL string `json:"url"`
 }
