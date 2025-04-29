@@ -955,6 +955,9 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

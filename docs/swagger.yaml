@@ -17,6 +17,8 @@ definitions:
         items:
           type: string
         type: array
+      total:
+        type: integer
     type: object
   objectstorage.BucketQuotaResponse:
     properties:

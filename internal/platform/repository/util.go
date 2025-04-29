@@ -99,7 +99,10 @@ func CustomizedErrorContents(err error) objectstorage.HTTPErrorWithCode {
 }
 
 func NewRadosClient(endpoint, adminAccessKey, adminSecretKey string) (*admin.API, error) {
-	return admin.New(endpoint, adminAccessKey, adminSecretKey, nil)
+	customHTTPClient := &http.Client{
+		Timeout: 60 * time.Second,
+	}
+	return admin.New(endpoint, adminAccessKey, adminSecretKey, admin.HTTPClient(customHTTPClient))
 }
 
 // calculateUsedBytes calculates the sum of buckets actual size from list of buckets

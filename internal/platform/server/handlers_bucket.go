@@ -26,7 +26,7 @@ import (
 //	@Router			/api/bucket/list [get]
 func (s *Server) HandleBucketList() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req objectstorage.BucketInfoRequestMeta
+		var req objectstorage.BucketListAndQuotaRequestMeta
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
@@ -80,7 +80,8 @@ func (s *Server) HandleBucketList() echo.HandlerFunc {
 //	@Router			/api/bucket/quota [get]
 func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req objectstorage.BucketInfoRequestMeta
+		var BucketQuotaV1Threshold = 20
+		var req objectstorage.BucketListAndQuotaRequestMeta
 		err := c.Bind(&req)
 		if err != nil {
 			s.logger.Error(err.Error())
@@ -108,18 +109,27 @@ func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 		req.UID = userID
 
 		// first we try to get a BucketList to make sure the provided credentials are correct
-		_, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, req)
+		bucketList, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, req)
 		if errBucketList.Message != nil {
 			s.logger.Error(errBucketList.Message.Error())
 			return c.JSON(errBucketList.Code, objectstorage.OperationErrWithMsg{Message: errBucketList.Message.Error()})
 		}
 
-		quotaInfo, errBucketQuota := s.db.BucketQuota(s.Config.ObjectStorageConfigs, req)
-		if errBucketQuota.Message != nil {
-			s.logger.Error(errBucketQuota.Message.Error())
-			return c.JSON(errBucketQuota.Code, objectstorage.OperationErrWithMsg{Message: errBucketQuota.Message.Error()})
+		if bucketList.Total <= BucketQuotaV1Threshold {
+			quotaInfo, errBucketQuota := s.db.BucketQuota(s.Config.ObjectStorageConfigs, req, bucketList)
+			if errBucketQuota.Message != nil {
+				s.logger.Error(errBucketQuota.Message.Error())
+				return c.JSON(errBucketQuota.Code, objectstorage.OperationErrWithMsg{Message: errBucketQuota.Message.Error()})
+			}
+			return c.JSON(http.StatusOK, quotaInfo)
+		} else {
+			quotaInfo, errBucketQuota := s.db.BucketQuotaV2(s.Config.ObjectStorageConfigs, req, bucketList)
+			if errBucketQuota.Message != nil {
+				s.logger.Error(errBucketQuota.Message.Error())
+				return c.JSON(errBucketQuota.Code, objectstorage.OperationErrWithMsg{Message: errBucketQuota.Message.Error()})
+			}
+			return c.JSON(http.StatusOK, quotaInfo)
 		}
-		return c.JSON(http.StatusOK, quotaInfo)
 	}
 }
 
@@ -159,9 +169,11 @@ func (s *Server) HandleBucketCreate(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, objectstorage.OperationErrWithMsg{Message: err.Error()})
 	}
 
-	bucketListInput := objectstorage.BucketInfoRequestMeta{
+	bucketListInput := objectstorage.BucketListAndQuotaRequestMeta{
 		AccessKey: req.AccessKey,
 		SecretKey: req.SecretKey,
+		MaxKeys:   1000,
+		Page:      1,
 	}
 	bucketList, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, bucketListInput)
 	if errBucketList.Message != nil {
@@ -227,23 +239,36 @@ func (s *Server) HandleBucketDelete() echo.HandlerFunc {
 			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: errGetUser.Error()})
 		}
 
-		reqBucketQuota := objectstorage.BucketInfoRequestMeta{
+		reqBucketQuota := objectstorage.BucketListAndQuotaRequestMeta{
 			AccessKey: req.AccessKey,
 			SecretKey: req.SecretKey,
 			UID:       userID,
+			MaxKeys:   1000,
+			Page:      1,
 		}
-		bucketQuota, bucketQuotaErr := s.db.BucketQuota(s.Config.ObjectStorageConfigs, reqBucketQuota)
-		if bucketQuotaErr.Message != nil {
-			return c.JSON(bucketQuotaErr.Code, bucketQuotaErr.Message.Error())
+		bucketList, bucketListQuotaErr := s.db.BucketList(s.Config.ObjectStorageConfigs, reqBucketQuota)
+		if bucketListQuotaErr.Message != nil {
+			return c.JSON(bucketListQuotaErr.Code, bucketListQuotaErr.Message.Error())
 		}
 
-		for _, bucket := range bucketQuota.Items {
-			if bucket.BucketName == req.Bucket {
-				if bucket.UsedObjects != 0 {
+		bucketFound := false
+		for _, bucket := range bucketList.Items {
+			if bucket == req.Bucket {
+				bucketFound = true
+				limitedBucketList := objectstorage.BucketListResponse{Total: 1, Items: []string{bucket}}
+				bucketQuota, bucketQuotaErr := s.db.BucketQuota(s.Config.ObjectStorageConfigs, reqBucketQuota, limitedBucketList)
+				if bucketQuotaErr.Message != nil {
+					return c.JSON(bucketQuotaErr.Code, bucketQuotaErr.Message.Error())
+				}
+				if bucketQuota.Items[0].UsedObjects != 0 {
 					return c.JSON(http.StatusForbidden, "Bucket is not empty for deletion")
 				}
 				break
 			}
+		}
+
+		if !bucketFound {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: language.ErrNoSuchBucket})
 		}
 
 		deleteBucket, errBucketDelete := s.db.BucketDelete(s.Config.ObjectStorageConfigs, req)

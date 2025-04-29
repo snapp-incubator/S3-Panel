@@ -963,6 +963,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

@@ -158,6 +158,7 @@ func (s *Server) HandleObjectUpload() echo.HandlerFunc {
 				s.logger.Error(errObjectUpload.Message.Error())
 				return c.JSON(errObjectUpload.Code, objectstorage.OperationErrWithMsg{Message: errObjectUpload.Message.Error()})
 			}
+			s.logger.Debug(fmt.Sprintf("File %s Uploaded to bucket %s of user %s Successfully", file.Filename, req.Bucket, req.AccessKey))
 		}
 		return c.JSON(http.StatusOK, objectstorage.ObjectUploadResponse{Created: true})
 	}
@@ -212,12 +213,18 @@ func (s *Server) HandleObjectList() echo.HandlerFunc {
 			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: errGetUser.Error()})
 		}
 
-		reqList := objectstorage.BucketInfoRequestMeta{
+		reqList := objectstorage.BucketListAndQuotaRequestMeta{
 			AccessKey: req.AccessKey,
 			SecretKey: req.SecretKey,
+			MaxKeys:   1000,
+			Page:      1,
 			UID:       userID,
 		}
-		outputBucketQuota, errBucketQuota := s.db.BucketQuota(s.Config.ObjectStorageConfigs, reqList)
+		outputBucketList, errBucketList := s.db.BucketList(s.Config.ObjectStorageConfigs, reqList)
+		if errBucketList.Message != nil {
+			return c.JSON(errBucketList.Code, objectstorage.OperationErrWithMsg{Message: errBucketList.Message.Error()})
+		}
+		outputBucketQuota, errBucketQuota := s.db.BucketQuota(s.Config.ObjectStorageConfigs, reqList, outputBucketList)
 		if errBucketQuota.Message != nil {
 			return c.JSON(errBucketQuota.Code, objectstorage.OperationErrWithMsg{Message: errBucketQuota.Message.Error()})
 		}

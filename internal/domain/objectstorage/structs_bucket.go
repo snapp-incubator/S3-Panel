@@ -7,6 +7,15 @@ type BucketActionRequestMeta struct {
 	Bucket    string `query:"bucket"      validate:"required"`
 }
 
+type BucketListAndQuotaRequestMeta struct {
+	AccessKey    string `header:"access_key"   validate:"required"`
+	SecretKey    string `header:"secret_key"   validate:"required"`
+	MaxKeys      int32  `query:"max_keys" validate:"required"`
+	Page         int32  `query:"page" validate:"required"`
+	SearchString string `query:"search_string"`
+	UID          string
+}
+
 // BucketInfoRequestMeta used for APIs that don't need the "bucket" name to take actions, like "Quota", "List"
 type BucketInfoRequestMeta struct {
 	AccessKey    string `header:"access_key"   validate:"required"`
@@ -37,6 +46,7 @@ type SingleBucketQuotaResponse struct {
 
 type BucketListResponse struct {
 	Items []string `json:"items"`
+	Total int      `json:"total"`
 }
 
 type BucketCreateResponse struct {

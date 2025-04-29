@@ -7,8 +7,8 @@ S3 Panel Backend is a project to be used as backend for SnappCloud Unified Panel
 ## APIs
 
 Buckets
-- [x] Bucket List
-- [x] Bucket Quota
+- [x] Bucket List (with Pagination)
+- [x] Bucket Quota (with Pagination)
 - [x] Bucket Create
 - [x] Bucket Delete
 
@@ -18,20 +18,21 @@ Users
 
 Objects
 - [x] Objects Delete
-- [x] Object List
+- [x] Object List (with Pagination)
 - [x] Object Download
-- [x] Object Upload
+- [x] Object Upload (Multiple Files)
 - [x] Object Head
+- [x] Object Temporary Link (with Custom Expiration)
 
 ## APIs Curls
 
 ### Bucket List
 
-curl -XGET "127.0.0.1:8080/api/bucket/list" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+curl -XGET "127.0.0.1:8080/api/bucket/list?page=1&max_keys=10" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
 
 ### Bucket Quota
 
-curl -XGET "127.0.0.1:8080/api/bucket/quota" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+curl -XGET "127.0.0.1:8080/api/bucket/quota?page=1&max_keys=10" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
 
 ### Bucket Create
 
@@ -47,7 +48,7 @@ curl -XGET "127.0.0.1:8080/api/user/id" -H "Content-Type: application/json" -H "
 
 ### User Quota
 
-curl -XGET "127.0.0.1:8080/api/user/id" -H "Content-Type: application/json" -H "access_key: X" -H "Authorization: Bearer X"
+curl -XGET "127.0.0.1:8080/api/user/quota" -H "Content-Type: application/json" -H "access_key: X" -H "Authorization: Bearer X"
 
 ### Object List
 
@@ -63,19 +64,20 @@ curl -XPOST "127.0.0.1:8080/api/object/upload" -H "Content-Type: multipart/form-
 
 ### Object Download
 
-curl -XGET "127.0.0.1:8080/api/object/delete" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "object": "X"}'
+curl -XGET "127.0.0.1:8080/api/object/download?bucket=X&object=X" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
 
 ### Object Head
 
-curl -XGET "127.0.0.1:8080/api/object/head" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" -d '{"bucket": "X", "object": "X"}'
+curl -XGET "127.0.0.1:8080/api/object/head?bucket=X&object=X" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+
+### Object Share
+
+curl -XGET "127.0.0.1:8080/api/object/share?bucket=X&object=X&expiration=1d" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
 
 ## TODO
 
 Object
 
-- [] Object Permanent Link
-- [] Object Temporary Link
-- [] Search Objects
 - [] Object Copy (source/destination bucket)
 - [] Object Set/Get Lock
 - [] Object Set/Get Retention
@@ -89,9 +91,3 @@ General
 - [] Support Directories
 - [] Bucket Set/Get Encryption/SSE
 - [] Bucket Set/Get Replication
-
-## Release Plan
-
-This list is prioritized from top to bottom. we will work on 2 items in a sprint.
-
-- None left
