@@ -17,7 +17,9 @@ import (
 //	@Produce		json
 //	@Param			access_key		header		string								true	"User given AccessKey"
 //	@Param			secret_key		header		string								true	"User given SecretKey"
-//	@Param			search_string	query		string								true	"search by given string, could be empty"
+//	@Param			search_string	query		string								false	"search by given string, could be empty"
+//	@Param			max_keys		query		string								false	"max keys in a page"
+//	@Param			page			query		string								false	"page number"
 //	@Success		200				{object}	objectstorage.BucketListResponse	"Successful response with bucket list"
 //	@Failure		400				{object}	objectstorage.OperationErrWithMsg	"Bad Request"
 //	@Failure		401				{object}	string								"Unauthorized"
@@ -71,7 +73,9 @@ func (s *Server) HandleBucketList() echo.HandlerFunc {
 //	@Produce		json
 //	@Param			access_key		header		string								true	"User given AccessKey"
 //	@Param			secret_key		header		string								true	"User given SecretKey"
-//	@Param			search_string	query		string								true	"search by given string, could be empty"
+//	@Param			search_string	query		string								false	"search by given string, could be empty"
+//	@Param			max_keys		query		string								false	"max keys in a page"
+//	@Param			page			query		string								false	"page number"
 //	@Success		200				{object}	objectstorage.BucketQuotaResponse	"Successful response with buckets quota"
 //	@Failure		400				{object}	objectstorage.OperationErrWithMsg	"Bad Request"
 //	@Failure		401				{object}	string								"Unauthorized"

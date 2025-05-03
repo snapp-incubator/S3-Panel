@@ -206,8 +206,19 @@ const docTemplate = `{
                         "type": "string",
                         "description": "search by given string, could be empty",
                         "name": "search_string",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "max keys in a page",
+                        "name": "max_keys",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page number",
+                        "name": "page",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -276,8 +287,19 @@ const docTemplate = `{
                         "type": "string",
                         "description": "search by given string, could be empty",
                         "name": "search_string",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "max keys in a page",
+                        "name": "max_keys",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page number",
+                        "name": "page",
+                        "in": "query"
                     }
                 ],
                 "responses": {

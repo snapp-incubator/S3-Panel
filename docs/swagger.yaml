@@ -279,7 +279,14 @@ paths:
       - description: search by given string, could be empty
         in: query
         name: search_string
-        required: true
+        type: string
+      - description: max keys in a page
+        in: query
+        name: max_keys
+        type: string
+      - description: page number
+        in: query
+        name: page
         type: string
       produces:
       - application/json
@@ -328,7 +335,14 @@ paths:
       - description: search by given string, could be empty
         in: query
         name: search_string
-        required: true
+        type: string
+      - description: max keys in a page
+        in: query
+        name: max_keys
+        type: string
+      - description: page number
+        in: query
+        name: page
         type: string
       produces:
       - application/json
