@@ -25,7 +25,9 @@ type BucketInfoRequestMeta struct {
 }
 
 type BucketQuotaResponse struct {
-	Items []SingleBucketQuotaResponse `json:"items"`
+	Items           []SingleBucketQuotaResponse `json:"items"`
+	TotalFiltered   int                         `json:"total_filtered"`
+	TotalUnfiltered int                         `json:"total_unfiltered"`
 }
 
 type SingleBucketQuotaResponse struct {
@@ -45,8 +47,9 @@ type SingleBucketQuotaResponse struct {
 }
 
 type BucketListResponse struct {
-	Items []string `json:"items"`
-	Total int      `json:"total"`
+	Items           []string `json:"items"`
+	TotalFiltered   int      `json:"total_filtered"`
+	TotalUnfiltered int      `json:"total_unfiltered"`
 }
 
 type BucketCreateResponse struct {

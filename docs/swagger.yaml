@@ -17,7 +17,9 @@ definitions:
         items:
           type: string
         type: array
-      total:
+      total_filtered:
+        type: integer
+      total_unfiltered:
         type: integer
     type: object
   objectstorage.BucketQuotaResponse:
@@ -26,6 +28,10 @@ definitions:
         items:
           $ref: '#/definitions/objectstorage.SingleBucketQuotaResponse'
         type: array
+      total_filtered:
+        type: integer
+      total_unfiltered:
+        type: integer
     type: object
   objectstorage.ObjectDeleteResponse:
     properties:

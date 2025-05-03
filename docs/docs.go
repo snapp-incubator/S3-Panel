@@ -986,7 +986,10 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "total": {
+                "total_filtered": {
+                    "type": "integer"
+                },
+                "total_unfiltered": {
                     "type": "integer"
                 }
             }
@@ -999,6 +1002,12 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/objectstorage.SingleBucketQuotaResponse"
                     }
+                },
+                "total_filtered": {
+                    "type": "integer"
+                },
+                "total_unfiltered": {
+                    "type": "integer"
                 }
             }
         },

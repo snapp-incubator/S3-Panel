@@ -119,7 +119,7 @@ func (s *Server) HandleBucketQuota() echo.HandlerFunc {
 			return c.JSON(errBucketList.Code, objectstorage.OperationErrWithMsg{Message: errBucketList.Message.Error()})
 		}
 
-		if bucketList.Total <= BucketQuotaV1Threshold {
+		if bucketList.TotalUnfiltered <= BucketQuotaV1Threshold {
 			quotaInfo, errBucketQuota := s.db.BucketQuota(s.Config.ObjectStorageConfigs, req, bucketList)
 			if errBucketQuota.Message != nil {
 				s.logger.Error(errBucketQuota.Message.Error())
@@ -259,7 +259,7 @@ func (s *Server) HandleBucketDelete() echo.HandlerFunc {
 		for _, bucket := range bucketList.Items {
 			if bucket == req.Bucket {
 				bucketFound = true
-				limitedBucketList := objectstorage.BucketListResponse{Total: 1, Items: []string{bucket}}
+				limitedBucketList := objectstorage.BucketListResponse{TotalUnfiltered: 1, TotalFiltered: 1, Items: []string{bucket}}
 				bucketQuota, bucketQuotaErr := s.db.BucketQuota(s.Config.ObjectStorageConfigs, reqBucketQuota, limitedBucketList)
 				if bucketQuotaErr.Message != nil {
 					return c.JSON(bucketQuotaErr.Code, bucketQuotaErr.Message.Error())
