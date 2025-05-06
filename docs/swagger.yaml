@@ -17,9 +17,9 @@ definitions:
         items:
           type: string
         type: array
-      total_filtered:
+      total_buckets:
         type: integer
-      total_unfiltered:
+      total_pages:
         type: integer
     type: object
   objectstorage.BucketQuotaResponse:
@@ -28,9 +28,9 @@ definitions:
         items:
           $ref: '#/definitions/objectstorage.SingleBucketQuotaResponse'
         type: array
-      total_filtered:
+      total_buckets:
         type: integer
-      total_unfiltered:
+      total_pages:
         type: integer
     type: object
   objectstorage.ObjectDeleteResponse:

@@ -91,9 +91,8 @@ func (c CephObjectStorage) BucketList(serverAdminConfig configApp.ObjectStorageC
 		}
 	}
 	return objectstorage.BucketListResponse{
-		Items:           buckets,
-		TotalUnfiltered: totalItems,
-		TotalFiltered:   len(buckets),
+		Items:        buckets,
+		TotalBuckets: totalItems,
 	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
@@ -148,7 +147,7 @@ func (c CephObjectStorage) BucketQuota(serverAdminConfig configApp.ObjectStorage
 		aggregatedBucketData = append(aggregatedBucketData, bucketQuotaInfo)
 	}
 
-	return objectstorage.BucketQuotaResponse{Items: aggregatedBucketData, TotalFiltered: matchedBuckets.TotalFiltered, TotalUnfiltered: matchedBuckets.TotalUnfiltered}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
+	return objectstorage.BucketQuotaResponse{Items: aggregatedBucketData, TotalBuckets: matchedBuckets.TotalBuckets, TotalPages: matchedBuckets.TotalPages}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
 func (c CephObjectStorage) BucketQuotaV2(serverAdminConfig configApp.ObjectStorageConfig, meta objectstorage.BucketListAndQuotaRequestMeta, matchedBuckets objectstorage.BucketListResponse) (objectstorage.BucketQuotaResponse, objectstorage.HTTPErrorWithCode) {
@@ -204,5 +203,5 @@ func (c CephObjectStorage) BucketQuotaV2(serverAdminConfig configApp.ObjectStora
 		aggregatedBucketData = append(aggregatedBucketData, bucketQuotaInfo)
 	}
 
-	return objectstorage.BucketQuotaResponse{Items: aggregatedBucketData, TotalFiltered: matchedBuckets.TotalFiltered, TotalUnfiltered: matchedBuckets.TotalUnfiltered}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
+	return objectstorage.BucketQuotaResponse{Items: aggregatedBucketData, TotalBuckets: matchedBuckets.TotalBuckets, TotalPages: matchedBuckets.TotalPages}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
 }

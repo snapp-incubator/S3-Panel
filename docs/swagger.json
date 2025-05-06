@@ -978,10 +978,10 @@
                         "type": "string"
                     }
                 },
-                "total_filtered": {
+                "total_buckets": {
                     "type": "integer"
                 },
-                "total_unfiltered": {
+                "total_pages": {
                     "type": "integer"
                 }
             }
@@ -995,10 +995,10 @@
                         "$ref": "#/definitions/objectstorage.SingleBucketQuotaResponse"
                     }
                 },
-                "total_filtered": {
+                "total_buckets": {
                     "type": "integer"
                 },
-                "total_unfiltered": {
+                "total_pages": {
                     "type": "integer"
                 }
             }

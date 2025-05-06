@@ -986,10 +986,10 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "total_filtered": {
+                "total_buckets": {
                     "type": "integer"
                 },
-                "total_unfiltered": {
+                "total_pages": {
                     "type": "integer"
                 }
             }
@@ -1003,10 +1003,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/objectstorage.SingleBucketQuotaResponse"
                     }
                 },
-                "total_filtered": {
+                "total_buckets": {
                     "type": "integer"
                 },
-                "total_unfiltered": {
+                "total_pages": {
                     "type": "integer"
                 }
             }
