@@ -45,7 +45,7 @@ type ObjectListResponse struct {
 }
 
 type ObjectDownloadResponse struct {
-	Downloaded bool `json:"downloaded"`
+	URL string `json:"url"`
 }
 
 type ObjectUploadResponse struct {

@@ -1022,8 +1022,8 @@ const docTemplate = `{
         "objectstorage.ObjectDownloadResponse": {
             "type": "object",
             "properties": {
-                "downloaded": {
-                    "type": "boolean"
+                "url": {
+                    "type": "string"
                 }
             }
         },
@@ -1200,12 +1200,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "ObjectStorage Backend Swagger",
-	Description:      "Serves the S3 backend APIs",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
