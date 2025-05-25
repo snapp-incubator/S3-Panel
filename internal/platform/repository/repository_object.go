@@ -21,6 +21,7 @@ import (
 )
 
 const DefaultPreSignShareExpiration = time.Hour * 1
+const PreSignDownloadExpiration = time.Minute * 1
 
 func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectDeleteRequestMeta) (objectstorage.ObjectDeleteResponse, objectstorage.HTTPErrorWithCode) {
 	if len(meta.Objects) == 0 {
@@ -65,7 +66,7 @@ func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageC
 }
 
 func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDownloadResponse, objectstorage.HTTPErrorWithCode) {
-	expiration := DefaultPreSignShareExpiration
+	expiration := PreSignDownloadExpiration
 
 	preSignClient, err := c.NewPreSignClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey, expiration)
 	if err != nil {
