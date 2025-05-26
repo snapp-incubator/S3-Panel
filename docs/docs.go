@@ -1022,8 +1022,8 @@ const docTemplate = `{
         "objectstorage.ObjectDownloadResponse": {
             "type": "object",
             "properties": {
-                "downloaded": {
-                    "type": "boolean"
+                "url": {
+                    "type": "string"
                 }
             }
         },

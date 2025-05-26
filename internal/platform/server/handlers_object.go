@@ -2,10 +2,11 @@ package server
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/domain/objectstorage"
 	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/repository"
-	"net/http"
 )
 
 // HandleObjectDownload
@@ -46,27 +47,21 @@ func (s *Server) HandleObjectDownload() echo.HandlerFunc {
 		}
 
 		// check if object exists before downloading
-		_, existsErr := s.db.ObjectHead(s.Config.ObjectStorageConfigs, req)
-		if existsErr.Message != nil {
-			s.logger.Error(existsErr.Message.Error())
-			return c.JSON(existsErr.Code, objectstorage.OperationErrWithMsg{Message: existsErr.Message.Error()})
+		exists, errObjHead := s.db.ObjectHead(s.Config.ObjectStorageConfigs, req)
+		if errObjHead.Message != nil {
+			s.logger.Error(errObjHead.Message.Error())
+			return c.JSON(errObjHead.Code, objectstorage.OperationErrWithMsg{Message: errObjHead.Message.Error()})
+		}
+		if exists.Exists == false {
+			return c.JSON(http.StatusUnprocessableEntity, objectstorage.OperationErrWithMsg{Message: "Object does not exist"})
 		}
 
-		tmpPath, exists, errCreatePath := createObjectPath(s.Config.ServerConfigs.DownloadPath, req.AccessKey, req.Object)
-		if errCreatePath != nil {
-			s.logger.Error(errCreatePath.Error())
-			return c.JSON(http.StatusInternalServerError, objectstorage.OperationErrWithMsg{Message: errCreatePath.Error()})
+		url, errObjDownload := s.db.ObjectDownload(s.Config.ObjectStorageConfigs, req)
+		if errObjDownload.Message != nil {
+			s.logger.Error(errObjDownload.Message.Error())
+			return c.JSON(errObjDownload.Code, objectstorage.OperationErrWithMsg{Message: errObjDownload.Message.Error()})
 		}
-		req.TemporaryPath = tmpPath
-
-		if !exists {
-			_, errObjectDownload := s.db.ObjectDownload(s.Config.ObjectStorageConfigs, req)
-			if errObjectDownload.Message != nil {
-				s.logger.Error(errObjectDownload.Message.Error())
-				return c.JSON(errObjectDownload.Code, objectstorage.OperationErrWithMsg{Message: errObjectDownload.Message.Error()})
-			}
-		}
-		return c.Attachment(req.TemporaryPath, req.Object)
+		return c.JSON(http.StatusOK, url)
 	}
 }
 

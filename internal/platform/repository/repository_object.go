@@ -8,12 +8,10 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	_ "github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
@@ -23,6 +21,7 @@ import (
 )
 
 const DefaultPreSignShareExpiration = time.Hour * 1
+const PreSignDownloadExpiration = time.Minute * 1
 
 func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectDeleteRequestMeta) (objectstorage.ObjectDeleteResponse, objectstorage.HTTPErrorWithCode) {
 	if len(meta.Objects) == 0 {
@@ -67,36 +66,23 @@ func (c CephObjectStorage) ObjectsDelete(serverAdminConfig config.ObjectStorageC
 }
 
 func (c CephObjectStorage) ObjectDownload(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectRequestMeta) (objectstorage.ObjectDownloadResponse, objectstorage.HTTPErrorWithCode) {
-	createdFile, errCreate := os.Create(meta.TemporaryPath)
-	if errCreate != nil {
-		return objectstorage.ObjectDownloadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf("could not create temporary file, error: %s", errCreate)}
-	}
+	expiration := PreSignDownloadExpiration
 
-	client, err := c.NewClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey)
+	preSignClient, err := c.NewPreSignClient(serverAdminConfig.URL, meta.AccessKey, meta.SecretKey, expiration)
 	if err != nil {
 		return objectstorage.ObjectDownloadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: fmt.Errorf(language.FailedToCreateClient)}
 	}
 
-	var partSize int64 = 10 * 1024 * 1024
-	downloader := manager.NewDownloader(client, func(d *manager.Downloader) {
-		d.PartSize = partSize
-		d.Concurrency = 4
-		d.PartBodyMaxRetries = 3
-		d.LogInterruptedDownloads = true
-	})
-	_, errDownload := downloader.Download(context.Background(), createdFile, &s3.GetObjectInput{
-		Bucket:       aws.String(meta.Bucket),
-		Key:          aws.String(meta.Object),
-		ChecksumMode: types.ChecksumModeEnabled,
-	})
-	if errDownload != nil {
-		fmt.Printf("Couldn't download large object from %v:%v. Here's why: %v\n", meta.Bucket, meta.Object, errDownload)
-		return objectstorage.ObjectDownloadResponse{}, CustomizedErrorContents(errDownload)
+	objectDownloadInput := s3.GetObjectInput{
+		Bucket: aws.String(meta.Bucket),
+		Key:    aws.String(meta.Object),
+	}
+	urlPreSign, errPreSignGet := preSignClient.PresignGetObject(context.Background(), &objectDownloadInput)
+	if errPreSignGet != nil {
+		return objectstorage.ObjectDownloadResponse{}, objectstorage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: errPreSignGet}
 	}
 
-	return objectstorage.ObjectDownloadResponse{
-		Downloaded: true,
-	}, objectstorage.HTTPErrorWithCode{Code: 0, Message: nil}
+	return objectstorage.ObjectDownloadResponse{URL: urlPreSign.URL}, objectstorage.HTTPErrorWithCode{}
 }
 
 func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConfig, meta objectstorage.ObjectListRequestMeta) (objectstorage.ObjectListResponse, objectstorage.HTTPErrorWithCode) {

@@ -40,8 +40,8 @@ definitions:
     type: object
   objectstorage.ObjectDownloadResponse:
     properties:
-      downloaded:
-        type: boolean
+      url:
+        type: string
     type: object
   objectstorage.ObjectHeadResponse:
     properties:

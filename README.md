@@ -64,7 +64,7 @@ curl -XPOST "127.0.0.1:8080/api/object/upload" -H "Content-Type: multipart/form-
 
 ### Object Download
 
-curl -XGET "127.0.0.1:8080/api/object/download?bucket=X&object=X" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+curl -XGET "127.0.0.1:8080/api/object/download?bucket=X&object=X" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" | jq
 
 ### Object Head
 
@@ -72,7 +72,7 @@ curl -XGET "127.0.0.1:8080/api/object/head?bucket=X&object=X" -H "Content-Type: 
 
 ### Object Share
 
-curl -XGET "127.0.0.1:8080/api/object/share?bucket=X&object=X&expiration=1d" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X"
+curl -XGET "127.0.0.1:8080/api/object/share?bucket=X&object=X&expiration=1d" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" | jq
 
 ## TODO
 
