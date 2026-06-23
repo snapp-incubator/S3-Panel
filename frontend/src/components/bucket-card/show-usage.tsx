@@ -1,7 +1,7 @@
 import { Progress } from '@/components/shadcn/progress'
 import { calculateValue } from '@/lib/utils'
 
-import { TShowUsageProps } from './showUsage.types'
+import type { TShowUsageProps } from './showUsage.types'
 
 export default function ShowUsage({
   quotaEnabled,

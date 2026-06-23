@@ -1,11 +1,11 @@
 import {
   Pagination,
   PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
   PaginationEllipsis,
-  PaginationLink
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
 } from '@/components/shadcn/pagination'
 
 interface CustomPaginationProps {

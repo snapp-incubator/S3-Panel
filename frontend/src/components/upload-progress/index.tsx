@@ -1,10 +1,9 @@
-import { useState } from 'react'
-
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { useState } from 'react'
 
 import { Progress } from '@/components/shadcn/progress'
 import { t } from '@/i18n'
-import { IUploadNames } from '@/types/s3/upload.types'
+import type { IUploadNames } from '@/types/s3/upload.types'
 
 import { useUploadProgress } from '../providers/uploadProgressContext'
 import { Button } from '../shadcn/button'
@@ -90,6 +89,7 @@ const GlobalUploadProgress = () => {
                     {item.failed ? null : <span>{returnProgress(item)}%</span>}
                     {!item.completed && !item.failed && (
                       <button
+                        type="button"
                         onClick={() => handleCancel(item)}
                         className="rounded bg-red-500 px-2 py-1 text-xs text-white"
                       >
@@ -98,6 +98,7 @@ const GlobalUploadProgress = () => {
                     )}
                     {item.failed && (
                       <button
+                        type="button"
                         onClick={() => handleRetry(item.name)}
                         className="rounded bg-blue-500 px-2 py-1 text-xs text-white"
                       >

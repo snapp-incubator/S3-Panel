@@ -1,5 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { Theme, ThemeProviderState, ThemeProviderProps } from './provider.types'
+import type {
+  Theme,
+  ThemeProviderProps,
+  ThemeProviderState
+} from './provider.types'
 
 const initialState: ThemeProviderState = {
   theme: 'light',

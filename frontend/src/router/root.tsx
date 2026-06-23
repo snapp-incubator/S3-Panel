@@ -1,4 +1,4 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { createRootRoute, Outlet } from '@tanstack/react-router'
 
 import ErrorPage from '@/components/error-page'
 import Layout from '@/components/layout'

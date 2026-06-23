@@ -1,7 +1,6 @@
-import { useState } from 'react'
-
 import { useMutation } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
+import { useState } from 'react'
 
 import { deleteObject } from '@/api/s3'
 import DeleteConfirmation from '@/components/delete-confirmation'
@@ -14,7 +13,7 @@ import {
 } from '@/components/shadcn/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import { t } from '@/i18n'
-import { HTTPClientError } from '@/services/http/interceptorsConfig'
+import type { HTTPClientError } from '@/services/http/interceptorsConfig'
 
 import type { TDeleteObjectProps } from './deleteObject.types'
 

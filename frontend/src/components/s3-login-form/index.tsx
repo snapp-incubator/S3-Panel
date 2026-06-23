@@ -22,7 +22,7 @@ import { useToast } from '@/hooks/use-toast'
 import useS3Credentials from '@/hooks/useS3Credentials'
 import { t } from '@/i18n'
 import { updateRegion } from '@/services/http/centralClient'
-import { HTTPClientError } from '@/services/http/interceptorsConfig'
+import type { HTTPClientError } from '@/services/http/interceptorsConfig'
 import { ProjectRegion } from '@/types/enums'
 import type { TRegions } from '@/types/regions.types'
 

@@ -1,9 +1,8 @@
+import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 
-import { useMutation } from '@tanstack/react-query'
-
 import { shareLink } from '@/api/s3'
-import { HTTPClientError } from '@/services/http/interceptorsConfig'
+import type { HTTPClientError } from '@/services/http/interceptorsConfig'
 
 import { useToast } from './use-toast'
 

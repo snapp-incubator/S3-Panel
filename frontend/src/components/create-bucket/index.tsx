@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { z } from 'zod'
+import type { z } from 'zod'
 
 import { createBucket } from '@/api/s3'
 import {
@@ -11,10 +11,10 @@ import {
 } from '@/components/shadcn/dialog'
 import { useToast } from '@/hooks/use-toast'
 import { t } from '@/i18n'
-import { HTTPClientError } from '@/services/http/interceptorsConfig'
+import type { HTTPClientError } from '@/services/http/interceptorsConfig'
 
 import BucketForm from './bucket-form'
-import { type ICreateBucket, FormSchemaType } from './createBucket.types'
+import type { FormSchemaType, ICreateBucket } from './createBucket.types'
 
 export default function CreateBucket({
   open,

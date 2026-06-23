@@ -1,6 +1,5 @@
-import { useState, useEffect, useDeferredValue } from 'react'
-
 import { useQuery } from '@tanstack/react-query'
+import { useDeferredValue, useEffect, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 
 import { fetchBucketsQuota } from '@/api/s3'
@@ -49,7 +48,7 @@ export default function Buckets() {
   }, [buckets, initialTotalPages])
 
   const returnBuckets = () => {
-    if (buckets && buckets.items) {
+    if (buckets?.items) {
       return buckets.items.map(bucket => (
         <BucketCard {...bucket} key={bucket.bucket} />
       ))

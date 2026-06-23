@@ -183,7 +183,7 @@ function useToast() {
         listeners.splice(index, 1)
       }
     }
-  }, [state])
+  }, [])
 
   return {
     ...state,
@@ -192,4 +192,4 @@ function useToast() {
   }
 }
 
-export { useToast, toast }
+export { toast, useToast }

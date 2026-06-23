@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 
 import { downloadObject } from '@/api/s3'
 import { downloadUrl } from '@/lib/utils'
-import { HTTPClientError } from '@/services/http/interceptorsConfig'
+import type { HTTPClientError } from '@/services/http/interceptorsConfig'
 
 import { useToast } from './use-toast'
 

@@ -40,7 +40,12 @@ export default function DeleteConfirmation({
             {t('delete')}
           </Button>
           <DialogClose asChild>
-            <Button disabled={isLoading} type="button" variant="secondary" data-test="cancel-delete-button">
+            <Button
+              disabled={isLoading}
+              type="button"
+              variant="secondary"
+              data-test="cancel-delete-button"
+            >
               {t('discard')}
             </Button>
           </DialogClose>

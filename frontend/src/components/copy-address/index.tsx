@@ -5,10 +5,10 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogTrigger
 } from '@/components/shadcn/dialog'
 import { Input } from '@/components/shadcn/input'

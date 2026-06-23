@@ -2,7 +2,7 @@ import { AlertCircle } from 'lucide-react'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/shadcn/alert'
 
-import { MessageAlertProps } from './message.types'
+import type { MessageAlertProps } from './message.types'
 
 export const AlertMessage = ({
   title,

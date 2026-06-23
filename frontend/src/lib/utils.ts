@@ -47,10 +47,10 @@ export function dateFormat(dateStr: string) {
     const normalized = dateStr.replace(' ', 'T').replace(' +0000 UTC', 'Z')
     const date = new Date(normalized)
 
-    if (isNaN(date.getTime())) throw new Error('Invalid date')
+    if (Number.isNaN(date.getTime())) throw new Error('Invalid date')
 
     return formatFullDateTime(date)
-  } catch (err) {
+  } catch (_err) {
     return 'Invalid Date'
   }
 }

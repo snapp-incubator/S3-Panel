@@ -12,7 +12,7 @@ import { buildQueryString } from '@/services/http/query-client'
 
 import { Button } from '../shadcn/button'
 
-import { TDownloadObjectProps } from './downloadObject.types'
+import type { TDownloadObjectProps } from './downloadObject.types'
 
 export default function DownloadObject({
   bucket,

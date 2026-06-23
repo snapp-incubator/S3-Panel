@@ -1,6 +1,0 @@
-tests-examples
-vite.config.ts
-tsconfig.json
-tailwind.config.js
-postcss.config.js
-playwright.config.ts

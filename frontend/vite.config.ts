@@ -1,5 +1,4 @@
-import path from 'path'
-
+import path from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import version from 'vite-plugin-package-version'
@@ -17,7 +16,7 @@ const IS_LOCAL_ENV =
   !IS_PRODUCTION_ENV && !IS_STAGING_ENV && !IS_DEVELOPMENT_ENV
 
 const IS_SENTRY_DISABLED = IS_LOCAL_ENV
-const RELEASE_NAME = IS_SENTRY_DISABLED
+const _RELEASE_NAME = IS_SENTRY_DISABLED
   ? ''
   : `${PROJECT_NAME}@${packageJson.version}${IS_PRODUCTION_ENV ? '' : `-${VITE_APP_ENVIRONMENT}`}`
 

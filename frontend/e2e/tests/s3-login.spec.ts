@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('S3 Bucket Login Form', () => {
   test.beforeEach(async ({ page }) => {

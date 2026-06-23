@@ -1,5 +1,10 @@
-import { createContext, useContext, useState, PropsWithChildren } from 'react'
-import { TitleContextType } from './provider.types'
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useState
+} from 'react'
+import type { TitleContextType } from './provider.types'
 
 const TitleContext = createContext<TitleContextType>({
   title: '',

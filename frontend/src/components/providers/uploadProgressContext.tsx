@@ -1,16 +1,16 @@
 import {
   createContext,
   type MutableRefObject,
-  useContext,
-  useRef,
-  useState,
   type ReactNode,
+  useCallback,
+  useContext,
   useEffect,
-  useCallback
+  useRef,
+  useState
 } from 'react'
 
 import { t } from '@/i18n'
-import { IUploadNames } from '@/types/s3/upload.types'
+import type { IUploadNames } from '@/types/s3/upload.types'
 
 interface UploadProgressContextProps {
   uploadNames: IUploadNames[]
@@ -61,7 +61,7 @@ export const UploadProgressProvider = ({
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
-  }, [processing, checkUploadProgress])
+  }, [checkUploadProgress])
 
   useEffect(() => {
     return () => {

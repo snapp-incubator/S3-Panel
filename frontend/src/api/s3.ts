@@ -3,9 +3,9 @@ import { buildQueryString } from '@/services/http/query-client'
 import type {
   IBucketObjectResponse,
   IBucketResponse,
-  IUserQuotaResponse,
+  IBucketsListResponse,
   IUserDetailsResponse,
-  IBucketsListResponse
+  IUserQuotaResponse
 } from '@/types/s3/buckets.types'
 
 const createBucket = async ({ bucket }: { bucket: string }) => {
@@ -146,14 +146,14 @@ const shareLink = async (
 
 export {
   createBucket,
-  fetchUserQuota,
-  fetchObjects,
-  fetchBucketsQuota,
-  fetchBucketsList,
-  fetchUserDetails,
-  deleteObject,
-  uploadObjects,
-  downloadObject,
   deleteBucketApi,
-  shareLink
+  deleteObject,
+  downloadObject,
+  fetchBucketsList,
+  fetchBucketsQuota,
+  fetchObjects,
+  fetchUserDetails,
+  fetchUserQuota,
+  shareLink,
+  uploadObjects
 }

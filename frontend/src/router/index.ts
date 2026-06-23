@@ -1,6 +1,5 @@
+import { createRoute, createRouter, redirect } from '@tanstack/react-router'
 import { lazy } from 'react'
-
-import { createRouter, createRoute, redirect } from '@tanstack/react-router'
 
 import { handleAuthRedirect } from '@/lib/utils'
 

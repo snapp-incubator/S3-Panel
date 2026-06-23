@@ -1,7 +1,6 @@
-import { useState } from 'react'
-
 import { useNavigate } from '@tanstack/react-router'
 import { Copy, Ellipsis } from 'lucide-react'
+import { useState } from 'react'
 
 import { Button } from '@/components/shadcn/button'
 import {
@@ -24,7 +23,7 @@ import {
   TooltipTrigger
 } from '../shadcn/tooltip'
 
-import { TUsageInfoProps } from './bucketCard.types'
+import type { TUsageInfoProps } from './bucketCard.types'
 import DeleteBucket from './delete-bucket'
 import ShowUsage from './show-usage'
 

@@ -5,7 +5,7 @@ import { bucketsKeys } from '@/api/s3Keys'
 import { t } from '@/i18n'
 import { queryClient } from '@/services/http/query-client'
 
-import { HTTPClientError } from '../services/http/interceptorsConfig'
+import type { HTTPClientError } from '../services/http/interceptorsConfig'
 
 import { useToast } from './use-toast'
 

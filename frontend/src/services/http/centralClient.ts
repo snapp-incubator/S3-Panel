@@ -1,10 +1,10 @@
 import { BaseHeaders } from './config'
 import {
+  type FetchError,
+  type HTTPClientError,
   interceptorRequestConfig,
   interceptorResponseErrorConfig,
-  RequestHeaders,
-  FetchError,
-  HTTPClientError
+  type RequestHeaders
 } from './interceptorsConfig'
 
 export type Env = 'prod' | 'stage'

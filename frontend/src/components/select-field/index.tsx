@@ -11,7 +11,7 @@ import {
   SelectValue
 } from '@/components/shadcn/select'
 
-import { selectFieldProps } from './selectField.types'
+import type { selectFieldProps } from './selectField.types'
 
 export default function SelectField({
   items,

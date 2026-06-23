@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
 import { s3Keys } from '@/api/s3Keys'
 import { S3StorageKeys } from '@/constants/s3/storeKeys'

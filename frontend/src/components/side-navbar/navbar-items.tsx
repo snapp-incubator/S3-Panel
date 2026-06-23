@@ -1,7 +1,6 @@
-import { useRef, useState } from 'react'
-
 import { Link } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
+import { useRef, useState } from 'react'
 
 import { buttonVariants } from '@/components/shadcn/button'
 import type { NavItem } from '@/constants/navItems.types'

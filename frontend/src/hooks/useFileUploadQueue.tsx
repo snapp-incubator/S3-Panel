@@ -1,10 +1,9 @@
-import { useEffect, useCallback } from 'react'
-
 import type { UseMutateAsyncFunction } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
 
 import { useUploadProgress } from '@/components/providers/uploadProgressContext'
-import { HTTPClientError } from '@/services/http/interceptorsConfig'
-import { IUploadNames } from '@/types/s3/upload.types'
+import type { HTTPClientError } from '@/services/http/interceptorsConfig'
+import type { IUploadNames } from '@/types/s3/upload.types'
 
 interface IUseFileUploadQueueProps {
   mutateAsync: UseMutateAsyncFunction<
@@ -51,7 +50,7 @@ export default function useFileUploadQueue({
                 : item
             )
           )
-        } catch (err) {
+        } catch (_err) {
           setUploadNames(prev =>
             prev.map(item =>
               item.name === currentItem.name ? { ...item, failed: true } : item
@@ -94,12 +93,5 @@ export default function useFileUploadQueue({
     if (pending.length === 0) return
 
     runQueue(pending)
-  }, [
-    uploadNames,
-    processing,
-    mutateAsync,
-    setUploadNames,
-    setShowUploadModal,
-    runQueue
-  ])
+  }, [uploadNames, processing, setUploadNames, runQueue])
 }

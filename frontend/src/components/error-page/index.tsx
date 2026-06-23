@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@/components/providers/themeProvider'
-import { ErrorPageProps } from './error.type'
+import type { ErrorPageProps } from './error.type'
 
 export default function ErrorPage({
   title,

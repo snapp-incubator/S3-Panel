@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 import Header from '@/components/layout/header'
 import { Toaster } from '@/components/shadcn/toaster'

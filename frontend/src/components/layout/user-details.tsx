@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { CircleUserRound, ChevronDown, Loader2 } from 'lucide-react'
+import { ChevronDown, CircleUserRound, Loader2 } from 'lucide-react'
 
 import { fetchUserDetails } from '@/api/s3'
 import { userKeys } from '@/api/s3Keys'

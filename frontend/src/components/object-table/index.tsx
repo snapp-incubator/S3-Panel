@@ -1,6 +1,6 @@
-import { Share2, AlertCircle } from 'lucide-react'
+import { AlertCircle, Share2 } from 'lucide-react'
 
-import { Alert, AlertTitle, AlertDescription } from '@/components/shadcn/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/shadcn/alert'
 import { Button } from '@/components/shadcn/button'
 import { Skeleton } from '@/components/shadcn/skeleton'
 import {
