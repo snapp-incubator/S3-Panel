@@ -7,16 +7,24 @@ interface IBucketCardSkeletonProps {
 export default function BucketCardSkeleton({
   count
 }: IBucketCardSkeletonProps) {
-  return new Array(count).fill('').map((_, index) => (
-    <div key={index} className="flex h-[210px] w-full min-w-[400px]">
-      <Skeleton className="w-[45%] rounded-lg" />
-      <div className="flex w-[55%] flex-col gap-3 p-2">
-        <Skeleton className="h-4 w-full rounded-lg" />
-        <Skeleton className="h-4 w-1/2 rounded-lg" />
-        <Skeleton className="h-4 w-full rounded-lg" />
-        <Skeleton className="h-4 w-1/2 rounded-lg" />
-        <Skeleton className="mt-auto h-12 w-full rounded-lg" />
+  return Array.from({ length: count }, (_, index) => (
+    <div
+      key={index}
+      className="flex min-w-[300px] flex-col gap-4 rounded-xl border bg-card p-5"
+    >
+      <div className="flex items-start gap-3">
+        <Skeleton className="size-10 shrink-0 rounded-lg" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-5 w-2/3 rounded" />
+          <Skeleton className="h-3 w-1/2 rounded" />
+        </div>
       </div>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-full rounded" />
+        <Skeleton className="h-2 w-full rounded-full" />
+      </div>
+      <Skeleton className="h-4 w-full rounded" />
+      <Skeleton className="mt-auto h-9 w-full rounded-md" />
     </div>
   ))
 }

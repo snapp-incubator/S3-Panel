@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { Copy, Ellipsis } from 'lucide-react'
+import { Copy, Database, Ellipsis } from 'lucide-react'
 import { useState } from 'react'
 
 import { Button } from '@/components/shadcn/button'
@@ -9,10 +9,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/shadcn/dropdown-menu'
+import { Progress } from '@/components/shadcn/progress'
 import { useToast } from '@/hooks/use-toast'
 import useDeleteBucket from '@/hooks/useDeleteBucket'
 import { t } from '@/i18n'
-import { copyString, dateFormat } from '@/lib/utils'
+import { calculateValue, copyString, timeAgo } from '@/lib/utils'
 import type { TBucketResponse } from '@/types/s3/buckets.types'
 
 import DeleteConfirmation from '../delete-confirmation'
@@ -23,128 +24,147 @@ import {
   TooltipTrigger
 } from '../shadcn/tooltip'
 
-import type { TUsageInfoProps } from './bucketCard.types'
 import DeleteBucket from './delete-bucket'
-import ShowUsage from './show-usage'
 
-const BucketCard = ({
-  bucket,
-  modify_time_stamp,
-  access,
-  hard_bytes,
-  used_bytes,
-  hard_objects,
-  used_objects,
-  quota_enabled,
-  hard_bytes_unit,
-  used_bytes_unit,
-  used_bytes_raw,
-  hard_bytes_raw
-}: TBucketResponse) => {
+const usageColor = (pct: number) => {
+  if (pct >= 90) return 'bg-red-500'
+  if (pct >= 70) return 'bg-amber-500'
+  return 'bg-green-600'
+}
+
+const num = (n: number) => n.toLocaleString()
+
+const BucketCard = (bucket: TBucketResponse) => {
+  const navigate = useNavigate()
+
+  const storageLimited = bucket.quota_enabled && bucket.hard_bytes_raw > 0
+  const pct = storageLimited
+    ? Math.min(
+        100,
+        Math.round(calculateValue(bucket.used_bytes_raw, bucket.hard_bytes_raw))
+      )
+    : 0
+  const objectsLimited = bucket.quota_enabled && bucket.hard_objects > 0
+
   return (
     <div
-      className="flex h-[210px] w-full min-w-[365px]"
       data-test="bucket-card"
-      data-test-bucket-name={bucket}
+      data-test-bucket-name={bucket.bucket}
+      className="flex min-w-[300px] flex-col gap-4 rounded-xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
     >
-      <BucketHeader bucket={bucket} date={modify_time_stamp} access={access} />
-      <div className="flex w-[55%] flex-col gap-3 p-2">
-        <UsageInfo
-          quotaEnabled={quota_enabled}
-          hardData={hard_bytes}
-          usedData={used_bytes}
-          objectQuota={hard_objects}
-          usedObjects={used_objects}
-          hardUnit={hard_bytes_unit}
-          usedUnit={used_bytes_unit}
-          usedRaw={used_bytes_raw}
-          hardRaw={hard_bytes_raw}
-          bucket={bucket}
-        />
-        <ActionButtons bucket={bucket} />
+      <div className="flex items-start gap-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-green-600/10 text-green-700">
+          <Database className="size-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <h3 className="truncate text-lg font-semibold leading-tight">
+                    {bucket.bucket}
+                  </h3>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{bucket.bucket}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <CopyButton name={bucket.bucket} />
+          </div>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            {bucket.access} · {t('modified')}{' '}
+            {timeAgo(bucket.modify_time_stamp)}
+          </p>
+        </div>
+        <BucketMenu bucket={bucket.bucket} />
       </div>
+
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center justify-between text-sm">
+          <span className="font-medium">{t('storage')}</span>
+          <span className="text-muted-foreground">
+            {storageLimited
+              ? `${pct}% · ${bucket.used_bytes} ${bucket.used_bytes_unit} / ${bucket.hard_bytes} ${bucket.hard_bytes_unit}`
+              : `${bucket.used_bytes} ${bucket.used_bytes_unit}`}
+          </span>
+        </div>
+        {storageLimited ? (
+          <Progress
+            value={pct}
+            className="h-2"
+            indicatorClassName={usageColor(pct)}
+          />
+        ) : null}
+      </div>
+
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-medium">{t('objects')}</span>
+        <span className="text-muted-foreground">
+          {objectsLimited
+            ? `${num(bucket.used_objects)} / ${num(bucket.hard_objects)}`
+            : num(bucket.used_objects)}
+        </span>
+      </div>
+
+      <Button
+        className="mt-auto w-full"
+        data-test="browse-bucket-button"
+        onClick={() =>
+          navigate({
+            to: `/object-storage/s3-bucket/buckets/${bucket.bucket}`
+          })
+        }
+      >
+        {t('browse')}
+      </Button>
     </div>
   )
 }
 
 export default BucketCard
 
-const BucketHeader = ({
-  bucket,
-  date,
-  access
-}: {
-  bucket: string
-  date: string
-  access: string
-}) => {
+const CopyButton = ({ name }: { name: string }) => {
   const { toast } = useToast()
 
-  const formatedDate = dateFormat(date)
-
-  const copyName = (name: string) => {
-    copyString(name).then(key => {
-      toast({
-        title: `${key} copied`,
-        variant: 'info'
-      })
-    })
-  }
-
   return (
-    <div className="flex w-[45%] flex-col justify-end rounded-lg bg-gradient-to-b from-green-400 to-black px-4 py-6">
-      <div className="flex flex-col text-white">
-        <div className="flex items-start justify-between gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <h3 className="line-clamp-3 text-xl underline">{bucket}</h3>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{bucket}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <Button
-            variant="link"
-            size="icon"
-            className="shrink-0"
-            onClick={() => copyName(bucket)}
-          >
-            <Copy className="size-5 text-white" />
-          </Button>
-        </div>
-
-        <span className="mt-2 text-sm">{`${t('modification_date')}: ${formatedDate}`}</span>
-        <span className="text-sm">{`${t('access')}: ${access}`}</span>
-      </div>
-    </div>
+    <Button
+      variant="link"
+      size="icon"
+      className="size-6 shrink-0 text-muted-foreground hover:text-foreground"
+      onClick={() =>
+        copyString(name).then(key =>
+          toast({ title: `${key} copied`, variant: 'info' })
+        )
+      }
+    >
+      <Copy className="size-4" />
+    </Button>
   )
 }
 
-const BucketMoreDetails = ({ bucket }: { bucket: string }) => {
+const BucketMenu = ({ bucket }: { bucket: string }) => {
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false)
   const [openMenu, setOpenMenu] = useState(false)
-
   const { mutate: deleteBucket, isPending } = useDeleteBucket()
 
   return (
     <div data-test="bucket-more-details">
       <DropdownMenu
         open={openMenu && !openDeleteConfirmation}
-        onOpenChange={open => setOpenMenu(open)}
+        onOpenChange={setOpenMenu}
       >
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
+            className="size-8 shrink-0"
             data-test="bucket-more-details-trigger"
           >
-            <Ellipsis />
+            <Ellipsis className="size-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={e => e.preventDefault()} className="p-0">
             <DeleteBucket
               disable={isPending}
@@ -161,70 +181,7 @@ const BucketMoreDetails = ({ bucket }: { bucket: string }) => {
         closeHandler={() => setOpenDeleteConfirmation(false)}
         acceptDelete={() => deleteBucket(bucket)}
         deleteItemName={bucket}
-      ></DeleteConfirmation>
-    </div>
-  )
-}
-
-const UsageInfo = ({
-  quotaEnabled,
-  hardData,
-  hardUnit,
-  usedUnit,
-  usedData,
-  objectQuota,
-  usedObjects,
-  bucket,
-  usedRaw,
-  hardRaw
-}: TUsageInfoProps) => {
-  return (
-    <>
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center justify-between">
-          <span className="text-base font-bold">{`${t('bucket_size')}:`}</span>
-          <BucketMoreDetails bucket={bucket} />
-        </div>
-        <ShowUsage
-          quotaEnabled={quotaEnabled}
-          hardData={hardData}
-          usedData={usedData}
-          hardUnit={hardUnit}
-          usedUnit={usedUnit}
-          usedRaw={usedRaw}
-          hardRaw={hardRaw}
-          withUnit={true}
-        />
-      </div>
-      <div className="flex flex-col gap-1">
-        <span className="text-base font-bold">{`${t('object_count')}:`}</span>
-        <ShowUsage
-          quotaEnabled={quotaEnabled}
-          hardData={objectQuota}
-          usedData={usedObjects}
-        />
-      </div>
-    </>
-  )
-}
-
-const ActionButtons = ({ bucket }: { bucket: string }) => {
-  const navigate = useNavigate()
-
-  return (
-    <div className="mt-auto flex items-center gap-2">
-      <Button
-        size="sm"
-        className="w-full"
-        data-test="browse-bucket-button"
-        onClick={() =>
-          navigate({
-            to: `/object-storage/s3-bucket/buckets/${bucket}`
-          })
-        }
-      >
-        Browse
-      </Button>
+      />
     </div>
   )
 }

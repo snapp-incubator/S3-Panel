@@ -3,6 +3,8 @@
   "access": "Access",
   "bucket_size": "Bucket Size",
   "object_count": "Object Count",
+  "objects": "Objects",
+  "modified": "Modified",
   "browse": "Browse",
   "error_bucket_name": "Fill Bucket Name",
   "bucket_creation": "Bucket Creation",
