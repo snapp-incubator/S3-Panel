@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"strings"
@@ -25,13 +26,14 @@ import (
 )
 
 type Server struct {
-	Config     config.Config
-	cancelCtx  context.Context
-	cancelFunc context.CancelFunc
-	store      storage.ObjectStorage
-	cache      cache.ServerCache
-	logger     *zap.Logger
-	Router     *echo.Echo
+	Config        config.Config
+	cancelCtx     context.Context
+	cancelFunc    context.CancelFunc
+	store         storage.ObjectStorage
+	cache         cache.ServerCache
+	logger        *zap.Logger
+	Router        *echo.Echo
+	regionTargets map[string]*url.URL
 }
 
 func NewServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Config, logger *zap.Logger) (*Server, error) {
@@ -40,6 +42,10 @@ func NewServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Co
 		cancelCtx:  ctx,
 		cancelFunc: cancelFunc,
 		logger:     logger,
+	}
+
+	if err := s.buildRegionTargets(); err != nil {
+		return nil, err
 	}
 
 	s.registerCephRepository()
@@ -131,7 +137,14 @@ func (s *Server) registerAPIGroup(prefix string) {
 		return c.NoContent(http.StatusNoContent)
 	})
 
-	apiRoutesBuckets := apiRoutes.Group("/bucket")
+	// /regions is always answered locally (it advertises this instance's config).
+	apiRoutes.GET("/regions", s.HandleRegions())
+
+	// Data routes are region-aware: a "region" header for a remote region is
+	// reverse-proxied to that region's backend.
+	region := s.regionRouter()
+
+	apiRoutesBuckets := apiRoutes.Group("/bucket", region)
 	{
 		apiRoutesBuckets.GET("/list", s.HandleBucketList())
 		apiRoutesBuckets.GET("/quota", s.HandleBucketQuota())
@@ -139,7 +152,7 @@ func (s *Server) registerAPIGroup(prefix string) {
 		apiRoutesBuckets.DELETE("/delete", s.HandleBucketDelete())
 	}
 
-	apiRoutesObjects := apiRoutes.Group("/object")
+	apiRoutesObjects := apiRoutes.Group("/object", region)
 	{
 		apiRoutesObjects.GET("/list", s.HandleObjectList())
 		apiRoutesObjects.POST("/upload", s.HandleObjectUpload())
@@ -149,7 +162,7 @@ func (s *Server) registerAPIGroup(prefix string) {
 		apiRoutesObjects.GET("/share", s.HandleObjectShare())
 	}
 
-	apiRoutesUsers := apiRoutes.Group("/user")
+	apiRoutesUsers := apiRoutes.Group("/user", region)
 	{
 		apiRoutesUsers.GET("/quota", s.HandleUserQuota())
 		apiRoutesUsers.GET("/id", s.HandleUserIdentification())

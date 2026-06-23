@@ -14,6 +14,14 @@ type ServerConfig struct {
 	// ServeFrontend controls whether the embedded SPA is served. Disable it for
 	// API-only instances. Defaults to true.
 	ServeFrontend bool `json:"serve_frontend"  koanf:"serve_frontend"`
+	// Region is the name of the region this instance serves directly (e.g.
+	// "teh-1"). Requests whose "region" header matches it (or is empty) are
+	// handled locally.
+	Region string `json:"region"          koanf:"region"`
+	// RegionEndpoints maps other region names to the base URL of their backend.
+	// When the frontend is served, a request for one of these regions is
+	// reverse-proxied to that backend. Only meaningful on a frontend instance.
+	RegionEndpoints map[string]string `json:"region_endpoints" koanf:"region_endpoints"`
 }
 
 type ServerCorsConfig struct {

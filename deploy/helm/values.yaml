@@ -18,3 +18,10 @@ snapp-object-store:
     auth_enabled: "false"
     # Serve the embedded frontend (set false for API-only instances).
     serve_frontend: true
+    # Name of the region this instance serves directly (e.g. "teh-1").
+    region: ""
+    # Map of other region name -> backend URL. When the frontend is served,
+    # requests for those regions are reverse-proxied there. e.g.
+    #   region_endpoints:
+    #     teh-2: http://s3-panel.apps.private.okd4.teh-2.snappcloud.io
+    region_endpoints: {}
