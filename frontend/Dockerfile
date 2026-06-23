@@ -1,30 +1,32 @@
-FROM oven/bun:1 as frontend
+FROM node:22-alpine AS frontend
 
-# Define build arguments for environment variables
-# These args will be available as env vars
+# Build-time configuration, exposed to Vite as environment variables.
 ARG VITE_API_LANGUAGE=fa
 ARG VITE_APP_ENVIRONMENT
 ARG VITE_AUTH_TOKEN
 ARG VITE_VARIANT=cab
 ARG VITE_CENTRAL_BACKEND_API
 ARG VITE_ENV
+ENV VITE_API_LANGUAGE=$VITE_API_LANGUAGE \
+    VITE_APP_ENVIRONMENT=$VITE_APP_ENVIRONMENT \
+    VITE_AUTH_TOKEN=$VITE_AUTH_TOKEN \
+    VITE_VARIANT=$VITE_VARIANT \
+    VITE_CENTRAL_BACKEND_API=$VITE_CENTRAL_BACKEND_API \
+    VITE_ENV=$VITE_ENV
 
-RUN apt-get update && apt-get install -y git
+RUN corepack enable && apk add --no-cache git
 
-RUN mkdir -p /app/
 WORKDIR /app
 
-COPY package.json bun.lockb ./
-
-RUN bun i --frozen-lockfile
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
-
-RUN bun run build
+RUN pnpm run build
 
 FROM nginxinc/nginx-unprivileged
 
-COPY --from=frontend ./app/dist/ /usr/share/nginx/html
+COPY --from=frontend /app/dist/ /usr/share/nginx/html
 
 USER root
 RUN chgrp -R 0 /usr/share/nginx && chmod -R g=u /usr/share/nginx

@@ -42,8 +42,7 @@
       "error",
       {
         "commonjs": true,
-        "amd": true,
-        "ignore": ["^bun(:\\w+)?$"]
+        "amd": true
       }
     ],
     "react/jsx-curly-brace-presence": ["error", "never"],

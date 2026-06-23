@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.2.9",
   "type": "module",
+  "packageManager": "pnpm@11.8.0",
   "scripts": {
     "dev": "vite",
     "analyze": "vite-bundle-visualizer",
@@ -11,8 +12,6 @@
     "lint:fix": "eslint . --fix",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:unit": "bun test src/**",
-    "test:unit:watch": "bun test:unit --watch",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -62,7 +61,6 @@
   "devDependencies": {
     "@playwright/test": "^1.45.0",
     "@tanstack/eslint-plugin-query": "^5.47.0",
-    "@types/bun": "latest",
     "@types/node": "^20.14.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

@@ -24,7 +24,7 @@ export default defineConfig({
   ],
   globalSetup: './e2e/global-setup',
   webServer: {
-    command: 'bun run dev',
+    command: 'pnpm run dev',
     url: 'http://localhost:8080',
     reuseExistingServer: true
   }

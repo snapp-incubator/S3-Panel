@@ -29,11 +29,8 @@ Create a .env file based on the provided .env.example.
 Run the development server:
 
 ```sh
-bun run dev
-# or
-npm run dev
-# or
-yarn dev
+pnpm install
+pnpm run dev
 ```
 
 Currently, two official plugins are available:
