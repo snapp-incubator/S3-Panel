@@ -15,11 +15,38 @@ This is a monorepo:
 Run the backend with a config file:
 
 ```sh
-go run ./cmd/s3-panel s3-panel --configPath=./config.yaml
+go run ./cmd/s3-panel s3-panel --configPath=./configs/sample-config.toml
 ```
 
-See `configs/sample-config.yaml` for the configuration format and `frontend/README.md`
-for the UI.
+Configuration is TOML, loaded with [koanf](https://github.com/knadh/koanf) (defaults
+< config file < `s3panel_`-prefixed environment variables). See
+`configs/sample-config.toml` for the format and `frontend/README.md` for the UI.
+
+## Deployment
+
+A Helm chart lives in [`deploy/helm`](deploy/helm) (chart name `s3-panel`). On each
+`v*` tag the release workflow publishes it as an OCI artifact alongside the images:
+
+| Artifact | Reference |
+| --- | --- |
+| Backend image | `ghcr.io/snapp-incubator/s3-panel:<version>` |
+| Frontend image | `ghcr.io/snapp-incubator/s3-panel-frontend:<version>` |
+| Helm chart (OCI) | `oci://ghcr.io/snapp-incubator/charts/s3-panel` |
+
+Install from the OCI registry:
+
+```sh
+helm install s3-panel oci://ghcr.io/snapp-incubator/charts/s3-panel \
+  --version <version> -n snappcloud-unified-panel -f my-values.yaml
+```
+
+## CI
+
+GitHub Actions (`.github/workflows`):
+
+- **Backend** — `go build`, `golangci-lint`, tests, and a Docker image build.
+- **Frontend** — `pnpm install`, Biome lint, Vite build, and a Docker image build.
+- **Release** — on a `v*` tag, builds and pushes the images and the Helm chart (OCI) to GHCR.
 
 ## APIs
 
