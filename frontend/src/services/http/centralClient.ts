@@ -9,7 +9,7 @@ import {
 
 export type Env = 'prod' | 'stage'
 
-export type Region = 'teh-1' | 'teh-2'
+export type Region = string
 
 export interface FetchOptions<TBody = unknown>
   extends Omit<RequestInit, 'body'> {

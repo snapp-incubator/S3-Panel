@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { fetchBucketsList } from '@/api/s3'
+import { fetchBucketsList, fetchRegions } from '@/api/s3'
 import SelectField from '@/components/select-field'
 import { Button } from '@/components/shadcn/button'
 import {
@@ -38,6 +39,13 @@ const formSchema = z.object({
   })
 })
 
+// "teh-1" -> "Teh 1"
+const formatRegion = (region: string) =>
+  region
+    .split('-')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
 export default function S3LoginForm() {
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -53,13 +61,38 @@ export default function S3LoginForm() {
     }
   })
 
+  // Regions are advertised by the backend; fall back to the known ones if the
+  // /regions endpoint isn't available (older backend).
+  const { data: regionsData } = useQuery({
+    queryKey: ['regions'],
+    queryFn: fetchRegions,
+    staleTime: Number.POSITIVE_INFINITY,
+    retry: false
+  })
+
+  const regionNames = regionsData?.regions?.length
+    ? regionsData.regions
+    : [ProjectRegion.Teh1, ProjectRegion.Teh2]
+  const regionOptions = regionNames.map(region => ({
+    title: formatRegion(region),
+    value: region
+  }))
+  const singleRegion = regionOptions.length === 1
+
+  // Default the selection to the backend's current region (or the only one).
+  const defaultRegion =
+    regionsData?.current ?? (singleRegion ? regionNames[0] : undefined)
+  useEffect(() => {
+    if (defaultRegion) form.setValue('region', defaultRegion)
+  }, [defaultRegion, form])
+
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async () => {
       const values = form.getValues()
       const { access_key, secret_key, region } = values
 
       // Set the credentials as separate headers
-      updateRegion(region as ProjectRegion.Teh1 | ProjectRegion.Teh2, {
+      updateRegion(region, {
         access_key,
         secret_key
       })
@@ -100,6 +133,12 @@ export default function S3LoginForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {formItems.map(item => {
+          // Hide the region selector entirely when there is only one region.
+          if (item.key === 'region' && singleRegion) return null
+
+          const selectItems =
+            item.key === 'region' ? regionOptions : item.selectItems
+
           return (
             <FormField
               control={form.control}
@@ -112,7 +151,7 @@ export default function S3LoginForm() {
                     <FormControl>
                       {item.type === 'select' ? (
                         <SelectField
-                          items={item.selectItems!}
+                          items={selectItems!}
                           placeholder={item.placeholder}
                           value={field.value}
                           onChange={field.onChange}

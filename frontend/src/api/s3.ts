@@ -1,5 +1,6 @@
 import centralClient from '@/services/http/centralClient'
 import { buildQueryString } from '@/services/http/query-client'
+import type { IRegionsResponse } from '@/types/regions.types'
 import type {
   IBucketObjectResponse,
   IBucketResponse,
@@ -7,6 +8,12 @@ import type {
   IUserDetailsResponse,
   IUserQuotaResponse
 } from '@/types/s3/buckets.types'
+
+const fetchRegions = async () => {
+  const res = await centralClient.get<IRegionsResponse>('/s3/api/regions')
+
+  return res.data
+}
 
 const createBucket = async ({ bucket }: { bucket: string }) => {
   const res = await centralClient.post('/s3/api/bucket/create', {
@@ -152,6 +159,7 @@ export {
   fetchBucketsList,
   fetchBucketsQuota,
   fetchObjects,
+  fetchRegions,
   fetchUserDetails,
   fetchUserQuota,
   shareLink,

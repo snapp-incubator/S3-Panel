@@ -5,7 +5,7 @@ export interface RequestHeaders {
   access_key?: string
   secret_key?: string
   env: 'prod' | 'stage'
-  region: 'teh-1' | 'teh-2'
+  region: string
 }
 
 export const interceptorRequestConfig = (
