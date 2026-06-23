@@ -103,6 +103,7 @@ func frontendMiddleware() echo.MiddlewareFunc {
 		Skipper: func(c echo.Context) bool {
 			p := c.Request().URL.Path
 			return strings.HasPrefix(p, "/api") ||
+				strings.HasPrefix(p, "/s3/api") ||
 				strings.HasPrefix(p, "/health") ||
 				strings.HasPrefix(p, "/docs")
 		},
@@ -113,7 +114,15 @@ func (s *Server) registerRoutes() {
 	s.Router.GET("/health", health.HandleHealth)
 	s.Router.GET("/docs/*", echoSwagger.WrapHandler)
 
-	apiRoutes := s.Router.Group("/api",
+	// Serve the API under both /api and /s3/api. The bundled frontend calls
+	// /s3/api (a convention inherited from the central panel router); direct API
+	// clients and the swagger docs use /api.
+	s.registerAPIGroup("/api")
+	s.registerAPIGroup("/s3/api")
+}
+
+func (s *Server) registerAPIGroup(prefix string) {
+	apiRoutes := s.Router.Group(prefix,
 		s.CORSMiddleware(),
 		s.AuthMiddleware(),
 	)

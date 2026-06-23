@@ -14,6 +14,7 @@ func serveFrontend(t *testing.T, path string) *httptest.ResponseRecorder {
 	e := echo.New()
 	e.Use(frontendMiddleware())
 	e.GET("/api/ping", func(c echo.Context) error { return c.String(http.StatusTeapot, "api") })
+	e.GET("/s3/api/ping", func(c echo.Context) error { return c.String(http.StatusTeapot, "s3api") })
 
 	req := httptest.NewRequest(http.MethodGet, path, nil)
 	rec := httptest.NewRecorder()
@@ -47,5 +48,13 @@ func TestFrontendSkipsAPI(t *testing.T) {
 	rec := serveFrontend(t, "/api/ping")
 	if rec.Code != http.StatusTeapot {
 		t.Fatalf("GET /api/ping: got %d, want 418 (handled by API, not static)", rec.Code)
+	}
+}
+
+func TestFrontendSkipsS3API(t *testing.T) {
+	// The bundled frontend calls /s3/api/*; it must reach the API, not the SPA.
+	rec := serveFrontend(t, "/s3/api/ping")
+	if rec.Code != http.StatusTeapot {
+		t.Fatalf("GET /s3/api/ping: got %d, want 418 (handled by API, not static)", rec.Code)
 	}
 }
