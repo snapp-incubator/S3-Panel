@@ -32,7 +32,7 @@ spec:
         volumeMounts:
         - mountPath: /etc/object-store/config/
           name: app-config
-        - mountPath: {{ .Values.config.download_path }}
+        - mountPath: {{ .Values.config.download_path | default "/tmp" }}
           name: data
       volumes:
       - name: app-config
