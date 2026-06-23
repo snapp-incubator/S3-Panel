@@ -5,7 +5,9 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      # semver tags, with or without a leading "v" (repo convention is no "v")
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 permissions:
   contents: read
