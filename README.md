@@ -1,5 +1,10 @@
 # S3 Panel
 
+[![CI](https://github.com/snapp-incubator/S3-Panel/actions/workflows/ci.yml/badge.svg)](https://github.com/snapp-incubator/S3-Panel/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/snapp-incubator/S3-Panel?sort=semver)](https://github.com/snapp-incubator/S3-Panel/releases)
+[![Go](https://img.shields.io/github/go-mod/go-version/snapp-incubator/S3-Panel)](go.mod)
+[![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
+
 S3 Panel is a self-service web panel for S3-compatible object storage (Ceph RGW):
 authenticate with S3 credentials and manage buckets and objects — list, upload,
 download, delete and share — and view quotas.
@@ -120,21 +125,3 @@ curl -XGET "127.0.0.1:8080/api/object/head?bucket=X&object=X" -H "Content-Type: 
 ### Object Share
 
 curl -XGET "127.0.0.1:8080/api/object/share?bucket=X&object=X&expiration=1d" -H "Content-Type: application/json" -H "access_key: X" -H "secret_key: X" -H "Authorization: Bearer X" | jq
-
-## TODO
-
-Object
-
-- [] Object Copy (source/destination bucket)
-- [] Object Set/Get Lock
-- [] Object Set/Get Retention
-
-Bucket
-
-- [] Bucket Set/Get Retention
-
-General
-
-- [] Support Directories
-- [] Bucket Set/Get Encryption/SSE
-- [] Bucket Set/Get Replication
