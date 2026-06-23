@@ -1,0 +1,43 @@
+name: Backend
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'frontend/**'
+  pull_request:
+    paths-ignore:
+      - 'frontend/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Build
+        run: go build ./...
+      - name: Vet
+        run: go vet ./...
+      # The tests/ package is an integration suite that needs a live Ceph
+      # endpoint, so it is excluded from CI.
+      - name: Test
+        run: go test $(go list ./... | grep -v /tests)
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: s3-panel:ci
