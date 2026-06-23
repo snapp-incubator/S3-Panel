@@ -11,6 +11,9 @@ type ServerConfig struct {
 	AuthKeyLookup string `json:"auth_key_lookup" koanf:"auth_key_lookup"`
 	AuthToken     string `json:"auth_token"      koanf:"auth_token"`
 	DownloadPath  string `json:"download_path"   koanf:"download_path"`
+	// ServeFrontend controls whether the embedded SPA is served. Disable it for
+	// API-only instances. Defaults to true.
+	ServeFrontend bool `json:"serve_frontend"  koanf:"serve_frontend"`
 }
 
 type ServerCorsConfig struct {

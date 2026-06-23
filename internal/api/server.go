@@ -84,7 +84,12 @@ func (s *Server) initializeCache() error {
 func (s *Server) registerRouter() {
 	newRouter := echo.New()
 	newRouter.Validator = &CustomValidator{validator: NewRawValidator()}
-	newRouter.Use(frontendMiddleware())
+	if s.Config.Server.ServeFrontend {
+		newRouter.Use(frontendMiddleware())
+		s.logger.Info("### Serving embedded frontend ###")
+	} else {
+		s.logger.Info("### Frontend serving disabled (API-only) ###")
+	}
 	s.Router = newRouter
 }
 

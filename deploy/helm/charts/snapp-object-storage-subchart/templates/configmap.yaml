@@ -16,6 +16,7 @@ data:
     auth_key_lookup = "header:Authorization"
     auth_token = {{ .Values.auth_token | default "" | quote }}
     download_path = {{ .Values.config.download_path | default "/tmp" | quote }}
+    serve_frontend = {{ dig "serve_frontend" true .Values.config }}
 
     [object_storage_config]
     url = {{ .Values.config.url | default "" | quote }}

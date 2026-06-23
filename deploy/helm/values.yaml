@@ -16,3 +16,5 @@ snapp-object-store:
     port: 8080
     log_level: "warn"
     auth_enabled: "false"
+    # Serve the embedded frontend (set false for API-only instances).
+    serve_frontend: true

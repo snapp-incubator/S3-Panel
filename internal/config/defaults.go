@@ -13,9 +13,10 @@ func DefaultConfig() Config {
 	}
 
 	serverConfig := ServerConfig{
-		Address:      DefaultServerAddress,
-		Port:         DefaultServerPort,
-		DownloadPath: DefaultDownloadPath,
+		Address:       DefaultServerAddress,
+		Port:          DefaultServerPort,
+		DownloadPath:  DefaultDownloadPath,
+		ServeFrontend: true,
 	}
 
 	serverCorsConfig := ServerCorsConfig{
