@@ -1,0 +1,81 @@
+package app
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"runtime/debug"
+
+	"gitlab.snapp.ir/platform/s3-panel/internal/logging"
+
+	"github.com/urfave/cli/v3"
+	"gitlab.snapp.ir/platform/s3-panel/internal/api"
+	"gitlab.snapp.ir/platform/s3-panel/internal/config"
+)
+
+func Execute() {
+	var configPath string
+	cancelCtx, cancelFunc := context.WithCancel(context.Background())
+
+	cmd := &cli.Command{
+		Name:        "s3-panel",
+		Description: "Backend of the S3 object storage panel on the SnappCloud unified panel",
+		Commands: []*cli.Command{
+			{
+				Name:  "s3-panel",
+				Usage: "run the s3-panel backend",
+				Action: func(_ context.Context, _ *cli.Command) error {
+					cfg := config.Provide(configPath)
+					logger := logging.Provide(cfg.Logger)
+					err := api.StartServer(cancelCtx, cancelFunc, cfg, logger)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:        "configPath",
+						Value:       "./config.yaml",
+						Usage:       "Path to config file",
+						Destination: &configPath,
+						OnlyOnce:    false,
+					},
+				},
+			},
+		},
+		Version: func() string {
+			revision := ""
+			timestamp := ""
+			modified := ""
+
+			if info, ok := debug.ReadBuildInfo(); ok {
+				for _, setting := range info.Settings {
+					switch setting.Key {
+					case "vcs.revision":
+						revision = setting.Value
+					case "vcs.time":
+						timestamp = setting.Value
+					case "vcs.modified":
+						modified = setting.Value
+					}
+				}
+			}
+
+			if revision == "" {
+				return ""
+			}
+
+			if modified == "true" {
+				return fmt.Sprintf("%s (%s) [dirty]", revision, timestamp)
+			}
+
+			return fmt.Sprintf("%s (%s)", revision, timestamp)
+		}(),
+	}
+
+	if err := cmd.Run(context.Background(), os.Args); err != nil {
+		log.Fatal(err)
+	}
+}

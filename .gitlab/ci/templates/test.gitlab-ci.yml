@@ -1,5 +1,5 @@
-image: registry.snapp.tech/docker/golang:1.23-alpine
+image: registry.snapp.tech/docker/golang:1.26-alpine
 test:
   stage: test
   script:
-    - go test -timeout 1m -v gitlab.snapp.ir/platform/snapp_object_store/tests
+    - go test -timeout 1m -v gitlab.snapp.ir/platform/s3-panel/tests

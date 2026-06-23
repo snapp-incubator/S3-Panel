@@ -2,9 +2,10 @@ package tests
 
 import (
 	"fmt"
-	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
 	"net/http"
 	"strings"
+
+	"gitlab.snapp.ir/platform/s3-panel/internal/config"
 )
 
 func FetchURL(conf config.ServerConfig, path string) string {
@@ -12,11 +13,8 @@ func FetchURL(conf config.ServerConfig, path string) string {
 }
 
 func isServerAuthEnabled(s string) bool {
-	// consider it would be disabled by default
-	if strings.ToLower(s) == "true" {
-		return true
-	}
-	return false
+	// auth is disabled by default and only enabled when the value is exactly "true"
+	return strings.EqualFold(strings.TrimSpace(s), "true")
 }
 
 func AddAuthorizationHeader(req *http.Request, conf config.ServerConfig) {
@@ -29,9 +27,13 @@ func AddContentTypeHeader(req *http.Request) {
 	req.Header.Add("Content-Type", "application/json")
 }
 
+// DoHttpClientRequest performs the request and returns the response. The caller
+// is responsible for closing the response body.
 func DoHttpClientRequest(r *http.Request) (*http.Response, error) {
 	client := &http.Client{}
 	res, errCall := client.Do(r)
-	defer res.Body.Close()
-	return res, errCall
+	if errCall != nil {
+		return nil, errCall
+	}
+	return res, nil
 }

@@ -2,11 +2,12 @@ package tests
 
 import (
 	"context"
+
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/config"
-	"gitlab.snapp.ir/platform/snapp_object_store/internal/infra/logger"
-	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/server"
+	"gitlab.snapp.ir/platform/s3-panel/internal/api"
+	"gitlab.snapp.ir/platform/s3-panel/internal/config"
+	"gitlab.snapp.ir/platform/s3-panel/internal/logging"
 )
 
 var conf config.Config
@@ -23,7 +24,7 @@ type HttpMessageError struct {
 
 type BaseTestSuite struct {
 	suite.Suite
-	server  *server.Server
+	server  *api.Server
 	context context.Context
 	cancel  context.CancelFunc
 	*require.Assertions
@@ -34,7 +35,7 @@ func (s *BaseTestSuite) SetupSuite() {
 	s.context = ctx
 	s.cancel = cancel
 	s.Assertions = s.Require()
-	testServer, err := server.NewServer(ctx, cancel, conf, logger.Provide(conf.LoggerConfigs))
+	testServer, err := api.NewServer(ctx, cancel, conf, logging.Provide(conf.Logger))
 	if err != nil {
 		s.FailNowf("failed to setup application with err : ", err.Error())
 	}

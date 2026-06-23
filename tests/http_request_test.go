@@ -3,17 +3,18 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
-	"gitlab.snapp.ir/platform/snapp_object_store/internal/platform/health"
-	language "gitlab.snapp.ir/platform/snapp_object_store/langs/en"
 	"net/http"
 	"net/http/httptest"
+
+	"gitlab.snapp.ir/platform/s3-panel/internal/health"
+	"gitlab.snapp.ir/platform/s3-panel/internal/messages"
 )
 
 func (s *ServerTestSuite) TestHealthEndpointShouldPass() {
 	path := "/health"
 	body := []byte("")
 	recorder := httptest.NewRecorder()
-	request := httptest.NewRequest(http.MethodGet, FetchURL(s.server.Config.ServerConfigs, path), bytes.NewBuffer(body))
+	request := httptest.NewRequest(http.MethodGet, FetchURL(s.server.Config.Server, path), bytes.NewBuffer(body))
 	AddContentTypeHeader(request)
 	ctx := s.server.Router.NewContext(request, recorder)
 	errCall := health.HandleHealth(ctx)
@@ -22,7 +23,7 @@ func (s *ServerTestSuite) TestHealthEndpointShouldPass() {
 	var appHealth health.ApplicationHealth
 	errUnmarshal := json.NewDecoder(recorder.Body).Decode(&appHealth)
 	s.Nil(errUnmarshal)
-	s.Equal(appHealth.Status, language.ApplicationHealthy)
+	s.Equal(appHealth.Status, messages.ApplicationHealthy)
 }
 
 func (s *ServerTestSuite) TestHTTPRequestWithNoAccessKeyShouldFail() {
@@ -30,9 +31,9 @@ func (s *ServerTestSuite) TestHTTPRequestWithNoAccessKeyShouldFail() {
 	body := []byte("")
 
 	recorder := httptest.NewRecorder()
-	request := httptest.NewRequest(http.MethodPost, FetchURL(s.server.Config.ServerConfigs, path), bytes.NewBuffer(body))
+	request := httptest.NewRequest(http.MethodPost, FetchURL(s.server.Config.Server, path), bytes.NewBuffer(body))
 	AddContentTypeHeader(request)
-	AddAuthorizationHeader(request, s.server.Config.ServerConfigs)
+	AddAuthorizationHeader(request, s.server.Config.Server)
 	ctx := s.server.Router.NewContext(request, recorder)
 	errCall := s.server.HandleBucketCreate(ctx)
 	s.Nil(errCall)
