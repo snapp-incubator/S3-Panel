@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/parsers/toml"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
@@ -36,7 +36,7 @@ func Provide(configPath string) Config {
 	}
 
 	// load configuration from file
-	if err := k.Load(file.Provider(configPath), yaml.Parser()); err != nil {
+	if err := k.Load(file.Provider(configPath), toml.Parser()); err != nil {
 		log.Printf("error loading %s: %s", configPath, err)
 	}
 

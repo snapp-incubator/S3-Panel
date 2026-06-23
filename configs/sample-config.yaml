@@ -1,8 +1,0 @@
-logger:
-  level: debug
-server:
-  address: "0.0.0.0"
-  port: 8080
-  auth_enabled: "true"
-  auth_key_lookup: "header:Authorization"
-  auth_token: "XXX"

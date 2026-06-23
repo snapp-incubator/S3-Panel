@@ -38,7 +38,7 @@ func Execute() {
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:        "configPath",
-						Value:       "./config.yaml",
+						Value:       "./config.toml",
 						Usage:       "Path to config file",
 						Destination: &configPath,
 						OnlyOnce:    false,

@@ -10,4 +10,4 @@ FROM alpine:3.20
 WORKDIR /app/
 COPY --from=builder /app/cmd/s3-panel .
 ENTRYPOINT ["./s3-panel"]
-CMD ["s3-panel", "--configPath=./config.yaml"]
+CMD ["s3-panel", "--configPath=./config.toml"]

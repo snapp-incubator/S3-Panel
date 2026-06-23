@@ -12,7 +12,7 @@ import (
 )
 
 var conf config.Config
-var confPath = "./../configs/test-config.yaml"
+var confPath = "./../configs/test-config.toml"
 
 func init() {
 	cfg := config.Provide(confPath)

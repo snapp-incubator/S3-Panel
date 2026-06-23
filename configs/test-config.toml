@@ -1,0 +1,9 @@
+[logger]
+level = "debug"
+
+[server]
+address = "127.0.0.1"
+port = "8080"
+auth_enabled = "true"
+auth_key_lookup = "header:Authorization"
+auth_token = "XXX"
