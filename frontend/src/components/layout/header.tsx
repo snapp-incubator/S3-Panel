@@ -1,5 +1,5 @@
 import { Link, useMatchRoute } from '@tanstack/react-router'
-import { Boxes } from 'lucide-react'
+import { Boxes, Github } from 'lucide-react'
 
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { useTitle } from '@/components/providers/titleProvider'
@@ -30,8 +30,23 @@ const Header = () => {
             <h1 className="text-lg font-semibold">{title}</h1>
           </div>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {isLogin() && isObjectStorageRoute ? <UserDetails /> : null}
+          {import.meta.env.PACKAGE_VERSION ? (
+            <span className="text-xs text-muted-foreground">
+              v{import.meta.env.PACKAGE_VERSION}
+            </span>
+          ) : null}
+          <a
+            href="https://github.com/snapp-incubator/S3-Panel"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Source code on GitHub"
+            title="Source code on GitHub"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Github className="size-5" />
+          </a>
           <ThemeToggle />
         </div>
       </nav>
