@@ -8,7 +8,3 @@ dependencies:
   version: 1.0.0
   repository: file://charts/snapp-object-storage-subchart
   alias: snapp-object-store
-- name: snapp-object-storage-subchart
-  version: 1.0.0
-  repository: file://charts/snapp-object-storage-subchart
-  alias: snapp-object-store-dev
