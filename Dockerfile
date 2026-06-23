@@ -1,4 +1,4 @@
-FROM registry.snapp.tech/docker/golang:1.26-alpine3.20 AS builder
+FROM registry.snapp.tech/docker/golang:1.26-alpine AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go env -w GOPROXY="https://repo.snapp.tech/repository/goproxy,goproxy.io,direct"
