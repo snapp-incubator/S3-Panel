@@ -1,0 +1,112 @@
+image: docker:stable
+
+services:
+  - docker:dind
+
+stages:
+  - test
+  - build
+
+# Global variables
+variables:
+  OKD4_TEH1_REGISTRY: 'image-registry.apps.private.okd4.teh-1.snappcloud.io'
+  QUAY_REGISTRY_BOX: 'quay.io/snapp'
+  CONTAINER_REGISTRY_USERNAME: 'gitlab-ci'
+  CONTAINER_REGISTRY_PASSWORD: '$CI_REGISTRY_TOKEN'
+  QUAY_REGISTRY_PASSWORD: '$QUAY_PASSWORD'
+  QUAY_REGISTRY_USER: '$QUAY_USER'
+
+# Shared login for both GitLab registry and Quay
+.default_docker_login: &default_docker_login
+  before_script:
+    - echo "${CONTAINER_REGISTRY_PASSWORD}" | docker login -u "${CONTAINER_REGISTRY_USERNAME}" "${OKD4_TEH1_REGISTRY}" --password-stdin
+    - echo "${QUAY_REGISTRY_PASSWORD}" | docker login -u "${QUAY_REGISTRY_USER}" "${QUAY_REGISTRY_BOX}" --password-stdin
+
+# Shared Docker build and push template
+.default_build: &default_build
+  stage: build
+  <<: *default_docker_login
+  script:
+    - |
+      docker image build \
+        --build-arg VITE_AUTH_TOKEN=${AUTH_TOKEN} \
+        --build-arg VITE_APP_ENVIRONMENT=${ENV} \
+        --build-arg VITE_ENV=${ENV} \
+        --build-arg VITE_CENTRAL_BACKEND_API=${CENTRAL_BACKEND_BASE_URL} \
+        -t ${IMAGE} .
+    - docker push ${IMAGE}
+    - |
+      docker image build \
+        --build-arg VITE_API_BOX_BASE_URL=${BOX_BASE_URL} \
+        --build-arg VITE_VARIANT=box \
+        --build-arg VITE_AUTH_TOKEN=${AUTH_TOKEN_BOX} \
+        --build-arg VITE_APP_ENVIRONMENT=${ENV} \
+        --build-arg VITE_ENV=${ENV} \
+        --build-arg VITE_CENTRAL_BACKEND_API=${CENTRAL_BACKEND_BASE_URL} \
+        -t ${BOX_IMAGE} .
+    - docker push ${BOX_IMAGE}
+
+# E2E Test Job
+e2e_tests:
+  stage: test
+  image: registry.snapp.tech/docker/playwright:v1.45.2-noble
+  variables:
+    VITE_PORT: 8080
+    VITE_E2E_REGION: 'teh 2'
+    VITE_VARIANT: cab
+    VITE_ENV: 'stage'
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  script:
+    - |
+      echo "VITE_ACCESS_KEY=$VITE_E2E_ACCESS_KEY" > .env
+      echo "VITE_SECRET_KEY=$VITE_E2E_SECRET_KEY" >> .env
+      echo "VITE_REGION=$VITE_E2E_REGION" >> .env
+      echo "VITE_AUTH_TOKEN=$AUTH_TOKEN_STAGING" >> .env
+      echo "VITE_VARIANT=$VITE_VARIANT" >> .env
+      echo "VITE_ENV=$VITE_ENV" >> .env
+      echo "VITE_CENTRAL_BACKEND_API=$CENTRAL_BACKEND_BASE_URL" >> .env
+    - npm ci
+    - npm run dev &
+    - npx wait-on http://localhost:$VITE_PORT
+    - npm run test:e2e
+  artifacts:
+    paths:
+      - .env
+    expire_in: 1 hour
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+# Build Staging
+build_staging:
+  <<: *default_build
+  variables:
+    ENV: staging
+    AUTH_TOKEN: ${AUTH_TOKEN_STAGING}
+    AUTH_TOKEN_BOX: ${AUTH_TOKEN_BOX_STAGING}
+    CENTRAL_BACKEND_BASE_URL: ${CENTRAL_BACKEND_BASE_URL}
+    BOX_BASE_URL: ${BOX_BASE_URL_STAGING}
+    IMAGE: '$OKD4_TEH1_REGISTRY/snappcloud-unified-panel/staging:${CI_COMMIT_TAG}'
+    BOX_IMAGE: '$QUAY_REGISTRY_BOX/box-snappcost-ui-staging:${CI_COMMIT_TAG}'
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+-staging$/'
+      when: always
+    - when: never
+
+# Build Production
+build_production:
+  <<: *default_build
+  variables:
+    ENV: production
+    AUTH_TOKEN: ${AUTH_TOKEN_PRODUCTION}
+    AUTH_TOKEN_BOX: ${AUTH_TOKEN_BOX_PRODUCTION}
+    CENTRAL_BACKEND_BASE_URL: ${CENTRAL_BACKEND_BASE_URL}
+    BOX_BASE_URL: ${BOX_BASE_URL_PRODUCTION}
+    IMAGE: '$OKD4_TEH1_REGISTRY/snappcloud-unified-panel/production:${CI_COMMIT_TAG}'
+    BOX_IMAGE: '$QUAY_REGISTRY_BOX/box-snappcost-ui-production:${CI_COMMIT_TAG}'
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+      when: always
+    - when: never

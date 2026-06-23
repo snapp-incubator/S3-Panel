@@ -1,0 +1,14 @@
+export const jalaliMonthsKey = [
+  'farvardin',
+  'ordibehesht',
+  'khordad',
+  'tir',
+  'mordad',
+  'shahrivar',
+  'mehr',
+  'aban',
+  'azar',
+  'dey',
+  'bahman',
+  'esfand'
+]

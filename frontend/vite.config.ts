@@ -1,0 +1,64 @@
+import path from 'path'
+
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import version from 'vite-plugin-package-version'
+
+import packageJson from './package.json'
+
+const PROJECT_NAME = 'snappCost'
+
+const VITE_APP_ENVIRONMENT = process.env.VITE_APP_ENVIRONMENT
+
+const IS_PRODUCTION_ENV = VITE_APP_ENVIRONMENT === 'production'
+const IS_STAGING_ENV = VITE_APP_ENVIRONMENT === 'staging'
+const IS_DEVELOPMENT_ENV = VITE_APP_ENVIRONMENT === 'development'
+const IS_LOCAL_ENV =
+  !IS_PRODUCTION_ENV && !IS_STAGING_ENV && !IS_DEVELOPMENT_ENV
+
+const IS_SENTRY_DISABLED = IS_LOCAL_ENV
+const RELEASE_NAME = IS_SENTRY_DISABLED
+  ? ''
+  : `${PROJECT_NAME}@${packageJson.version}${IS_PRODUCTION_ENV ? '' : `-${VITE_APP_ENVIRONMENT}`}`
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react(), version()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src/')
+    }
+  },
+  preview: {
+    port: 3000,
+    strictPort: true
+  },
+  server: {
+    port: 8080,
+    strictPort: true,
+    host: true,
+    origin: 'http://0.0.0.0:8080'
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[hash].js',
+        chunkFileNames: 'assets/[hash].js',
+        manualChunks: (id: string) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('@tanstack/react-query')) {
+              return 'vendor/react-query'
+            }
+
+            if (id.includes('@hookform/resolvers')) {
+              return 'vendor/hookform'
+            }
+
+            return 'vendor/other'
+          }
+        }
+      }
+    },
+    sourcemap: true
+  }
+})
