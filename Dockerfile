@@ -1,5 +1,5 @@
 # 1) Build the frontend (Vite) into /fe/dist.
-FROM node:22-alpine AS frontend
+FROM node:26-alpine AS frontend
 
 # Build-time configuration, exposed to Vite as environment variables.
 ARG VITE_API_LANGUAGE=fa
