@@ -5,18 +5,20 @@ metadata:
   name: {{ include "snappobjectstore.name" . }}-app-config
   namespace: {{ .Release.Namespace }}
 data:
-  config.yaml: |
-    logger:
-      level: {{ .Values.config.log_level }}
-    server:
-      address: {{ .Values.config.address | quote }}
-      port: {{ .Values.config.port }}
-      auth_enabled: {{ .Values.config.auth_enabled | quote }}
-      auth_key_lookup: "header:Authorization"
-      auth_token: {{ .Values.auth_token | quote }}
-      download_path: {{ .Values.config.download_path | quote }}
-    object_storage_config:
-      url: {{ .Values.config.url | quote }}
-      access_key: {{ .Values.access_key }}
-      secret_key: {{ .Values.secret_key }}
+  config.toml: |
+    [logger]
+    level = {{ .Values.config.log_level | default "warn" | quote }}
+
+    [server]
+    address = {{ .Values.config.address | default "0.0.0.0" | quote }}
+    port = {{ .Values.config.port | default 8080 | quote }}
+    auth_enabled = {{ .Values.config.auth_enabled | default "false" | quote }}
+    auth_key_lookup = "header:Authorization"
+    auth_token = {{ .Values.auth_token | default "" | quote }}
+    download_path = {{ .Values.config.download_path | default "/tmp" | quote }}
+
+    [object_storage_config]
+    url = {{ .Values.config.url | default "" | quote }}
+    access_key = {{ .Values.access_key | default "" | quote }}
+    secret_key = {{ .Values.secret_key | default "" | quote }}
 {{- end }}

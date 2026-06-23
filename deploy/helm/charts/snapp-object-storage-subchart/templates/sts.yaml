@@ -21,8 +21,8 @@ spec:
       - name: object-storage-backend
         image: {{ .Values.image }}
         args:
-        - snapp-object-store
-        - --configPath=/etc/object-store/config/config.yaml
+        - s3-panel
+        - --configPath=/etc/object-store/config/config.toml
         ports:
         - containerPort: {{ .Values.config.port }}
           protocol: TCP
