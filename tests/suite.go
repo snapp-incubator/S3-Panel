@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+
 	"github.com/snapp-incubator/S3-Panel/internal/api"
 	"github.com/snapp-incubator/S3-Panel/internal/config"
 	"github.com/snapp-incubator/S3-Panel/internal/logging"

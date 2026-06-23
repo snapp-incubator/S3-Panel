@@ -1,9 +1,10 @@
 package main
 
 import (
+	_ "go.uber.org/automaxprocs"
+
 	_ "github.com/snapp-incubator/S3-Panel/docs"
 	"github.com/snapp-incubator/S3-Panel/internal/app"
-	_ "go.uber.org/automaxprocs"
 )
 
 //	@title			S3 Panel Backend

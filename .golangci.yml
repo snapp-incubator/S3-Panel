@@ -1,0 +1,14 @@
+version: "2"
+
+linters:
+  default: standard
+  # standard = errcheck, govet, ineffassign, staticcheck, unused
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/snapp-incubator/S3-Panel

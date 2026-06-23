@@ -12,12 +12,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"go.uber.org/zap"
+
 	"github.com/snapp-incubator/S3-Panel/internal/cache"
 	"github.com/snapp-incubator/S3-Panel/internal/config"
 	"github.com/snapp-incubator/S3-Panel/internal/health"
 	"github.com/snapp-incubator/S3-Panel/internal/storage"
 	"github.com/snapp-incubator/S3-Panel/internal/storage/ceph"
-	"go.uber.org/zap"
 )
 
 type Server struct {
@@ -129,7 +130,8 @@ func (s *Server) registerPruner() {
 			select {
 			case <-s.cancelCtx.Done():
 				s.logger.Warn("Shutting Down Ticker due to canceling context")
-				break
+				ticker.Stop()
+				return
 			case <-ticker.C:
 				s.logger.Info("Triggered Pruner")
 				errPrune := pruneDownloadDir(s.Config.Server.DownloadPath, prunerInterval)
@@ -155,6 +157,9 @@ func (s *Server) ShutDown() error {
 
 func StartServer(ctx context.Context, cancelFunc context.CancelFunc, cfg config.Config, logger *zap.Logger) error {
 	server, err := NewServer(ctx, cancelFunc, cfg, logger)
+	if err != nil {
+		return err
+	}
 	go func() {
 		errServerStart := server.Start()
 		if errServerStart != nil {

@@ -14,6 +14,7 @@ import (
 	awsHttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/smithy-go"
 	"github.com/ceph/go-ceph/rgw/admin"
+
 	"github.com/snapp-incubator/S3-Panel/internal/messages"
 	"github.com/snapp-incubator/S3-Panel/internal/storage"
 )

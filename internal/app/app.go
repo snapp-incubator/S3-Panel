@@ -10,6 +10,7 @@ import (
 	"github.com/snapp-incubator/S3-Panel/internal/logging"
 
 	"github.com/urfave/cli/v3"
+
 	"github.com/snapp-incubator/S3-Panel/internal/api"
 	"github.com/snapp-incubator/S3-Panel/internal/config"
 )

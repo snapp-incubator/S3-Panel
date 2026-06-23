@@ -14,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+
 	"github.com/snapp-incubator/S3-Panel/internal/config"
 	"github.com/snapp-incubator/S3-Panel/internal/messages"
 	"github.com/snapp-incubator/S3-Panel/internal/storage"
@@ -214,7 +215,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 	if errOpen != nil {
 		return storage.ObjectUploadResponse{}, translateError(errOpen)
 	}
-	defer src.Close()
+	defer func() { _ = src.Close() }()
 
 	bs := make([]byte, file.Size)
 	if _, errReadBuf := io.ReadFull(src, bs); errReadBuf != nil {

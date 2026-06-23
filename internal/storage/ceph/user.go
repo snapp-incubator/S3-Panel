@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ceph/go-ceph/rgw/admin"
+
 	"github.com/snapp-incubator/S3-Panel/internal/config"
 	"github.com/snapp-incubator/S3-Panel/internal/storage"
 )

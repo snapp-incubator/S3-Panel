@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+
 	"github.com/snapp-incubator/S3-Panel/internal/config"
 )
 

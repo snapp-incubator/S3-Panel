@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+
 	"github.com/snapp-incubator/S3-Panel/internal/storage"
 	"github.com/snapp-incubator/S3-Panel/internal/storage/ceph"
 )
@@ -52,7 +53,7 @@ func (s *Server) HandleObjectDownload() echo.HandlerFunc {
 			s.logger.Error(errObjHead.Message.Error())
 			return c.JSON(errObjHead.Code, storage.OperationErrWithMsg{Message: errObjHead.Message.Error()})
 		}
-		if exists.Exists == false {
+		if !exists.Exists {
 			return c.JSON(http.StatusUnprocessableEntity, storage.OperationErrWithMsg{Message: "Object does not exist"})
 		}
 
@@ -108,7 +109,7 @@ func (s *Server) HandleObjectUpload() echo.HandlerFunc {
 
 		req.Bucket = c.FormValue(formFieldBucket)
 		if req.Bucket == "" {
-			return c.JSON(http.StatusBadRequest, storage.OperationErrWithMsg{Message: fmt.Sprintf("bucket can not be empty")})
+			return c.JSON(http.StatusBadRequest, storage.OperationErrWithMsg{Message: "bucket can not be empty"})
 		}
 
 		form, errForm := c.MultipartForm()
@@ -403,7 +404,7 @@ func (s *Server) HandleObjectShare() echo.HandlerFunc {
 			s.logger.Error(errObjHead.Message.Error())
 			return c.JSON(errObjHead.Code, storage.OperationErrWithMsg{Message: errObjHead.Message.Error()})
 		}
-		if exists.Exists == false {
+		if !exists.Exists {
 			return c.JSON(http.StatusUnprocessableEntity, storage.OperationErrWithMsg{Message: "Object does not exist"})
 		}
 
