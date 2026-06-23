@@ -1,17 +1,17 @@
 definitions:
-  objectstorage.BucketCreateResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketCreateResponse:
     properties:
       created:
         type: boolean
     type: object
-  objectstorage.BucketDeleteResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketDeleteResponse:
     properties:
       deleted:
         type: boolean
       has_objects:
         type: boolean
     type: object
-  objectstorage.BucketListResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketListResponse:
     properties:
       items:
         items:
@@ -22,33 +22,33 @@ definitions:
       total_pages:
         type: integer
     type: object
-  objectstorage.BucketQuotaResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketQuotaResponse:
     properties:
       items:
         items:
-          $ref: '#/definitions/objectstorage.SingleBucketQuotaResponse'
+          $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.SingleBucketQuotaResponse'
         type: array
       total_buckets:
         type: integer
       total_pages:
         type: integer
     type: object
-  objectstorage.ObjectDeleteResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectDeleteResponse:
     properties:
       deleted:
         type: boolean
     type: object
-  objectstorage.ObjectDownloadResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectDownloadResponse:
     properties:
       url:
         type: string
     type: object
-  objectstorage.ObjectHeadResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectHeadResponse:
     properties:
       exists:
         type: boolean
     type: object
-  objectstorage.ObjectListBody:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectListBody:
     properties:
       last_modified_timestamp:
         type: string
@@ -59,33 +59,33 @@ definitions:
       size_value:
         type: number
     type: object
-  objectstorage.ObjectListResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectListResponse:
     properties:
       items:
         items:
-          $ref: '#/definitions/objectstorage.ObjectListBody'
+          $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectListBody'
         type: array
       total_matched_items:
         type: integer
       total_pages:
         type: integer
     type: object
-  objectstorage.ObjectShareResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectShareResponse:
     properties:
       url:
         type: string
     type: object
-  objectstorage.ObjectUploadResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectUploadResponse:
     properties:
       created:
         type: boolean
     type: object
-  objectstorage.OperationErrWithMsg:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg:
     properties:
       message:
         type: string
     type: object
-  objectstorage.SingleBucketQuotaResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.SingleBucketQuotaResponse:
     properties:
       access:
         type: string
@@ -114,7 +114,7 @@ definitions:
       used_objects:
         type: integer
     type: object
-  objectstorage.UserIdentificationResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.UserIdentificationResponse:
     properties:
       display_name:
         type: string
@@ -127,7 +127,7 @@ definitions:
       userID:
         type: string
     type: object
-  objectstorage.UserQuotaResponse:
+  gitlab_snapp_ir_platform_s3-panel_internal_storage.UserQuotaResponse:
     properties:
       hard_buckets:
         type: integer
@@ -157,12 +157,12 @@ info:
     email: cloud-platform@snappcloud.io
     name: Cloud-Platform
     url: https://docs.snappcloud.io/docs/servicedesk
-  description: Serves the S3 backend APIs
+  description: Serves the S3 object storage panel backend APIs
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: https://swagger.io/terms/
-  title: ObjectStorage Backend Swagger
+  title: S3 Panel Backend
   version: "1.0"
 paths:
   /api/bucket/create:
@@ -193,11 +193,11 @@ paths:
         "201":
           description: Bucket created successfully
           schema:
-            $ref: '#/definitions/objectstorage.BucketCreateResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketCreateResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -205,15 +205,15 @@ paths:
         "403":
           description: Bucket Already Exists / Bucket creation quota exceeded
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: Creates Bucket
       tags:
       - Bucket
@@ -245,11 +245,11 @@ paths:
         "200":
           description: Bucket deleted successfully
           schema:
-            $ref: '#/definitions/objectstorage.BucketDeleteResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketDeleteResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -257,11 +257,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: Deletes Bucket
       tags:
       - Bucket
@@ -300,11 +300,11 @@ paths:
         "200":
           description: Successful response with bucket list
           schema:
-            $ref: '#/definitions/objectstorage.BucketListResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketListResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -312,11 +312,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: List of buckets of a user
       tags:
       - Bucket
@@ -356,11 +356,11 @@ paths:
         "200":
           description: Successful response with buckets quota
           schema:
-            $ref: '#/definitions/objectstorage.BucketQuotaResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketQuotaResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -368,11 +368,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: Quota of buckets of a user
       tags:
       - Bucket
@@ -411,11 +411,11 @@ paths:
         "200":
           description: Successful response with objects delete
           schema:
-            $ref: '#/definitions/objectstorage.ObjectDeleteResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectDeleteResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -423,15 +423,15 @@ paths:
         "403":
           description: Object Does not exist
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: Deletes the list of objects inside a bucket
       tags:
       - Object
@@ -467,11 +467,11 @@ paths:
         "200":
           description: Successful response with bucket download
           schema:
-            $ref: '#/definitions/objectstorage.ObjectDownloadResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectDownloadResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -479,11 +479,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: download an object to bucket
       tags:
       - Object
@@ -521,11 +521,11 @@ paths:
         "200":
           description: Successful response with objects head
           schema:
-            $ref: '#/definitions/objectstorage.ObjectHeadResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectHeadResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -533,11 +533,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: check if an object exists
       tags:
       - Object
@@ -584,11 +584,11 @@ paths:
         "200":
           description: Successful response with bucket list
           schema:
-            $ref: '#/definitions/objectstorage.ObjectListResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectListResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -596,11 +596,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: List of objects of a bucket
       tags:
       - Object
@@ -645,11 +645,11 @@ paths:
         "200":
           description: Successful response with object url
           schema:
-            $ref: '#/definitions/objectstorage.ObjectShareResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectShareResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -657,11 +657,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: share the preSign address of object
       tags:
       - Object
@@ -692,11 +692,11 @@ paths:
         "200":
           description: Successful response with bucket upload
           schema:
-            $ref: '#/definitions/objectstorage.ObjectUploadResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectUploadResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -704,19 +704,19 @@ paths:
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "409":
           description: Already Exists
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: upload an object to bucket
       tags:
       - Object
@@ -737,11 +737,11 @@ paths:
         "200":
           description: Successful response with user identification
           schema:
-            $ref: '#/definitions/objectstorage.UserIdentificationResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.UserIdentificationResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -749,11 +749,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: Fetch User Identification information using AccessKey
       tags:
       - User
@@ -774,11 +774,11 @@ paths:
         "200":
           description: Successful response with user quota
           schema:
-            $ref: '#/definitions/objectstorage.UserQuotaResponse'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.UserQuotaResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "401":
           description: Unauthorized
           schema:
@@ -786,11 +786,11 @@ paths:
         "422":
           description: Action didn't complete
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/objectstorage.OperationErrWithMsg'
+            $ref: '#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg'
       summary: Fetch User Quota from AccessKey
       tags:
       - User

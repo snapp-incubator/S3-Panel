@@ -66,13 +66,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Bucket created successfully",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.BucketCreateResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketCreateResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -84,19 +84,19 @@ const docTemplate = `{
                     "403": {
                         "description": "Bucket Already Exists / Bucket creation quota exceeded",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -144,13 +144,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Bucket deleted successfully",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.BucketDeleteResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketDeleteResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -162,13 +162,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -225,13 +225,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with bucket list",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.BucketListResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketListResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -243,13 +243,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -306,13 +306,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with buckets quota",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.BucketQuotaResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketQuotaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -324,13 +324,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -387,13 +387,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with objects delete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.ObjectDeleteResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectDeleteResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -405,19 +405,19 @@ const docTemplate = `{
                     "403": {
                         "description": "Object Does not exist",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -470,13 +470,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with bucket download",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.ObjectDownloadResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectDownloadResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -488,13 +488,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -551,13 +551,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with objects head",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.ObjectHeadResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectHeadResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -569,13 +569,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -642,13 +642,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with bucket list",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.ObjectListResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectListResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -660,13 +660,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -732,13 +732,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with object url",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.ObjectShareResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectShareResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -750,13 +750,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -802,13 +802,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with bucket upload",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.ObjectUploadResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectUploadResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -820,25 +820,25 @@ const docTemplate = `{
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "409": {
                         "description": "Already Exists",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -870,13 +870,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with user identification",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.UserIdentificationResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.UserIdentificationResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -888,13 +888,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -926,13 +926,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful response with user quota",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.UserQuotaResponse"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.UserQuotaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "401": {
@@ -944,13 +944,13 @@ const docTemplate = `{
                     "422": {
                         "description": "Action didn't complete",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/objectstorage.OperationErrWithMsg"
+                            "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg"
                         }
                     }
                 }
@@ -958,7 +958,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "objectstorage.BucketCreateResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketCreateResponse": {
             "type": "object",
             "properties": {
                 "created": {
@@ -966,7 +966,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.BucketDeleteResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketDeleteResponse": {
             "type": "object",
             "properties": {
                 "deleted": {
@@ -977,7 +977,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.BucketListResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketListResponse": {
             "type": "object",
             "properties": {
                 "items": {
@@ -994,13 +994,13 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.BucketQuotaResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.BucketQuotaResponse": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/objectstorage.SingleBucketQuotaResponse"
+                        "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.SingleBucketQuotaResponse"
                     }
                 },
                 "total_buckets": {
@@ -1011,7 +1011,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.ObjectDeleteResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectDeleteResponse": {
             "type": "object",
             "properties": {
                 "deleted": {
@@ -1019,7 +1019,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.ObjectDownloadResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectDownloadResponse": {
             "type": "object",
             "properties": {
                 "url": {
@@ -1027,7 +1027,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.ObjectHeadResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectHeadResponse": {
             "type": "object",
             "properties": {
                 "exists": {
@@ -1035,7 +1035,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.ObjectListBody": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectListBody": {
             "type": "object",
             "properties": {
                 "last_modified_timestamp": {
@@ -1052,13 +1052,13 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.ObjectListResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectListResponse": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/objectstorage.ObjectListBody"
+                        "$ref": "#/definitions/gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectListBody"
                     }
                 },
                 "total_matched_items": {
@@ -1069,7 +1069,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.ObjectShareResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectShareResponse": {
             "type": "object",
             "properties": {
                 "url": {
@@ -1077,7 +1077,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.ObjectUploadResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.ObjectUploadResponse": {
             "type": "object",
             "properties": {
                 "created": {
@@ -1085,7 +1085,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.OperationErrWithMsg": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.OperationErrWithMsg": {
             "type": "object",
             "properties": {
                 "message": {
@@ -1093,7 +1093,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.SingleBucketQuotaResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.SingleBucketQuotaResponse": {
             "type": "object",
             "properties": {
                 "access": {
@@ -1137,7 +1137,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.UserIdentificationResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.UserIdentificationResponse": {
             "type": "object",
             "properties": {
                 "display_name": {
@@ -1157,7 +1157,7 @@ const docTemplate = `{
                 }
             }
         },
-        "objectstorage.UserQuotaResponse": {
+        "gitlab_snapp_ir_platform_s3-panel_internal_storage.UserQuotaResponse": {
             "type": "object",
             "properties": {
                 "hard_buckets": {
@@ -1204,8 +1204,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "ObjectStorage Backend Swagger",
-	Description:      "Serves the S3 backend APIs",
+	Title:            "S3 Panel Backend",
+	Description:      "Serves the S3 object storage panel backend APIs",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
