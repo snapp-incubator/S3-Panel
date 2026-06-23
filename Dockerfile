@@ -15,7 +15,9 @@ ENV VITE_API_LANGUAGE=$VITE_API_LANGUAGE \
     VITE_CENTRAL_BACKEND_API=$VITE_CENTRAL_BACKEND_API \
     VITE_ENV=$VITE_ENV
 
-RUN corepack enable && apk add --no-cache git
+# Corepack is unbundled from Node 25+, so install it explicitly (works on any
+# Node major); it activates the pnpm version pinned in package.json.
+RUN apk add --no-cache git && npm install -g corepack@latest && corepack enable
 WORKDIR /fe
 COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
