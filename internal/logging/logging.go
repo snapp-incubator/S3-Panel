@@ -3,7 +3,7 @@ package logging
 import (
 	"log"
 
-	"gitlab.snapp.ir/platform/s3-panel/internal/config"
+	"github.com/snapp-incubator/S3-Panel/internal/config"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

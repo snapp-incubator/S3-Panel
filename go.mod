@@ -1,4 +1,4 @@
-module gitlab.snapp.ir/platform/s3-panel
+module github.com/snapp-incubator/S3-Panel
 
 go 1.26.0
 

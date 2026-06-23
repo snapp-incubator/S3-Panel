@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"gitlab.snapp.ir/platform/s3-panel/internal/config"
+	"github.com/snapp-incubator/S3-Panel/internal/config"
 )
 
 func FetchURL(conf config.ServerConfig, path string) string {

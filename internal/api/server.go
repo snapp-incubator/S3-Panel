@@ -12,11 +12,11 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"gitlab.snapp.ir/platform/s3-panel/internal/cache"
-	"gitlab.snapp.ir/platform/s3-panel/internal/config"
-	"gitlab.snapp.ir/platform/s3-panel/internal/health"
-	"gitlab.snapp.ir/platform/s3-panel/internal/storage"
-	"gitlab.snapp.ir/platform/s3-panel/internal/storage/ceph"
+	"github.com/snapp-incubator/S3-Panel/internal/cache"
+	"github.com/snapp-incubator/S3-Panel/internal/config"
+	"github.com/snapp-incubator/S3-Panel/internal/health"
+	"github.com/snapp-incubator/S3-Panel/internal/storage"
+	"github.com/snapp-incubator/S3-Panel/internal/storage/ceph"
 	"go.uber.org/zap"
 )
 

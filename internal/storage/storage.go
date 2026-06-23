@@ -4,7 +4,7 @@ import (
 	"mime/multipart"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"gitlab.snapp.ir/platform/s3-panel/internal/config"
+	"github.com/snapp-incubator/S3-Panel/internal/config"
 )
 
 type HTTPErrorWithCode struct {

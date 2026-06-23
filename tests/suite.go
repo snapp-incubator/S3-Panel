@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"gitlab.snapp.ir/platform/s3-panel/internal/api"
-	"gitlab.snapp.ir/platform/s3-panel/internal/config"
-	"gitlab.snapp.ir/platform/s3-panel/internal/logging"
+	"github.com/snapp-incubator/S3-Panel/internal/api"
+	"github.com/snapp-incubator/S3-Panel/internal/config"
+	"github.com/snapp-incubator/S3-Panel/internal/logging"
 )
 
 var conf config.Config

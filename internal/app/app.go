@@ -7,11 +7,11 @@ import (
 	"os"
 	"runtime/debug"
 
-	"gitlab.snapp.ir/platform/s3-panel/internal/logging"
+	"github.com/snapp-incubator/S3-Panel/internal/logging"
 
 	"github.com/urfave/cli/v3"
-	"gitlab.snapp.ir/platform/s3-panel/internal/api"
-	"gitlab.snapp.ir/platform/s3-panel/internal/config"
+	"github.com/snapp-incubator/S3-Panel/internal/api"
+	"github.com/snapp-incubator/S3-Panel/internal/config"
 )
 
 func Execute() {

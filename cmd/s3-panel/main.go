@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "gitlab.snapp.ir/platform/s3-panel/docs"
-	"gitlab.snapp.ir/platform/s3-panel/internal/app"
+	_ "github.com/snapp-incubator/S3-Panel/docs"
+	"github.com/snapp-incubator/S3-Panel/internal/app"
 	_ "go.uber.org/automaxprocs"
 )
 

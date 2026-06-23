@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/ceph/go-ceph/rgw/admin"
-	"gitlab.snapp.ir/platform/s3-panel/internal/config"
-	"gitlab.snapp.ir/platform/s3-panel/internal/storage"
+	"github.com/snapp-incubator/S3-Panel/internal/config"
+	"github.com/snapp-incubator/S3-Panel/internal/storage"
 )
 
 func (c CephObjectStorage) UserQuota(serverAdminConfig config.ObjectStorageConfig, meta storage.UserRequestMeta) (storage.UserQuotaResponse, storage.HTTPErrorWithCode) {

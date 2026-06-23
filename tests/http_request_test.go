@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"gitlab.snapp.ir/platform/s3-panel/internal/health"
-	"gitlab.snapp.ir/platform/s3-panel/internal/messages"
+	"github.com/snapp-incubator/S3-Panel/internal/health"
+	"github.com/snapp-incubator/S3-Panel/internal/messages"
 )
 
 func (s *ServerTestSuite) TestHealthEndpointShouldPass() {

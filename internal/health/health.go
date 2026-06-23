@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"gitlab.snapp.ir/platform/s3-panel/internal/messages"
+	"github.com/snapp-incubator/S3-Panel/internal/messages"
 )
 
 type ApplicationHealth struct {
