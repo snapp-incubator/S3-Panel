@@ -8,6 +8,8 @@ ARG VITE_AUTH_TOKEN
 ARG VITE_VARIANT=cab
 ARG VITE_CENTRAL_BACKEND_API
 ARG VITE_ENV
+# Release version (the git tag), shown in the UI. Falls back to package.json.
+ARG APP_VERSION
 ENV VITE_API_LANGUAGE=$VITE_API_LANGUAGE \
     VITE_APP_ENVIRONMENT=$VITE_APP_ENVIRONMENT \
     VITE_AUTH_TOKEN=$VITE_AUTH_TOKEN \
@@ -22,6 +24,9 @@ WORKDIR /fe
 COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY frontend/ ./
+# Stamp the release version into package.json so the UI (vite-plugin-package-version)
+# shows the tag instead of the committed placeholder.
+RUN if [ -n "$APP_VERSION" ]; then npm pkg set version="$APP_VERSION"; fi
 RUN pnpm run build
 
 # 2) Build the Go binary with the frontend embedded (internal/web/dist).
