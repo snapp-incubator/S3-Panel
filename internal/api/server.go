@@ -6,11 +6,13 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"go.uber.org/zap"
 
@@ -19,6 +21,7 @@ import (
 	"github.com/snapp-incubator/S3-Panel/internal/health"
 	"github.com/snapp-incubator/S3-Panel/internal/storage"
 	"github.com/snapp-incubator/S3-Panel/internal/storage/ceph"
+	"github.com/snapp-incubator/S3-Panel/internal/web"
 )
 
 type Server struct {
@@ -81,7 +84,24 @@ func (s *Server) initializeCache() error {
 func (s *Server) registerRouter() {
 	newRouter := echo.New()
 	newRouter.Validator = &CustomValidator{validator: NewRawValidator()}
+	newRouter.Use(frontendMiddleware())
 	s.Router = newRouter
+}
+
+// frontendMiddleware serves the embedded frontend SPA for any request that is
+// not an API, health or docs route. HTML5 falls back to index.html so
+// client-side routes (e.g. /object-storage/...) resolve to the app.
+func frontendMiddleware() echo.MiddlewareFunc {
+	return middleware.StaticWithConfig(middleware.StaticConfig{
+		Filesystem: web.HTTPFS(),
+		HTML5:      true,
+		Skipper: func(c echo.Context) bool {
+			p := c.Request().URL.Path
+			return strings.HasPrefix(p, "/api") ||
+				strings.HasPrefix(p, "/health") ||
+				strings.HasPrefix(p, "/docs")
+		},
+	})
 }
 
 func (s *Server) registerRoutes() {

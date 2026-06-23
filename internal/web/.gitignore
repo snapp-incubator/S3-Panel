@@ -1,0 +1,4 @@
+# The real frontend build is produced at image-build time; only the placeholder
+# index.html is tracked so `go build` always has something to embed.
+/dist/*
+!/dist/index.html
