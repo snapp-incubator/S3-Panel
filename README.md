@@ -7,7 +7,8 @@ download, delete and share — and view quotas.
 This is a monorepo:
 
 - **Backend** (`cmd/`, `internal/`) — a Go HTTP API in front of the Ceph RADOS Gateway.
-- **Frontend** (`frontend/`) — a Vite + React + TypeScript UI.
+- **Frontend** (`frontend/`) — a Vite + React + TypeScript UI, embedded into and
+  served by the backend binary (`internal/web`), so there is a single image.
 - **Deploy** (`deploy/helm/`) — the `s3-panel` Helm chart.
 
 ## Getting started
@@ -25,12 +26,12 @@ Configuration is TOML, loaded with [koanf](https://github.com/knadh/koanf) (defa
 ## Deployment
 
 A Helm chart lives in [`deploy/helm`](deploy/helm) (chart name `s3-panel`). On each
-`v*` tag the release workflow publishes it as an OCI artifact alongside the images:
+semver tag the release workflow publishes it as an OCI artifact alongside the
+single image (which serves both the API and the embedded frontend):
 
 | Artifact | Reference |
 | --- | --- |
-| Backend image | `ghcr.io/snapp-incubator/s3-panel:<version>` |
-| Frontend image | `ghcr.io/snapp-incubator/s3-panel-frontend:<version>` |
+| Image (API + UI) | `ghcr.io/snapp-incubator/s3-panel:<version>` |
 | Helm chart (OCI) | `oci://ghcr.io/snapp-incubator/charts/s3-panel` |
 
 Install from the OCI registry:
@@ -44,9 +45,9 @@ helm install s3-panel oci://ghcr.io/snapp-incubator/charts/s3-panel \
 
 GitHub Actions (`.github/workflows`):
 
-- **Backend** — `go build`, `golangci-lint`, tests, and a Docker image build.
-- **Frontend** — `pnpm install`, Biome lint, Vite build, and a Docker image build.
-- **Release** — on a `v*` tag, builds and pushes the images and the Helm chart (OCI) to GHCR.
+- **Backend** — `go build`, `golangci-lint`, tests, and the (frontend-embedding) Docker image build.
+- **Frontend** — `pnpm install`, Biome lint, Vite build.
+- **Release** — on a semver tag, builds and pushes the image and the Helm chart (OCI) to GHCR.
 
 ## APIs
 
