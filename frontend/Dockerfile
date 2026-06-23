@@ -27,6 +27,7 @@ RUN pnpm run build
 FROM nginxinc/nginx-unprivileged
 
 COPY --from=frontend /app/dist/ /usr/share/nginx/html
+COPY .docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 USER root
 RUN chgrp -R 0 /usr/share/nginx && chmod -R g=u /usr/share/nginx
