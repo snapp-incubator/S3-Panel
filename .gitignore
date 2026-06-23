@@ -2,3 +2,6 @@
 sample-config-with-secrets.yaml
 vendor
 data/
+
+# macOS
+.DS_Store
