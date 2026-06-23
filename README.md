@@ -45,9 +45,11 @@ helm install s3-panel oci://ghcr.io/snapp-incubator/charts/s3-panel \
 
 GitHub Actions (`.github/workflows`):
 
-- **Backend** — `go build`, `golangci-lint`, tests, and the (frontend-embedding) Docker image build.
-- **Frontend** — `pnpm install`, Biome lint, Vite build.
-- **Release** — on a semver tag, builds and pushes the image and the Helm chart (OCI) to GHCR.
+- **CI** (`ci.yml`) — **lint** (golangci-lint, Biome, `helm lint --strict`) and **test**
+  (`go test`, plus chart manifest validation with kubeconform), then **build** the single
+  image. The build job runs only after lint and test pass.
+- **Release** (`release.yml`) — on a semver tag, builds and pushes the image and the Helm
+  chart (OCI) to GHCR.
 
 ## APIs
 
