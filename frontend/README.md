@@ -1,24 +1,10 @@
-[![Latest Release](https://gitlab.snapp.ir/snappcloud/unified-panel/-/badges/release.svg)](https://gitlab.snapp.ir/snappcloud/unified-panel/-/releases)
-[![coverage report](https://gitlab.snapp.ir/snappcloud/unified-panel/badges/main/coverage.svg)](https://gitlab.snapp.ir/snappcloud/unified-panel/-/commits/main)
-[![pipeline status](https://gitlab.snapp.ir/snappcloud/unified-panel/badges/main/pipeline.svg)](https://gitlab.snapp.ir/snappcloud/unified-panel/-/commits/main)
+# S3 Panel — Frontend
 
-# SnappCost PWA
+The web UI for S3 Panel: a browser for S3-compatible object storage (Ceph RGW).
+It lets a user authenticate with S3 credentials and manage buckets and objects
+(list, upload, download, delete, share) against the [S3 Panel backend](../).
 
-> [!CAUTION]
-> **This repository is DEPRECATED and no longer deployed.**
->
-> The unified panel has been split up and its parts relocated:
->
-> | Old feature | New home |
-> | --- | --- |
-> | **Cost panel** (usage, quota, billing, openstack) | Moved into the SnappCost backend repo and embedded in the binary — [`platform/snappcost`](https://gitlab.snapp.ir/platform/snappcost) (`web/`). Backend + frontend now ship in one image. |
-> | **Home page service links** | Moved into the DevEx portal as the "Service Portals" page — [`platform/devexportal`](https://gitlab.snapp.ir/platform/devexportal) (`apps/frontend/src/docs/setup/service-portals.mdx`). |
-> | **Object Storage (S3) browser** | Retired. |
->
-> Do not develop here. The `cost.snappcloud.io` route now points at the `snappcost` service. This repo is kept only for history and will be archived.
-
-SnappCost as SnappCloud billing solution use the cluster metrics to find out about
-usage and provides bills.
+Built with Vite, React, TypeScript and Tailwind.
 
 ## Configuration
 

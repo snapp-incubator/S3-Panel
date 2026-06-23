@@ -11,12 +11,11 @@ import (
 //	@description	Serves the S3 object storage panel backend APIs
 //	@termsOfService	https://swagger.io/terms/
 
-//	@contact.name	Cloud-Platform
-//	@contact.url	https://docs.snappcloud.io/docs/servicedesk
-//	@contact.email	cloud-platform@snappcloud.io
+//	@contact.name	snapp-incubator
+//	@contact.url	https://github.com/snapp-incubator/S3-Panel
 
-// @license.name	Apache 2.0
-// @license.url	https://www.apache.org/licenses/LICENSE-2.0.html
+// @license.name	GPL-3.0
+// @license.url	https://www.gnu.org/licenses/gpl-3.0.html
 func main() {
 	app.Execute()
 }
