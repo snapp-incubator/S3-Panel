@@ -1,0 +1,51 @@
+{{- if .Values.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "snappobjectstore.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "snappobjectstore.name" . }}-backend
+spec:
+  replicas: {{ .Values.replica }}
+  selector:
+    matchLabels:
+      app: {{ include "snappobjectstore.name" . }}-backend
+  serviceName: {{ include "snappobjectstore.name" . }}-service
+  template:
+    metadata:
+      labels:
+        app: {{ include "snappobjectstore.name" . }}-backend
+    spec:
+      containers:
+      - name: object-storage-backend
+        image: {{ .Values.image }}
+        args:
+        - snapp-object-store
+        - --configPath=/etc/object-store/config/config.yaml
+        ports:
+        - containerPort: {{ .Values.config.port }}
+          protocol: TCP
+          name: backend
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        volumeMounts:
+        - mountPath: /etc/object-store/config/
+          name: app-config
+        - mountPath: {{ .Values.config.download_path }}
+          name: data
+      volumes:
+      - name: app-config
+        configMap:
+          defaultMode: 420
+          name: {{ include "snappobjectstore.name" . }}-app-config
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 50Gi
+{{- end }}

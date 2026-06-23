@@ -1,0 +1,36 @@
+snapp-object-store:
+  enabled: false
+  replica: 1
+  image: image-registry.openshift-image-registry.svc:5000/snappcloud-unified-panel/snapp_object_store:0.2.1
+  fqdn: ""
+  resources:
+    limits:
+      cpu: 2
+      memory: 4Gi
+    requests:
+      cpu: 1
+      memory: 2Gi
+  config:
+    url: ""
+    address: "0.0.0.0"
+    port: 8080
+    log_level: "warn"
+    auth_enabled: "false"
+snapp-object-store-dev:
+  enabled: false
+  replica: 1
+  image: image-registry.openshift-image-registry.svc:5000/snappcloud-unified-panel/snapp_object_store:0.2.1
+  fqdn: ""
+  resources:
+    limits:
+      cpu: '1'
+      memory: 2Gi
+    requests:
+      cpu: '1'
+      memory: 2Gi
+  config:
+    url: ""
+    address: "0.0.0.0"
+    port: 8080
+    log_level: "warn"
+    auth_enabled: "false"

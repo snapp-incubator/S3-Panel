@@ -1,0 +1,14 @@
+apiVersion: v2
+name: s3-panel
+description: A Helm chart for the S3 Panel backend
+type: application
+version: 1.0.0
+dependencies:
+- name: snapp-object-storage-subchart
+  version: 1.0.0
+  repository: file://charts/snapp-object-storage-subchart
+  alias: snapp-object-store
+- name: snapp-object-storage-subchart
+  version: 1.0.0
+  repository: file://charts/snapp-object-storage-subchart
+  alias: snapp-object-store-dev
