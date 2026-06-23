@@ -32,7 +32,7 @@ COPY --from=frontend /fe/dist ./internal/web/dist
 RUN go build -v -o s3-panel ./cmd/s3-panel
 
 # 3) Minimal runtime image — a single binary that serves the API and the SPA.
-FROM alpine:3.20
+FROM alpine:3.24
 WORKDIR /app/
 COPY --from=builder /app/s3-panel .
 ENTRYPOINT ["./s3-panel"]
