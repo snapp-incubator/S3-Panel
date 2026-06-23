@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Serves the S3 object storage panel backend APIs",
-        "title": "S3 Panel Backend",
+        "description": "HTTP API for S3 Panel — managing S3-compatible object storage",
+        "title": "S3 Panel",
         "termsOfService": "https://swagger.io/terms/",
         "contact": {
             "name": "snapp-incubator",

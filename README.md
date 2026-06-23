@@ -1,8 +1,25 @@
-# S3 Panel Backend
+# S3 Panel
+
+S3 Panel is a self-service web panel for S3-compatible object storage (Ceph RGW):
+authenticate with S3 credentials and manage buckets and objects — list, upload,
+download, delete and share — and view quotas.
+
+This is a monorepo:
+
+- **Backend** (`cmd/`, `internal/`) — a Go HTTP API in front of the Ceph RADOS Gateway.
+- **Frontend** (`frontend/`) — a Vite + React + TypeScript UI.
+- **Deploy** (`deploy/helm/`) — the `s3-panel` Helm chart.
 
 ## Getting started
 
-S3 Panel Backend is a project to be used as backend for SnappCloud Unified Panel.
+Run the backend with a config file:
+
+```sh
+go run ./cmd/s3-panel s3-panel --configPath=./config.yaml
+```
+
+See `configs/sample-config.yaml` for the configuration format and `frontend/README.md`
+for the UI.
 
 ## APIs
 

@@ -21,11 +21,11 @@ func Execute() {
 
 	cmd := &cli.Command{
 		Name:        "s3-panel",
-		Description: "Backend of the S3 object storage panel on the SnappCloud unified panel",
+		Description: "S3 Panel — API for managing S3-compatible object storage",
 		Commands: []*cli.Command{
 			{
 				Name:  "s3-panel",
-				Usage: "run the s3-panel backend",
+				Usage: "run the s3-panel server",
 				Action: func(_ context.Context, _ *cli.Command) error {
 					cfg := config.Provide(configPath)
 					logger := logging.Provide(cfg.Logger)

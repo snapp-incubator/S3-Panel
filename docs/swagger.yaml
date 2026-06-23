@@ -156,12 +156,12 @@ info:
   contact:
     name: snapp-incubator
     url: https://github.com/snapp-incubator/S3-Panel
-  description: Serves the S3 object storage panel backend APIs
+  description: HTTP API for S3 Panel — managing S3-compatible object storage
   license:
     name: GPL-3.0
     url: https://www.gnu.org/licenses/gpl-3.0.html
   termsOfService: https://swagger.io/terms/
-  title: S3 Panel Backend
+  title: S3 Panel
   version: "1.0"
 paths:
   /api/bucket/create:

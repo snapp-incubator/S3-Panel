@@ -7,9 +7,9 @@ import (
 	"github.com/snapp-incubator/S3-Panel/internal/app"
 )
 
-//	@title			S3 Panel Backend
+//	@title			S3 Panel
 //	@version		1.0
-//	@description	Serves the S3 object storage panel backend APIs
+//	@description	HTTP API for S3 Panel — managing S3-compatible object storage
 //	@termsOfService	https://swagger.io/terms/
 
 //	@contact.name	snapp-incubator
