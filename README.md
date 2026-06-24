@@ -1,9 +1,10 @@
-# S3 Panel
+<h1 align="center">S3 Panel</h1>
 
-[![CI](https://github.com/snapp-incubator/S3-Panel/actions/workflows/ci.yml/badge.svg)](https://github.com/snapp-incubator/S3-Panel/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/snapp-incubator/S3-Panel?sort=semver)](https://github.com/snapp-incubator/S3-Panel/releases)
-[![Go](https://img.shields.io/github/go-mod/go-version/snapp-incubator/S3-Panel)](go.mod)
-[![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
+<p align="center">
+<img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/snapp-incubator/s3-panel/ci.yml?style=for-the-badge&logo=github">
+<img alt="GitHub Release" src="https://img.shields.io/github/v/release/snapp-incubator/s3-panel?style=for-the-badge&logo=rocket">
+<img alt="GitHub License" src="https://img.shields.io/github/license/snapp-incubator/s3-panel?style=for-the-badge&logo=gnu">
+</p>
 
 S3 Panel is a self-service web panel for S3-compatible object storage (Ceph RGW):
 authenticate with S3 credentials and manage buckets and objects — list, upload,
