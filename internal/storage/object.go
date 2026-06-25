@@ -7,6 +7,7 @@ type ObjectListRequestMeta struct {
 	Page         int32  `query:"page"          validate:"required"`
 	MaxKeys      int32  `query:"max_keys"      validate:"required"`
 	SearchString string `query:"search_string"`
+	Prefix       string `query:"prefix"`
 }
 
 type ObjectDeleteRequestMeta struct {
@@ -35,6 +36,7 @@ type ObjectListBody struct {
 	SizeValue             float64 `json:"size_value"`
 	SizeUnit              string  `json:"size_unit"`
 	LastModifiedTimestamp string  `json:"last_modified_timestamp"`
+	IsFolder              bool    `json:"is_folder"`
 }
 
 type ObjectListResponse struct {
