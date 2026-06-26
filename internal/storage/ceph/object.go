@@ -96,73 +96,112 @@ func (c CephObjectStorage) ObjectList(serverAdminConfig config.ObjectStorageConf
 	}
 
 	if meta.SearchString != "" {
-		return ObjectListFiltered(client, meta)
-	} else {
-		return ObjectListUnfiltered(client, meta)
+		return c.objectListSearch(client, meta)
 	}
+	return c.objectListByPrefix(client, meta)
 }
 
-func ObjectListUnfiltered(client *s3.Client, meta storage.ObjectListRequestMeta) (storage.ObjectListResponse, storage.HTTPErrorWithCode) {
+func (c CephObjectStorage) objectListByPrefix(client *s3.Client, meta storage.ObjectListRequestMeta) (storage.ObjectListResponse, storage.HTTPErrorWithCode) {
 	var bulkListKeys int32 = 500
-	var desiredObjects []storage.ObjectListBody
-	var nextMarker *string
-	var totalItems int
-	meta.SearchString = strings.TrimSpace(strings.ToLower(meta.SearchString))
+	var allFolders []storage.ObjectListBody
+	var allFiles []storage.ObjectListBody
+	var nextContinuationToken *string
+
 	downThreshold := int(meta.MaxKeys) * (int(meta.Page) - 1)
-	upThreshold := int(meta.MaxKeys) * (int(meta.Page))
+	upThreshold := int(meta.MaxKeys) * int(meta.Page)
+
 	for {
-		outputListObjects, errListObjects := client.ListObjects(context.Background(), &s3.ListObjectsInput{
-			Bucket:  aws.String(meta.Bucket),
-			MaxKeys: aws.Int32(bulkListKeys),
-			Marker:  nextMarker,
-		})
-		if errListObjects != nil {
-			return storage.ObjectListResponse{}, translateError(errListObjects)
+		input := &s3.ListObjectsV2Input{
+			Bucket:            aws.String(meta.Bucket),
+			MaxKeys:           aws.Int32(bulkListKeys),
+			Delimiter:         aws.String("/"),
+			ContinuationToken: nextContinuationToken,
+		}
+		if meta.Prefix != "" {
+			input.Prefix = aws.String(meta.Prefix)
 		}
 
-		if totalItems <= upThreshold && totalItems+len(outputListObjects.Contents) >= downThreshold {
-			for _, object := range outputListObjects.Contents {
-				totalItems += 1
-				if downThreshold < totalItems && totalItems <= upThreshold {
-					objSizeValue, objSizeUnit := convertSizeToUnit(object.Size)
-					desiredObjects = append(desiredObjects, storage.ObjectListBody{
-						Name:                  object.Key,
-						LastModifiedTimestamp: object.LastModified.String(),
-						SizeUnit:              objSizeUnit,
-						SizeValue:             objSizeValue,
-					})
-				}
+		output, errList := client.ListObjectsV2(context.Background(), input)
+		if errList != nil {
+			return storage.ObjectListResponse{}, translateError(errList)
+		}
+
+		for _, cp := range output.CommonPrefixes {
+			name := *cp.Prefix
+			if meta.Prefix != "" && strings.HasPrefix(name, meta.Prefix) {
+				name = strings.TrimPrefix(name, meta.Prefix)
 			}
-		} else {
-			totalItems += len(outputListObjects.Contents)
+			allFolders = append(allFolders, storage.ObjectListBody{
+				Name:     &name,
+				IsFolder: true,
+			})
 		}
 
-		if *outputListObjects.IsTruncated {
-			nextMarker = outputListObjects.Contents[len(outputListObjects.Contents)-1].Key
+		for _, obj := range output.Contents {
+			key := *obj.Key
+			if meta.Prefix != "" && strings.HasPrefix(key, meta.Prefix) {
+				key = strings.TrimPrefix(key, meta.Prefix)
+			}
+			if key == "" {
+				continue
+			}
+			objSizeValue, objSizeUnit := convertSizeToUnit(obj.Size)
+			allFiles = append(allFiles, storage.ObjectListBody{
+				Name:                  &key,
+				SizeValue:             objSizeValue,
+				SizeUnit:              objSizeUnit,
+				LastModifiedTimestamp: obj.LastModified.String(),
+				IsFolder:              false,
+			})
+		}
+
+		if output.IsTruncated != nil && *output.IsTruncated {
+			nextContinuationToken = output.NextContinuationToken
 		} else {
 			break
 		}
 	}
+
+	allItems := append(allFolders, allFiles...)
+	totalItems := len(allItems)
+
+	if downThreshold >= totalItems {
+		return storage.ObjectListResponse{
+			Items:             []storage.ObjectListBody{},
+			TotalMatchedItems: totalItems,
+			TotalPages:        (totalItems + int(meta.MaxKeys) - 1) / int(meta.MaxKeys),
+		}, storage.HTTPErrorWithCode{Code: 0, Message: nil}
+	}
+
+	end := upThreshold
+	if end > totalItems {
+		end = totalItems
+	}
+
 	return storage.ObjectListResponse{
-		Items:             desiredObjects,
+		Items:             allItems[downThreshold:end],
 		TotalMatchedItems: totalItems,
+		TotalPages:        (totalItems + int(meta.MaxKeys) - 1) / int(meta.MaxKeys),
 	}, storage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
-func ObjectListFiltered(client *s3.Client, meta storage.ObjectListRequestMeta) (storage.ObjectListResponse, storage.HTTPErrorWithCode) {
+func (c CephObjectStorage) objectListSearch(client *s3.Client, meta storage.ObjectListRequestMeta) (storage.ObjectListResponse, storage.HTTPErrorWithCode) {
 	var bulkListKeys int32 = 500
 	var desiredObjects []storage.ObjectListBody
 	var totalMatchedItems = 0
-	var nextMarker *string
+	var nextContinuationToken *string
 	downThreshold := int(meta.MaxKeys) * (int(meta.Page) - 1)
-	upThreshold := int(meta.MaxKeys) * (int(meta.Page))
+	upThreshold := int(meta.MaxKeys) * int(meta.Page)
 	meta.SearchString = strings.TrimSpace(strings.ToLower(meta.SearchString))
+
 	for {
-		outputListObjects, errListObjects := client.ListObjects(context.Background(), &s3.ListObjectsInput{
-			Bucket:  aws.String(meta.Bucket),
-			MaxKeys: aws.Int32(bulkListKeys),
-			Marker:  nextMarker,
-		})
+		input := &s3.ListObjectsV2Input{
+			Bucket:            aws.String(meta.Bucket),
+			MaxKeys:           aws.Int32(bulkListKeys),
+			ContinuationToken: nextContinuationToken,
+		}
+
+		outputListObjects, errListObjects := client.ListObjectsV2(context.Background(), input)
 		if errListObjects != nil {
 			return storage.ObjectListResponse{}, translateError(errListObjects)
 		}
@@ -179,12 +218,13 @@ func ObjectListFiltered(client *s3.Client, meta storage.ObjectListRequestMeta) (
 					LastModifiedTimestamp: object.LastModified.String(),
 					SizeUnit:              objSizeUnit,
 					SizeValue:             objSizeValue,
+					IsFolder:              false,
 				})
 			}
 		}
 
-		if *outputListObjects.IsTruncated {
-			nextMarker = outputListObjects.Contents[len(outputListObjects.Contents)-1].Key
+		if outputListObjects.IsTruncated != nil && *outputListObjects.IsTruncated {
+			nextContinuationToken = outputListObjects.NextContinuationToken
 		} else {
 			break
 		}
@@ -192,6 +232,7 @@ func ObjectListFiltered(client *s3.Client, meta storage.ObjectListRequestMeta) (
 	return storage.ObjectListResponse{
 		Items:             desiredObjects,
 		TotalMatchedItems: totalMatchedItems,
+		TotalPages:        (totalMatchedItems + int(meta.MaxKeys) - 1) / int(meta.MaxKeys),
 	}, storage.HTTPErrorWithCode{Code: 0, Message: nil}
 }
 
@@ -201,9 +242,11 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		return storage.ObjectUploadResponse{}, storage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: errors.New(messages.FailedToCreateClient)}
 	}
 
+	objectKey := meta.Prefix + file.Filename
+
 	uploadMultiPartInput := &s3.CreateMultipartUploadInput{
 		Bucket:            aws.String(meta.Bucket),
-		Key:               aws.String(file.Filename),
+		Key:               aws.String(objectKey),
 		ChecksumAlgorithm: types.ChecksumAlgorithmCrc32,
 	}
 	respMP, errCreateMP := client.CreateMultipartUpload(context.Background(), uploadMultiPartInput)
@@ -239,7 +282,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		partInput := &s3.UploadPartInput{
 			Body:              bytes.NewReader(bs[curr : curr+partLength]),
 			Bucket:            aws.String(meta.Bucket),
-			Key:               aws.String(file.Filename),
+			Key:               aws.String(objectKey),
 			PartNumber:        &partNum,
 			UploadId:          respMP.UploadId,
 			ChecksumCRC32:     &checkSumCRC32,
@@ -249,7 +292,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		if errUploadPart != nil {
 			aboInput := &s3.AbortMultipartUploadInput{
 				Bucket:   aws.String(meta.Bucket),
-				Key:      aws.String(file.Filename),
+				Key:      aws.String(objectKey),
 				UploadId: respMP.UploadId,
 			}
 			_, aboErr := client.AbortMultipartUpload(context.TODO(), aboInput)
@@ -269,7 +312,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 
 	compInput := &s3.CompleteMultipartUploadInput{
 		Bucket:   aws.String(meta.Bucket),
-		Key:      aws.String(file.Filename),
+		Key:      aws.String(objectKey),
 		UploadId: respMP.UploadId,
 		MultipartUpload: &types.CompletedMultipartUpload{
 			Parts: completedParts,
@@ -280,7 +323,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 	if compErr != nil {
 		aboInput := &s3.AbortMultipartUploadInput{
 			Bucket:   aws.String(meta.Bucket),
-			Key:      aws.String(file.Filename),
+			Key:      aws.String(objectKey),
 			UploadId: respMP.UploadId,
 		}
 		_, errAbort := client.AbortMultipartUpload(context.Background(), aboInput)

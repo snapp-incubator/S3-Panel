@@ -32,13 +32,15 @@ const fetchUserQuota = async () => {
 const fetchObjects = async (
   bucket: string,
   page: number,
-  searchValue?: string
+  searchValue?: string,
+  prefix?: string
 ) => {
-  const params = {
+  const params: Record<string, string | number | undefined> = {
     bucket,
     max_keys: 20,
     page,
-    search_string: searchValue || undefined
+    search_string: searchValue || undefined,
+    prefix: prefix || undefined
   }
 
   const res = await centralClient.get<IBucketObjectResponse>(
