@@ -112,6 +112,8 @@ func (s *Server) HandleObjectUpload() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, storage.OperationErrWithMsg{Message: "bucket can not be empty"})
 		}
 
+		req.Prefix = c.FormValue("prefix")
+
 		form, errForm := c.MultipartForm()
 		if errForm != nil {
 			s.logger.Error(errForm.Error())
@@ -133,7 +135,7 @@ func (s *Server) HandleObjectUpload() echo.HandlerFunc {
 				AccessKey: req.AccessKey,
 				SecretKey: req.SecretKey,
 				Bucket:    req.Bucket,
-				Object:    file.Filename,
+				Object:    req.Prefix + file.Filename,
 			}
 			existOut, existsErr := s.store.ObjectHead(s.Config.ObjectStorage, headReq)
 			if existsErr.Message != nil {

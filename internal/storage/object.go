@@ -29,6 +29,7 @@ type ObjectUploadRequestMeta struct {
 	AccessKey string `header:"access_key" validate:"required"`
 	SecretKey string `header:"secret_key" validate:"required"`
 	Bucket    string `form:"bucket"       validate:"required"`
+	Prefix    string `form:"prefix"`
 }
 
 type ObjectListBody struct {

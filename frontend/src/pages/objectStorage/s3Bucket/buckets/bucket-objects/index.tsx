@@ -147,6 +147,7 @@ export default function BucketObjects() {
         />
         <UploadObject
           bucketName={bucketName!}
+          currentPath={currentPath}
           refetchObjects={() => refetch()}
         />
       </div>

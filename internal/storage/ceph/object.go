@@ -242,9 +242,11 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		return storage.ObjectUploadResponse{}, storage.HTTPErrorWithCode{Code: http.StatusInternalServerError, Message: errors.New(messages.FailedToCreateClient)}
 	}
 
+	objectKey := meta.Prefix + file.Filename
+
 	uploadMultiPartInput := &s3.CreateMultipartUploadInput{
 		Bucket:            aws.String(meta.Bucket),
-		Key:               aws.String(file.Filename),
+		Key:               aws.String(objectKey),
 		ChecksumAlgorithm: types.ChecksumAlgorithmCrc32,
 	}
 	respMP, errCreateMP := client.CreateMultipartUpload(context.Background(), uploadMultiPartInput)
@@ -280,7 +282,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		partInput := &s3.UploadPartInput{
 			Body:              bytes.NewReader(bs[curr : curr+partLength]),
 			Bucket:            aws.String(meta.Bucket),
-			Key:               aws.String(file.Filename),
+			Key:               aws.String(objectKey),
 			PartNumber:        &partNum,
 			UploadId:          respMP.UploadId,
 			ChecksumCRC32:     &checkSumCRC32,
@@ -290,7 +292,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 		if errUploadPart != nil {
 			aboInput := &s3.AbortMultipartUploadInput{
 				Bucket:   aws.String(meta.Bucket),
-				Key:      aws.String(file.Filename),
+				Key:      aws.String(objectKey),
 				UploadId: respMP.UploadId,
 			}
 			_, aboErr := client.AbortMultipartUpload(context.TODO(), aboInput)
@@ -310,7 +312,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 
 	compInput := &s3.CompleteMultipartUploadInput{
 		Bucket:   aws.String(meta.Bucket),
-		Key:      aws.String(file.Filename),
+		Key:      aws.String(objectKey),
 		UploadId: respMP.UploadId,
 		MultipartUpload: &types.CompletedMultipartUpload{
 			Parts: completedParts,
@@ -321,7 +323,7 @@ func (c CephObjectStorage) ObjectUpload(serverAdminConfig config.ObjectStorageCo
 	if compErr != nil {
 		aboInput := &s3.AbortMultipartUploadInput{
 			Bucket:   aws.String(meta.Bucket),
-			Key:      aws.String(file.Filename),
+			Key:      aws.String(objectKey),
 			UploadId: respMP.UploadId,
 		}
 		_, errAbort := client.AbortMultipartUpload(context.Background(), aboInput)
