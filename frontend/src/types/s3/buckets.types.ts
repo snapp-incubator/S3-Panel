@@ -26,8 +26,10 @@ export interface IBucketObjectResponse {
     last_modified_timestamp: string
     size_unit: string
     size_value: number
+    is_folder: boolean
   }[]
   total_pages: number
+  total_matched_items?: number
 }
 
 export interface IUserQuotaResponse {

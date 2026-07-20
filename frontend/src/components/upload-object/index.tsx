@@ -9,11 +9,16 @@ import type { TUploadObjectProps } from './uploadObject.types'
 
 export default function UploadObject({
   bucketName,
+  currentPath,
   refetchObjects
 }: TUploadObjectProps) {
   const { setUploadNames } = useUploadProgress()
 
-  const { mutateAsync } = useFileUploadMutation({ bucketName, refetchObjects })
+  const { mutateAsync } = useFileUploadMutation({
+    bucketName,
+    currentPath,
+    refetchObjects
+  })
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files

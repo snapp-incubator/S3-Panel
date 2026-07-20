@@ -28,6 +28,7 @@ export default function BucketObjects() {
   const { bucketName } = useParams({ strict: false })
 
   const [currentPage, setCurrentPage] = useState(1)
+  const [currentPath, setCurrentPath] = useState('')
 
   useEffectOnce(() => {
     setTitle('SnappCloud - S3 Bucket Objects')
@@ -47,9 +48,36 @@ export default function BucketObjects() {
     refetch,
     isError
   } = useQuery({
-    queryKey: bucketObjectKeys.all(bucketName!, currentPage, deferredSearch),
-    queryFn: () => fetchObjects(bucketName!, currentPage, deferredSearch)
+    queryKey: bucketObjectKeys.all(
+      bucketName!,
+      currentPage,
+      deferredSearch,
+      currentPath
+    ),
+    queryFn: () =>
+      fetchObjects(bucketName!, currentPage, deferredSearch, currentPath)
   })
+
+  const navigateToFolder = (folderName: string) => {
+    setCurrentPath(prev => prev + folderName)
+    setCurrentPage(1)
+    setSearchValue('')
+  }
+
+  const navigateToPath = (path: string) => {
+    setCurrentPath(path)
+    setCurrentPage(1)
+  }
+
+  const pathSegments = currentPath
+    ? currentPath
+        .split('/')
+        .filter(Boolean)
+        .map((segment, _index, arr) => {
+          const pathUpTo = arr.slice(0, _index + 1).join('/') + '/'
+          return { name: segment, path: pathUpTo }
+        })
+    : []
 
   return (
     <div>
@@ -73,8 +101,40 @@ export default function BucketObjects() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Objects</BreadcrumbPage>
+            {currentPath ? (
+              <BreadcrumbLink>
+                <Button
+                  size="sm"
+                  variant="link"
+                  onClick={() => navigateToPath('')}
+                >
+                  {bucketName}
+                </Button>
+              </BreadcrumbLink>
+            ) : (
+              <BreadcrumbPage>{bucketName}</BreadcrumbPage>
+            )}
           </BreadcrumbItem>
+          {pathSegments.map((segment, index) => (
+            <span key={segment.path} className="contents">
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                {index === pathSegments.length - 1 ? (
+                  <BreadcrumbPage>{segment.name}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink>
+                    <Button
+                      size="sm"
+                      variant="link"
+                      onClick={() => navigateToPath(segment.path)}
+                    >
+                      {segment.name}
+                    </Button>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </span>
+          ))}
         </BreadcrumbList>
       </Breadcrumb>
       <div className="mt-6 flex items-center justify-between">
@@ -87,6 +147,7 @@ export default function BucketObjects() {
         />
         <UploadObject
           bucketName={bucketName!}
+          currentPath={currentPath}
           refetchObjects={() => refetch()}
         />
       </div>
@@ -97,12 +158,14 @@ export default function BucketObjects() {
             isLoading={isLoading}
             objectList={objectList!}
             bucket={bucketName!}
+            currentPath={currentPath}
             refetchObjects={() => refetch()}
             isSearch={!!searchValue}
             onShareObject={objectName => {
               setObjectName(objectName)
               setOpenShareObject(true)
             }}
+            onNavigateToFolder={navigateToFolder}
           />
         </CardContent>
         <CardFooter className="relative">
