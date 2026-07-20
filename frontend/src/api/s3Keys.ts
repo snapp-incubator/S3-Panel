@@ -12,12 +12,12 @@ export const userKeys = createKeyStore(s3Keys.user, {
 })
 
 export const bucketObjectKeys = createKeyStore(s3Keys.objects, {
-  all: (bucketName: string, page: number, searchValue?: string, prefix?: string) => [
-    bucketName,
-    page,
-    searchValue,
-    prefix
-  ]
+  all: (
+    bucketName: string,
+    page: number,
+    searchValue?: string,
+    prefix?: string
+  ) => [bucketName, page, searchValue, prefix]
 })
 
 export const bucketsKeys = createKeyStore(s3Keys.buckets, {

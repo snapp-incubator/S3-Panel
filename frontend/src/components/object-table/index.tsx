@@ -108,9 +108,7 @@ export default function ObjectTable({
 
                 return (
                   <TableRow key={item.name}>
-                    <TableCell className="font-medium">
-                      {item.name}
-                    </TableCell>
+                    <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell className="text-center">
                       {dateFormat(item.last_modified_timestamp)}
                     </TableCell>
