@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 
-import type { TFeature } from '@/services/http'
+// Feature flag that gates a nav item. Currently only object storage ('s3').
+type TFeature = 's3'
 
 export type NavItem = {
   title: string

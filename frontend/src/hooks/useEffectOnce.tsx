@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 
-const useEffectOnce = (effect: () => undefined | (() => void)) => {
-  const effectFn = useRef<() => undefined | (() => void)>(effect)
-  const destroyFn = useRef<undefined | (() => void)>(undefined)
+const useEffectOnce = (effect: () => void | (() => void)) => {
+  const effectFn = useRef<() => void | (() => void)>(effect)
+  const destroyFn = useRef<void | (() => void)>(undefined)
   const effectCalled = useRef(false)
   const rendered = useRef(false)
   const [, setVal] = useState<number>(0)
