@@ -1,5 +1,5 @@
 import { TriangleAlert } from 'lucide-react'
-import { cloneElement } from 'react'
+import { cloneElement, type ReactElement } from 'react'
 
 import { t } from '@/i18n'
 
@@ -7,7 +7,7 @@ const DEFAULT_ICON = <TriangleAlert color="red" />
 
 interface ErrorStateProps {
   message?: string
-  icon?: JSX.Element
+  icon?: ReactElement<{ color?: string }>
   iconColor?: string
 }
 
