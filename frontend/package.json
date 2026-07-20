@@ -8,6 +8,7 @@
     "dev": "vite",
     "analyze": "vite-bundle-visualizer",
     "build": "vite build",
+    "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",

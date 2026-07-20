@@ -34,6 +34,9 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm run lint
+      - name: Frontend typecheck
+        working-directory: frontend
+        run: pnpm run typecheck
       - uses: azure/setup-helm@v5
       - name: Chart lint
         run: helm lint --strict deploy/helm
